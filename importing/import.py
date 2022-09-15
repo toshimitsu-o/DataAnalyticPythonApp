@@ -62,74 +62,82 @@ def validateFile(fileName):
 
 def importFile(fileName):
     
-    schema = {
-        "fields": [
-            {
-                "name": "ACCIDENT_NO",
-                "required": True
-            },
-            {
-                "name": "ACCIDENT_DATE",
-                "required": True
-            },
-            {
-                "name": "ACCIDENT_TIME",
-                "required": True
-            },
-            {
-                "name": "ACCIDENT_TYPE",
-                "required": True
-            },
-            {
-                "name": "DAY_OF_WEEK",
-                "required": True
-            },
-            {
-                "name": "SEVERITY",
-                "required": True
-            },
-            {
-                "name": "LONGITUDE",
-                "required": True
-            },
-            {
-                "name": "LATITUDE",
-                "required": True
-            },
-            {
-                "name": "LGA_NAME",
-                "required": True
-            },
-            {
-                "name": "REGION_NAME",
-                "required": True
-            },
-            {
-                "name": "FATALITY",
-                "required": True
-            },
-            {
-                "name": "SERIOUSINJURY",
-                "required": True
-            },
-            {
-                "name": "ALCOHOL_RELATED",
-                "required": True
-            },
-        ]
-    }
-    
+    """function accepts csv file, performs schema valiation and returns a list of tuples containing relevant
+    information from csv file 
+    """
+    # attempts to validate csv file
     try:
+        # list of required fields
+        schema = {
+            "fields": [
+                {
+                    "name": "ACCIDENT_NO",
+                    "required": True
+                },
+                {
+                    "name": "ACCIDENT_DATE",
+                    "required": True
+                },
+                {
+                    "name": "ACCIDENT_TIME",
+                    "required": True
+                },
+                {
+                    "name": "ACCIDENT_TYPE",
+                    "required": True
+                },
+                {
+                    "name": "DAY_OF_WEEK",
+                    "required": True
+                },
+                {
+                    "name": "SEVERITY",
+                    "required": True
+                },
+                {
+                    "name": "LONGITUDE",
+                    "required": True
+                },
+                {
+                    "name": "LATITUDE",
+                    "required": True
+                },
+                {
+                    "name": "LGA_NAME",
+                    "required": True
+                },
+                {
+                    "name": "REGION_NAME",
+                    "required": True
+                },
+                {
+                    "name": "FATALITY",
+                    "required": True
+                },
+                {
+                    "name": "SERIOUSINJURY",
+                    "required": True
+                },
+                {
+                    "name": "ALCOHOL_RELATED",
+                    "required": True
+                },
+            ]
+        }
+        # validates csv file against listed schema
         v = Validator(fileName, schema=schema)
         v.validate()
         
+    # if validation fails returns this error
     except:
-        print("validation error")
+        return "validation error"
             
+    # if validation is successful this code will execute
     else:
         wb = pd.read_csv(fileName)
         accidentData = []
         
+        # iterates through each row and appends required field information as a tuple to the list accidentData
         for index, row in wb.iterrows():
             aNo = row[1]
             aDate = row[4]
@@ -145,7 +153,7 @@ def importFile(fileName):
             seriousInjury = row[28]
             alcoholRelated = row[45]
             accidentData.append((aNo, aDate, aTime, aType, dayOfWeek, severity, longitude, latitude, lgaName, regionName, fatality, seriousInjury, alcoholRelated))
-        
+        return accidentData
     
     
     
