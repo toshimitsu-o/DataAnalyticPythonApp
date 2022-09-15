@@ -35,3 +35,6 @@ def insertData(dbFile):
         dbFile (_type_): _description_
     """
     connection = None
+
+createDatabase('testDatabase.db')
+
