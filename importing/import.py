@@ -119,33 +119,37 @@ def importFile(fileName):
         ]
     }
     
-    
-    v = Validator(fileName, schema=schema)
-    v.validate()
-    
-    
+    try:
+        v = Validator(fileName, schema=schema)
+        v.validate()
         
-    wb = pd.read_csv(fileName)
-    accidentData = []
+    except:
+        print("validation error")
+            
+    else:
+        wb = pd.read_csv(fileName)
+        accidentData = []
+        
+        for index, row in wb.iterrows():
+            aNo = row[1]
+            aDate = row[4]
+            aTime = row[5]
+            aType = row[7]
+            dayOfWeek = row[8]
+            severity = row[14]
+            longitude = row[18]
+            latitude = row[19]
+            lgaName = row[21]
+            regionName = row[22]
+            fatality = row[27]
+            seriousInjury = row[28]
+            alcoholRelated = row[45]
+            accidentData.append((aNo, aDate, aTime, aType, dayOfWeek, severity, longitude, latitude, lgaName, regionName, fatality, seriousInjury, alcoholRelated))
+        
     
-    for index, row in wb.iterrows():
-        aNo = row[1]
-        aDate = row[4]
-        aTime = row[5]
-        aType = row[7]
-        dayOfWeek = row[8]
-        severity = row[14]
-        longitude = row[18]
-        latitude = row[19]
-        lgaName = row[21]
-        regionName = row[22]
-        fatality = row[27]
-        seriousInjury = row[28]
-        alcoholRelated = row[45]
-        accidentData.append((aNo, aDate, aTime, aType, dayOfWeek, severity, longitude, latitude, lgaName, regionName, fatality, seriousInjury, alcoholRelated))
     
     
-validateFile("C:/Users/zeefe/OneDrive/Documents/Uni/Year 2/Trimester 2/Software Technologies/Git Repositories/2810ICT-2022-Assignment/2810ICT-2022-Assignment/dataset/Crash Statistics Victoria.csv")
+importFile("C:/Users/zeefe/OneDrive/Documents/Uni/Year 2/Trimester 2/Software Technologies/Git Repositories/2810ICT-2022-Assignment/2810ICT-2022-Assignment/dataset/Crash Statistics Victoria.csv")
 # importFile("C:/Users/zeefe/OneDrive/Documents/Uni/Year 2/Trimester 2/Software Technologies/Git Repositories/2810ICT-2022-Assignment/2810ICT-2022-Assignment/dataset/Crash Statistics Victoria.csv")
 
 
