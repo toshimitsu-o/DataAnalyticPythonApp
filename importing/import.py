@@ -1,46 +1,14 @@
+from wsgiref.validate import validator
 import pandas as pd
 import csv
-import pycsvschema
+from pycsvschema.checker import Validator
 import sys
 from csvvalidator import *
 
 def validateFile(fileName):
     
-    # schema = {
-    #     'fields':[
-    #        {
-    #            "name": "ACCIDENT_NO",
-    #            "type": "string",
-    #            "required": "True"
-    #        },
-    #        {
-    #            "name": "ACCIDENT_DATE",
-    #            "type": 
-    #        }
-    #     ]
-    # }
-    
-    schema = {
-        "fields": [
-            {
-                "name": "ACCIDENT_NO",
-                "type": "string",
-                "required": "True"
-            },
-            {
-                "name": "ACCIDENT_DATE",
-                "type": "string",
-                "format": "datetime"
-            },
-            {
-                "name": "donation",
-                "type": "number",
-                "groupChar": ",",
-                "minimum": 100
-            }
-        ]
-    }
 
+    
     field_names = ("ACCIDENT_NO",
                 "ACCIDENT_DATE",
                 "ACCIDENT_TIME",
@@ -94,20 +62,69 @@ def validateFile(fileName):
 
 def importFile(fileName):
     
-    colNames = ["ACCIDENT_NO",
-                "ACCIDENT_DATE",
-                "ACCIDENT_TIME",
-                "ACCIDENT_TYPE",
-                "DAY_OF_WEEK",
-                "SEVERITY",
-                "LONGITUDE",
-                "LATITUDE",
-                "LGA_NAME",
-                "REGION_NAME",
-                "FATALITY",
-                "SERIOUSINJURY",
-                "ALCOHOL_RELATED"]
+    schema = {
+        "fields": [
+            {
+                "name": "ACCIDENT_NO",
+                "required": True
+            },
+            {
+                "name": "ACCIDENT_DATE",
+                "required": True
+            },
+            {
+                "name": "ACCIDENT_TIME",
+                "required": True
+            },
+            {
+                "name": "ACCIDENT_TYPE",
+                "required": True
+            },
+            {
+                "name": "DAY_OF_WEEK",
+                "required": True
+            },
+            {
+                "name": "SEVERITY",
+                "required": True
+            },
+            {
+                "name": "LONGITUDE",
+                "required": True
+            },
+            {
+                "name": "LATITUDE",
+                "required": True
+            },
+            {
+                "name": "LGA_NAME",
+                "required": True
+            },
+            {
+                "name": "REGION_NAME",
+                "required": True
+            },
+            {
+                "name": "FATALITY",
+                "required": True
+            },
+            {
+                "name": "SERIOUSINJURY",
+                "required": True
+            },
+            {
+                "name": "ALCOHOL_RELATED",
+                "required": True
+            },
+        ]
+    }
     
+    
+    v = Validator(fileName, schema=schema)
+    v.validate()
+    
+    
+        
     wb = pd.read_csv(fileName)
     accidentData = []
     
