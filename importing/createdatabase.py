@@ -10,7 +10,7 @@ def createDatabase(dbFile):
         connection = sqlite3.connect(dbFile)
         c = connection.cursor()
         c.execute(
-            """DROP TABLE IF EXISTS Accident
+            """DROP TABLE IF EXISTS Accident;
             CREATE TABLE IF NOT EXISTS Accident
             (ACCIDENT_NO VARCHAR(20) PRIMARY KEY,
             ACCIDENT_DATE TEXT,
@@ -24,7 +24,7 @@ def createDatabase(dbFile):
             REGION_NAME VARCHAR(30),
             FATALITY BOOLEAN,
             SERIOUSINJURY BOOLEAN,
-            ALCOHOL_RELATED BOOLEAN)"""
+            ALCOHOL_RELATED BOOLEAN);"""
         )
     except Error as e:
         print(e)

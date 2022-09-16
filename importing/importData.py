@@ -110,9 +110,8 @@ def importFile(fileName):
             seriousInjury = row[28]
             # converts results to boolean 0,1
             alcoholRelated = strtobool(row[45])
-            print(alcoholRelated)
-            
             accidentData.append((aNo, aDate, aPTime, aType, dayOfWeek, severity, longitude, latitude, lgaName, regionName, fatality, seriousInjury, alcoholRelated))
+        
         return accidentData
     
     
