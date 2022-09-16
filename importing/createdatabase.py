@@ -22,8 +22,8 @@ def createDatabase():
             latitude REAL,
             lgaName VARCHAR,
             regionName VARCHAR,
-            fatality INT,
-            seriousInjury INT,
+            fatalites INT,
+            seriousInjuries INT,
             alcoholRelated INT);"""
         )
     except Error as e:
@@ -49,6 +49,6 @@ def insertData(dataFileName):
         
         
         
-# createDatabase()
+createDatabase()
 insertData("C:/Users/zeefe/OneDrive/Documents/Uni/Year 2/Trimester 2/Software Technologies/Git Repositories/2810ICT-2022-Assignment/2810ICT-2022-Assignment/dataset/Crash Statistics Victoria.csv")
 
