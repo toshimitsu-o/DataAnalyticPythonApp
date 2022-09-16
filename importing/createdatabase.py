@@ -10,7 +10,7 @@ def createDatabase():
         connection = sqlite3.connect("accidentDatabase.db")
         c = connection.cursor()
         c.execute(
-            """DROP TABLE IF EXISTS Accident;""")
+            "DROP TABLE IF EXISTS Accident;")
         c.execute("""CREATE TABLE IF NOT EXISTS Accident
             (accidentNo VARCHAR PRIMARY KEY,
             accidentDate TEXT,
@@ -34,7 +34,6 @@ def insertData(dataFileName):
     """attempts to insert data into a database 
 
     Args:
-        dbFile (database): database file for data to insert
         dataFileName (str): filepath of csv for import
     """
     connection = None
@@ -42,7 +41,6 @@ def insertData(dataFileName):
         connection = sqlite3.connect("accidentDatabase.db", detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
         c = connection.cursor()
         data = importFile(dataFileName)
-        # print(data)
         c.executemany("INSERT INTO Accident VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", data)
         connection.commit()
         
