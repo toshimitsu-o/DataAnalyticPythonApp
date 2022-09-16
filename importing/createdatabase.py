@@ -22,9 +22,9 @@ def createDatabase(dbFile):
             latitude REAL,
             lgaName VARCHAR,
             regionName VARCHAR,
-            fatality BOOLEAN,
-            seriousInjury BOOLEAN,
-            alcoholRelated BOOLEAN);"""
+            fatality INT,
+            seriousInjury INT,
+            alcoholRelated INT);"""
         )
     except Error as e:
         print(e)
