@@ -1,3 +1,4 @@
+from time import strptime
 from wsgiref.validate import validator
 import pandas as pd
 import csv
@@ -85,31 +86,37 @@ def importFile(fileName):
         
         # iterates through each row and appends required field information as a tuple to the list accidentData
         for index, row in wb.iterrows():
-            aNo = row[1]
-            # converts dates from dd/mm/yyyy to yyyy-mm-dd format
-            aDate = datetime.datetime.strptime(row[4], "%d/%m/%Y").strftime("%Y-%m-%d")
-            # converts time from hh.mm.ss to hh:mm:ss format
-            aTime = row[5]
-            aFTime = None
-            for i in aTime:
-                if i ==".":
-                    aFTime.append(":")
+            # aNo = row[1]
+            # # converts dates from dd/mm/yyyy to yyyy-mm-dd format
+            # aDate = datetime.datetime.strptime(row[4], "%d/%m/%Y").strftime("%Y-%m-%d")
+            # # converts time from hh.mm.ss to hh:mm:ss format
+            # aTime = row[5]
+            # aFTime = ""
+            # for i in aTime:
+            #     if i ==".":
+            #         aFTime += ":"
+            #     else:
+            #         aFTime += i
+            # aPTime = datetime.datetime.strptime(aFTime, "%H:%M:%S").time()
+            # aType = row[7]
+            # dayOfWeek = row[8]
+            # severity = row[14]
+            # longitude = row[18]
+            # latitude = row[19]
+            # lgaName = row[21]
+            # regionName = row[22]
+            # fatality = row[27]
+            # seriousInjury = row[28]
+            alcoholRelated = row[45]
+            alcoholBool = 0
+            for i in alcoholRelated:
+                if i == "Yes":
+                    alcoholBool = 1
                 else:
-                    aFTime.append(i)
-            print(aFTime)
-            # aTime = datetime.datetime.strptime(row[5], "$HH.%mm.%ss").strftime("%H:%M:%S")
-            # print(aTime)
-        #     aType = row[7]
-        #     dayOfWeek = row[8]
-        #     severity = row[14]
-        #     longitude = row[18]
-        #     latitude = row[19]
-        #     lgaName = row[21]
-        #     regionName = row[22]
-        #     fatality = row[27]
-        #     seriousInjury = row[28]
-        #     alcoholRelated = row[45]
-        #     accidentData.append((aNo, aDate, aTime, aType, dayOfWeek, severity, longitude, latitude, lgaName, regionName, fatality, seriousInjury, alcoholRelated))
+                    alcoholBool = 0
+            print(alcoholBool)
+            
+        #     accidentData.append((aNo, aDate, aPTime, aType, dayOfWeek, severity, longitude, latitude, lgaName, regionName, fatality, seriousInjury, alcoholRelated))
         # return accidentData
     
     
