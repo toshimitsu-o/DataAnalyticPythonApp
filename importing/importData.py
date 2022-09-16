@@ -88,8 +88,10 @@ def importFile(fileName):
         # iterates through each row and appends required field information as a tuple to the list accidentData
         for index, row in wb.iterrows():
             aNo = row[1]
+            print(type(aNo))
             # converts dates from dd/mm/yyyy to yyyy-mm-dd format
             aDate = datetime.datetime.strptime(row[4], "%d/%m/%Y").strftime("%Y-%m-%d")
+            print(type(aDate))
             # converts time from hh.mm.ss to hh:mm:ss format
             aTime = row[5]
             aFTime = ""
@@ -99,18 +101,30 @@ def importFile(fileName):
                 else:
                     aFTime += i
             aPTime = datetime.datetime.strptime(aFTime, "%H:%M:%S").time()
+            print(type(aPTime))
             aType = row[7]
+            print(type(aType))
             dayOfWeek = row[8]
+            print(type(dayOfWeek))
             severity = row[14]
+            print(type(severity))
             longitude = row[18]
+            print(type(longitude))
             latitude = row[19]
+            print(type(latitude))
             lgaName = row[21]
+            print(type(lgaName))
             regionName = row[22]
+            print(type(regionName))
             fatality = row[27]
+            print(type(fatality))
             seriousInjury = row[28]
+            print(type(seriousInjury))
             # converts results to boolean 0,1
             alcoholRelated = strtobool(row[45])
+            print(type(alcoholRelated))
             accidentData.append((aNo, aDate, aPTime, aType, dayOfWeek, severity, longitude, latitude, lgaName, regionName, fatality, seriousInjury, alcoholRelated))
+            break
         
         return accidentData
     
