@@ -23,3 +23,6 @@ def searchDateRange(date1, date2):
         
 x = searchDateRange("2013-07-01", "2013-07-01")
 print(x)
+
+def searchKeyword(keyword):
+    None
