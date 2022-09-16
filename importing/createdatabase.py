@@ -3,11 +3,11 @@ import sqlite3
 from sqlite3 import Error
 from importData import importFile
 
-def createDatabase(dbFile):
+def createDatabase():
     """ create a database connection to a SQLite database """
     connection = None
     try:
-        connection = sqlite3.connect(dbFile)
+        connection = sqlite3.connect("accidentDatabase.db")
         c = connection.cursor()
         c.execute(
             """DROP TABLE IF EXISTS Accident;""")
@@ -30,7 +30,7 @@ def createDatabase(dbFile):
         print(e)
         
    
-def insertData(dbFile, dataFileName):
+def insertData(dataFileName):
     """attempts to insert data into a database 
 
     Args:
@@ -39,7 +39,7 @@ def insertData(dbFile, dataFileName):
     """
     connection = None
     try:
-        connection = sqlite3.connect(dbFile, detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
+        connection = sqlite3.connect("accidentDatabase.db", detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
         c = connection.cursor()
         data = importFile(dataFileName)
         # print(data)
@@ -51,6 +51,6 @@ def insertData(dbFile, dataFileName):
         
         
         
-# createDatabase('testDatabase.db')
-insertData('testDatabase.db', "C:/Users/zeefe/OneDrive/Documents/Uni/Year 2/Trimester 2/Software Technologies/Git Repositories/2810ICT-2022-Assignment/2810ICT-2022-Assignment/dataset/Crash Statistics Victoria.csv")
+# createDatabase()
+insertData("C:/Users/zeefe/OneDrive/Documents/Uni/Year 2/Trimester 2/Software Technologies/Git Repositories/2810ICT-2022-Assignment/2810ICT-2022-Assignment/dataset/Crash Statistics Victoria.csv")
 
