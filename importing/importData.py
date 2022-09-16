@@ -92,6 +92,9 @@ def importFile(fileName):
             # converts dates from dd/mm/yyyy to yyyy-mm-dd format
             aDate = datetime.datetime.strptime(row[4], "%d/%m/%Y").strftime("%Y-%m-%d")
             # print(type(aDate))
+            aFDate = datetime.datetime.strptime(aDate, "%Y-%m-%d").date()
+            # print(aFDate)
+            # print(type(aFDate))
             # converts time from hh.mm.ss to hh:mm:ss format
             aTime = row[5]
             aFTime = ""
@@ -102,6 +105,7 @@ def importFile(fileName):
                     aFTime += i
             aPTime = datetime.datetime.strptime(aFTime, "%H:%M:%S").time()
             # print(type(aPTime))
+            # print(aPTime)
             aType = row[7]
             # print(type(aType))
             dayOfWeek = row[8]
@@ -123,7 +127,7 @@ def importFile(fileName):
             # converts results to boolean 0,1
             alcoholRelated = strtobool(row[45])
             # print(type(alcoholRelated))
-            accidentData.append((aNo, aDate, aPTime, aType, dayOfWeek, severity, longitude, latitude, lgaName, regionName, fatality, seriousInjury, alcoholRelated))
+            accidentData.append((aNo, aDate, aFTime, aType, dayOfWeek, severity, longitude, latitude, lgaName, regionName, fatality, seriousInjury, alcoholRelated))
             # break
         
         return accidentData

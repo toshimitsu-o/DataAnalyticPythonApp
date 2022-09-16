@@ -29,11 +29,7 @@ def createDatabase(dbFile):
     except Error as e:
         print(e)
         
-def parseData(values):
-    None
-    
-    
-    
+   
 def insertData(dbFile, dataFileName):
     """attempts to insert data into a database 
 
@@ -46,13 +42,15 @@ def insertData(dbFile, dataFileName):
         connection = sqlite3.connect(dbFile, detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
         c = connection.cursor()
         data = importFile(dataFileName)
+        # print(data)
         c.executemany("INSERT INTO Accident VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", data)
+        connection.commit()
         
     except Error as e:
         print(e)
         
         
         
-createDatabase('testDatabase.db')
+# createDatabase('testDatabase.db')
 insertData('testDatabase.db', "C:/Users/zeefe/OneDrive/Documents/Uni/Year 2/Trimester 2/Software Technologies/Git Repositories/2810ICT-2022-Assignment/2810ICT-2022-Assignment/dataset/Crash Statistics Victoria.csv")
 
