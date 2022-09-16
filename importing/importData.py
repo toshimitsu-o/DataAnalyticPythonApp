@@ -4,6 +4,7 @@ import csv
 from pycsvschema.checker import Validator
 import sys
 from csvvalidator import *
+import datetime
 
 def importFile(fileName):
     
@@ -85,20 +86,31 @@ def importFile(fileName):
         # iterates through each row and appends required field information as a tuple to the list accidentData
         for index, row in wb.iterrows():
             aNo = row[1]
-            aDate = row[4]
+            # converts dates from dd/mm/yyyy to yyyy-mm-dd format
+            aDate = datetime.datetime.strptime(row[4], "%d/%m/%Y").strftime("%Y-%m-%d")
+            # converts time from hh.mm.ss to hh:mm:ss format
             aTime = row[5]
-            aType = row[7]
-            dayOfWeek = row[8]
-            severity = row[14]
-            longitude = row[18]
-            latitude = row[19]
-            lgaName = row[21]
-            regionName = row[22]
-            fatality = row[27]
-            seriousInjury = row[28]
-            alcoholRelated = row[45]
-            accidentData.append((aNo, aDate, aTime, aType, dayOfWeek, severity, longitude, latitude, lgaName, regionName, fatality, seriousInjury, alcoholRelated))
-        return accidentData
+            aFTime = None
+            for i in aTime:
+                if i ==".":
+                    aFTime.append(":")
+                else:
+                    aFTime.append(i)
+            print(aFTime)
+            # aTime = datetime.datetime.strptime(row[5], "$HH.%mm.%ss").strftime("%H:%M:%S")
+            # print(aTime)
+        #     aType = row[7]
+        #     dayOfWeek = row[8]
+        #     severity = row[14]
+        #     longitude = row[18]
+        #     latitude = row[19]
+        #     lgaName = row[21]
+        #     regionName = row[22]
+        #     fatality = row[27]
+        #     seriousInjury = row[28]
+        #     alcoholRelated = row[45]
+        #     accidentData.append((aNo, aDate, aTime, aType, dayOfWeek, severity, longitude, latitude, lgaName, regionName, fatality, seriousInjury, alcoholRelated))
+        # return accidentData
     
     
     
