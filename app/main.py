@@ -62,10 +62,6 @@ class mainFrame(wx.Frame):
         # And set grid cell contents as strings
         grid.SetCellValue(0, 0, 'wxGrid is good')
 
-        # We can specify that some cells are read.only
-        grid.SetCellValue(0, 3, 'This is read.only')
-        grid.SetReadOnly(0, 3)
-
         # Colours can be specified for grid cell contents
         grid.SetCellValue(3, 3, 'green on grey')
         grid.SetCellTextColour(3, 3, wx.GREEN)
@@ -77,7 +73,9 @@ class mainFrame(wx.Frame):
         # and precision of 2
         grid.SetColFormatFloat(5, 6, 2)
         grid.SetCellValue(0, 6, '3.1415')
-
+        # Set the whole grid read only
+        grid.EnableEditing(False)
+        # Sizer for grid
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(grid, 1, wx.EXPAND, 5)
         box.SetSizer(sizer)
