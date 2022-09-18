@@ -23,8 +23,7 @@ class mainFrame(wx.Frame):
 
         # create a panel in the frame
         pnl = wx.Panel(self)
-
-        
+        self.SetBackgroundColour((19,162,166,255))
 
         # button for Dataset
         btn1 = wx.Button(pnl, label="Dataset")
@@ -39,12 +38,13 @@ class mainFrame(wx.Frame):
         btn4 = wx.Button(pnl, label="Location")
         self.Bind(wx.EVT_BUTTON, self.onLocation, btn4)
 
-
         box = wx.StaticBox(pnl, wx.ID_ANY, "", pos =(0, 0), size =(780, 450))
+        box.SetBackgroundColour("white")
         # put some text with a larger bold font on it
         st = wx.StaticText(box, label="Main Box")
 
         boxBtm = wx.StaticBox(pnl, wx.ID_ANY, "", pos =(0, 0), size =(780, 50))
+        boxBtm.SetBackgroundColour("black")
         # put some text with a larger bold font on it
         st = wx.StaticText(boxBtm, label="Bottom Box")
         font = st.GetFont()
@@ -52,7 +52,7 @@ class mainFrame(wx.Frame):
         font = font.Bold()
         st.SetFont(font)
         # and create a sizer to manage the layout of child widgets
-        sizer = wx.GridBagSizer(hgap=2, vgap=1)
+        sizer = wx.GridBagSizer(hgap=0, vgap=1)
         sizer.Add(btn1, pos=(0,0), flag=wx.ALIGN_CENTER|wx.ALL, border=5)
         sizer.Add(btn2, pos=(0,1), flag=wx.ALIGN_CENTER|wx.ALL, border=5)
         sizer.Add(btn3, pos=(0,2), flag=wx.ALIGN_CENTER|wx.ALL, border=5)
