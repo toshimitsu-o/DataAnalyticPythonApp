@@ -4,14 +4,15 @@ import pandas as pd
 import csv
 from pycsvschema.checker import Validator
 import sys
-from csvvalidator import *
+# from csvvalidator import *
 import datetime
 from distutils.util import strtobool
+import sqlite3
+from sqlite3 import Error
 
-def importFile(fileName):
+def validateFile(fileName):
     
-    """function accepts csv file, performs schema valiation and returns a list of tuples containing relevant
-    information from csv file 
+    """function accepts csv file, performs schema valiation and determines if data is valid for processing 
     """
     # attempts to validate csv file
     try:
@@ -81,10 +82,16 @@ def importFile(fileName):
         return "validation error"
             
     # if validation is successful this code will execute
+def importData(fileName):
+    
+    try:
+        validateFile(fileName)
+    except:
+        return "CSV file not valid"
     else:
         wb = pd.read_csv(fileName)
         accidentData = []
-        
+
         # iterates through each row and appends required field information as a tuple to the list accidentData
         for index, row in wb.iterrows():
             aNo = row[1]
@@ -114,90 +121,57 @@ def importFile(fileName):
             # converts results to boolean 0,1
             alcoholRelated = strtobool(row[45])
             accidentData.append((aNo, aDate, aFTime, aType, dayOfWeek, severity, longitude, latitude, lgaName, regionName, fatality, seriousInjury, alcoholRelated))
-        
+
         return accidentData
     
     
-    
-importFile("C:/Users/zeefe/OneDrive/Documents/Uni/Year 2/Trimester 2/Software Technologies/Git Repositories/2810ICT-2022-Assignment/2810ICT-2022-Assignment/dataset/Crash Statistics Victoria.csv")
+def createDatabase():
+    """ create a database connection to a SQLite database """
+    connection = None
+    try:
+        connection = sqlite3.connect("accidentDatabase.db")
+        c = connection.cursor()
+        c.execute(
+            "DROP TABLE IF EXISTS Accident;")
+        c.execute("""CREATE TABLE IF NOT EXISTS Accident
+            (accidentNo VARCHAR PRIMARY KEY,
+            accidentDate TEXT,
+            accidentTime TEXT,
+            accidentType VARCHAR,
+            dayOfWeek TEXT,
+            severity VARCHAR,
+            longitude REAL,
+            latitude REAL,
+            lgaName VARCHAR,
+            regionName VARCHAR,
+            fatalites INT,
+            seriousInjuries INT,
+            alcoholRelated INT);"""
+        )
+    except Error as e:
+        return e
+        
+   
+def insertData(dataFileName):
+    """attempts to insert data into a database 
 
-    
-
-    
-#     field_names = ("ACCIDENT_NO",
-#                 "ACCIDENT_DATE",
-#                 "ACCIDENT_TIME",
-#                 "ACCIDENT_TYPE",
-#                 "DAY_OF_WEEK",
-#                 "SEVERITY",
-#                 "LONGITUDE",
-#                 "LATITUDE",
-#                 "LGA_NAME",
-#                 "REGION_NAME",
-#                 "FATALITY",
-#                 "SERIOUSINJURY",
-#                 "ALCOHOL_RELATED"
-#     )
-
-    # validator = CSVValidator(field_names)
-
-    # # basic header and record length checks
-    # validator.add_header_check('EX1', 'bad header')
-    # validator.add_record_length_check('EX2', 'unexpected record length')
-
-    # # # some simple value checks
-    # # validator.add_value_check('ACCIDENT_NO', str,
-    # #                         'EX3', 'study id must be an integer')
-    # # validator.add_value_check('patient_id', int,
-    # #                         'EX4', 'patient id must be an integer')
-    # # validator.add_value_check('gender', enumeration('M', 'F'),
-    # #                         'EX5', 'invalid gender')
-    # # validator.add_value_check('age_years', number_range_inclusive(0, 120, int),
-    # #                         'EX6', 'invalid age in years')
-    # # validator.add_value_check('date_inclusion', datetime_string('%Y-%m-%d'),
-    # #                         'EX7', 'invalid date')
-
-    # # # a more complicated record check
-    # # def check_age_variables(r):
-    # #     age_years = int(r['age_years'])
-    # #     age_months = int(r['age_months'])
-    # #     valid = (age_months >= age_years * 12 and
-    # #             age_months % age_years < 12)
-    # #     if not valid:
-    # #         raise RecordError('EX8', 'invalid age variables')
-    # # validator.add_record_check(check_age_variables)
-
-    # # # validate the data and write problems to stdout
-    # # data = csv.reader(fileName, delimiter='\t')
-    
-    # problems = validator.validate(fileName)
-    # write_problems(problems, sys.stdout)
-
-# importFile("C:/Users/zeefe/OneDrive/Documents/Uni/Year 2/Trimester 2/Software Technologies/Git Repositories/2810ICT-2022-Assignment/2810ICT-2022-Assignment/dataset/Crash Statistics Victoria.csv")
+    Args:
+        dataFileName (str): filepath of csv for import
+    """
+    connection = None
+    try:
+        connection = sqlite3.connect("accidentDatabase.db", detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
+        c = connection.cursor()
+        data = importData(dataFileName)
+        c.executemany("INSERT INTO Accident VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", data)
+        connection.commit()
+        
+    except Error as e:
+        print(e)
+        
+        
+        
+createDatabase()
+insertData("C:/Users/zeefe/OneDrive/Documents/Uni/Year 2/Trimester 2/Software Technologies/Git Repositories/2810ICT-2022-Assignment/2810ICT-2022-Assignment/dataset/Crash Statistics Victoria.csv")
 
 
-
-# wb = Workbook()
-# ws = wb.active()
-
-# val = dv(type="list", formula1= "ACCIDENT_NO, ACCIDENT_DATE, ACCIDENT_TIME, ACCIDENT_TYPE, DAY_OF_WEEK, SEVERITY, LONGITUDE, LATITUDE, LGA_NAME, REGION_NAME, FATALITY, SERIOUSINJURY, ALCOHOL_RELATED", allow_blank=False)
-
-# val.error = "Invalid entry in list"
-# val.errorTitle = "Invalid entry"
-
-
-
-    # field_names = ("ACCIDENT_NO",
-    #             "ACCIDENT_DATE",
-    #             "ACCIDENT_TIME",
-    #             "ACCIDENT_TYPE",
-    #             "DAY_OF_WEEK",
-    #             "SEVERITY",
-    #             "LONGITUDE",
-    #             "LATITUDE",
-    #             "LGA_NAME",
-    #             "REGION_NAME",
-    #             "FATALITY",
-    #             "SERIOUSINJURY",
-    #             "ALCOHOL_RELATED"
-    # )
