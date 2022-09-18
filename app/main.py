@@ -26,7 +26,10 @@ class mainFrame(wx.Frame):
         self.SetBackgroundColour((19,162,166,255))
 
         # button for Dataset
-        btn1 = wx.Button(pnl, label="Dataset")
+        btn1 = wx.Button(pnl, size =(200, 40), label="Dataset")
+        bmp = wx.Bitmap('btn.png', wx.BITMAP_TYPE_PNG).ConvertToImage()
+        bmp = wx.Bitmap(bmp.Scale(30, 30, wx.IMAGE_QUALITY_HIGH))
+        btn1.SetBitmap(bmp)
         self.Bind(wx.EVT_BUTTON, self.onDataset, btn1)
         #  button for Analyse
         btn2 = wx.Button(pnl, label="Analyse")
