@@ -168,9 +168,27 @@ def insertData(dataFileName):
     except Error as e:
         print(e)
         
+def getDateRange():
+    """queries accident database and returns tuple of (minDate, maxDate)
+    """
+    
+    connection = sqlite3.connect("accidentDatabase.db", detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
+    c = connection.cursor()
+    sqlmin = "SELECT MIN('accidentDate) FROM Accident;"
+    sqlmax = "SELECT MAX('accidentDate) FROM Accident;"
+    c.execute(sqlmin)
+    minDate = c.fetchall()
+    c.execute(sqlmax)
+    maxDate = c.fetchall()
+    return (minDate, maxDate)
+  
+
+
+x = getDateRange()
+print(x)      
         
         
-createDatabase()
-insertData("C:/Users/zeefe/OneDrive/Documents/Uni/Year 2/Trimester 2/Software Technologies/Git Repositories/2810ICT-2022-Assignment/2810ICT-2022-Assignment/dataset/Crash Statistics Victoria.csv")
+# createDatabase()
+# insertData("C:/Users/zeefe/OneDrive/Documents/Uni/Year 2/Trimester 2/Software Technologies/Git Repositories/2810ICT-2022-Assignment/2810ICT-2022-Assignment/dataset/Crash Statistics Victoria.csv")
 
 
