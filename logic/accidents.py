@@ -4,11 +4,14 @@
 import pandas as pd
 import numpy as np
 from datetime import datetime
+import sqlite3
+from database import queries
+
 
 #creating a dataframe
-df = pd.read_csv('/Users/nicdonaldson/Software Technologies/Assignment/2810ICT-2022-Assignment/Dataset/CrashStatisticsVictoria.csv')
-print(df.head())
-   
+con = sqlite3.connect("database/accidentDatabase.sqlite")
+df = pd.read_sql_query("SELECT *", con)
+
 
 def get_hour(string):
 #Gets hour from datestring
