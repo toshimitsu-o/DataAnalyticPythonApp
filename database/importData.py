@@ -4,7 +4,6 @@ import pandas as pd
 import csv
 from pycsvschema.checker import Validator
 import sys
-# from csvvalidator import *
 import datetime
 from distutils.util import strtobool
 import sqlite3
