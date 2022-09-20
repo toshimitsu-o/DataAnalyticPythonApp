@@ -5,12 +5,18 @@ import pandas as pd
 import numpy as np
 from datetime import datetime
 import sqlite3
-from database import queries
 
 
 #creating a dataframe
-con = sqlite3.connect("database/accidentDatabase.sqlite")
-df = pd.read_sql_query("SELECT *", con)
+con = sqlite3.connect("accidentDatabase.db")
+cur = con.cursor()
+cur.execute("SELECT * FROM Accident")
+rows = cur.fetchall()
+print(rows[1:3])
+
+
+
+
 
 
 def get_hour(string):
