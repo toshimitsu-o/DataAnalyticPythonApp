@@ -7,12 +7,14 @@ from datetime import datetime
 import sqlite3
 
 
+
 #creating a dataframe
-con = sqlite3.connect("accidentDatabase.db")
+con = sqlite3.connect("database/accidentDatabase.db", detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
 cur = con.cursor()
 cur.execute("SELECT * FROM Accident")
 rows = cur.fetchall()
 print(rows[1:3])
+
 
 
 
