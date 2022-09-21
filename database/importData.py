@@ -182,18 +182,20 @@ def getDateRange():
     maxDate = c.fetchall()
     return (minDate, maxDate)
 
-# def getAccidentTypes():
-#     """queries accident database and returns a list of all unique accident types
-#     """
-#     connection = sqlite3.connect("database/accidentDatabase.db", detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
-#     c = connection.cursor()
+def getAccidentTypes():
+    """queries accident database and returns a list of all unique accident types
+    """
+    connection = sqlite3.connect("database/accidentDatabase.db", detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
+    accidents = pd.read_sql("SELECT accidentType FROM Accident;", connection)
+    accidentTypes = accidents["accidentType"].unique()
+    return accidentTypes
   
 
 
-x = getDateRange()
+x = getAccidentTypes()
 print(x)      
         
-        
+
 # createDatabase()
 # insertData("C:/Users/zeefe/OneDrive/Documents/Uni/Year 2/Trimester 2/Software Technologies/Git Repositories/2810ICT-2022-Assignment/2810ICT-2022-Assignment/dataset/Crash Statistics Victoria.csv")
 
