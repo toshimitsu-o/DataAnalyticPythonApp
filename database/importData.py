@@ -188,12 +188,18 @@ def getAccidentTypes():
     connection = sqlite3.connect("database/accidentDatabase.db", detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
     accidents = pd.read_sql("SELECT accidentType FROM Accident;", connection)
     accidentTypes = accidents["accidentType"].unique()
-    return accidentTypes
+    # converts from numpy.ndarray to list type
+    accidentList = []
+    for i in accidentTypes:
+        accidentList.append(i)
+    return accidentList
   
 
 
 x = getAccidentTypes()
-print(x)      
+print(x)
+print(type(x))
+
         
 
 # createDatabase()
