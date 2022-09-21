@@ -172,15 +172,21 @@ def getDateRange():
     """queries accident database and returns tuple of (minDate, maxDate)
     """
     
-    connection = sqlite3.connect("accidentDatabase.db", detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
+    connection = sqlite3.connect("database/accidentDatabase.db", detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
     c = connection.cursor()
-    sqlmin = "SELECT MIN('accidentDate) FROM Accident;"
-    sqlmax = "SELECT MAX('accidentDate) FROM Accident;"
+    sqlmin = "SELECT MIN(accidentDate) FROM Accident;"
+    sqlmax = "SELECT MAX(accidentDate) FROM Accident;"
     c.execute(sqlmin)
     minDate = c.fetchall()
     c.execute(sqlmax)
     maxDate = c.fetchall()
     return (minDate, maxDate)
+
+# def getAccidentTypes():
+#     """queries accident database and returns a list of all unique accident types
+#     """
+#     connection = sqlite3.connect("database/accidentDatabase.db", detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
+#     c = connection.cursor()
   
 
 
