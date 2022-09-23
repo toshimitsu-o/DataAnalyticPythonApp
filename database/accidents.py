@@ -16,17 +16,6 @@ rows = cur.fetchall()
 #print(rows[1:3])
 
 
-
-
-
-
-
-def get_hour(string):
-#Gets hour from datestring
-    hr = datetime.fromisoformat(string).hour
-    return hr
-
-
 ##Calculates the average number of accidents in each hour of the day.
 def hourly_average():
     connection = sqlite3.connect("database/accidentDatabase.db", detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
@@ -34,19 +23,9 @@ def hourly_average():
     return hourly_average
     #NOT WORKING 
 
-#OLD VERSION WITH PANDAS
-#Calculates the average number of accidents in each hour of the day.
-#def hourly_average(df): #df is the accident data (list of tuple)
-
-    #time = []
-    #time = df.sort_values(by=['ACCIDENT_TIME'])
-    #for i in time:
-        #time.append
-    #return time 
-
 #test
-#df = hourly_average()
-#print(df)
+#test = hourly_average()
+#print(test)
 #NOT WORKING
 
 
@@ -63,8 +42,8 @@ def accident_type():
     #return type
 
 #test 
-#df = accident_type()
-#print(df)
+#test = accident_type()
+#print(test)
 #WORKING
 
 #Calculates the number of accidents in each month.
@@ -83,39 +62,60 @@ def calculate_by_month():
     #return result
 
 #test
-#df = calculate_by_month()
-#print(df)
+#test = calculate_by_month()
+#print(test)
 #PARTIALLY WORKING
 
-
 #Calculates the number of accidents in each day.
-def calculate_by_day(df): 
-    day = df['DAY_OF_WEEK'].value_counts(ascending=True)
-    return day
+def calculate_by_day():
+    connection = sqlite3.connect("database/accidentDatabase.db", detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
+    by_day = pd.read_sql("SELECT dayOfWeek, COUNT(*) FROM Accident GROUP BY dayOfWeek ORDER BY COUNT(*) DESC ;", connection)
+    return by_day
+
+
+#OLD VERSION WITH PANDAS 
+#Calculates the number of accidents in each day.
+#def calculate_by_day(df): 
+    #day = df['DAY_OF_WEEK'].value_counts(ascending=True)
+    #return day
 
 #test 
-#df = calculate_by_day(df)
-#print(df)
+#test = calculate_by_day()
+#print(test)
 #WORKING
 
 #Calculates the number of accidents in each LGA.
-def calculateLGA(df):
-    LGA = df['LGA_NAME'].value_counts(ascending=True)
+def calculateLGA():
+    connection = sqlite3.connect("database/accidentDatabase.db", detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
+    LGA = pd.read_sql("SELECT lgaName, COUNT(*) FROM Accident GROUP BY lgaName ORDER BY COUNT(*) DESC ;", connection)
     return LGA
+
+#OLD VERSION WITH PANDAS
+#Calculates the number of accidents in each LGA.
+#def calculateLGA(df):
+    #LGA = df['LGA_NAME'].value_counts(ascending=True)
+    #return LGA
     
 #test 
-#df = calculateLGA(df)
-#print(df)
+#test = calculateLGA()
+#print(test)
 #WORKING
 
 #Calculates the number of accidents in each region.
-def calculate_region(df):
-    region = df['REGION_NAME'].value_counts(ascending=True)
+def calculate_region():
+    connection = sqlite3.connect("database/accidentDatabase.db", detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
+    region = pd.read_sql("SELECT regionName, COUNT(*) FROM Accident GROUP BY regionName ORDER BY COUNT(*) DESC ;", connection)
     return region
+
+#OLD VERSION WITH PANDAS
+#Calculates the number of accidents in each region.
+#def calculate_region(df):
+    #region = df['REGION_NAME'].value_counts(ascending=True)
+    #return region
         
 #test
-#df = calculate_region(df)
-#print(df)
+#test = calculate_region()
+#print(test)
 #WORKING
     
 
