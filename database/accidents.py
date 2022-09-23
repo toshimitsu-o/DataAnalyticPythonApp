@@ -13,7 +13,7 @@ con = sqlite3.connect("database/accidentDatabase.db", detect_types=sqlite3.PARSE
 cur = con.cursor()
 cur.execute("SELECT * FROM Accident")
 rows = cur.fetchall()
-print(rows[1:3])
+#print(rows[1:3])
 
 
 
@@ -43,12 +43,19 @@ def hourly_average(df): #df is the accident data (list of tuple)
 
 
 #Calculate the number of accidents in each accident type.
-def accident_type(df): 
-    type = df['ACCIDENT_TYPE'].value_counts(ascending=True)
-    return type
+def accident_type():
+    connection = sqlite3.connect("database/accidentDatabase.db", detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
+    accidents = pd.read_sql("SELECT accidentType, COUNT(*) FROM Accident GROUP BY accidentType ORDER BY COUNT(*) DESC ;", connection)
+    return accidents
+
+#OLD VERSION WITH PANDAS 
+#Calculate the number of accidents in each accident type.
+#def accident_type(rows): 
+    #type = rows['ACCIDENT_TYPE'].value_counts(ascending=True)
+    #return type
 
 #test 
-#df = accident_type(df)
+#df = accident_type()
 #print(df)
 #WORKING
 
