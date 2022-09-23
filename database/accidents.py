@@ -26,18 +26,26 @@ def get_hour(string):
     hr = datetime.fromisoformat(string).hour
     return hr
 
-    
-#Calculates the average number of accidents in each hour of the day.
-def hourly_average(df): #df is the accident data (list of tuple)
 
-    time = []
-    time = df.sort_values(by=['ACCIDENT_TIME'])
-    for i in time:
-        time.append
-    return time 
+##Calculates the average number of accidents in each hour of the day.
+def hourly_average():
+    connection = sqlite3.connect("database/accidentDatabase.db", detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
+    hourly_average = pd.read_sql("SELECT CAST(FLOOR(CAST(accidentDate AS float)) AS datetime) AS Day, DATEPART(hh, accidentDate) AS hour, AVG(COUNT(AccidentNo)) AS average FROM Accident GROUP BY CAST(FLOOR(CAST(accidentDate AS float)) AS datetime), DATEPART(hh, accidentDate);", connection)
+    return hourly_average
+    #NOT WORKING 
+
+#OLD VERSION WITH PANDAS
+#Calculates the average number of accidents in each hour of the day.
+#def hourly_average(df): #df is the accident data (list of tuple)
+
+    #time = []
+    #time = df.sort_values(by=['ACCIDENT_TIME'])
+    #for i in time:
+        #time.append
+    #return time 
 
 #test
-#df = hourly_average(df)
+#df = hourly_average()
 #print(df)
 #NOT WORKING
 
@@ -60,13 +68,22 @@ def accident_type():
 #WORKING
 
 #Calculates the number of accidents in each month.
-def calculate_by_month(df):
-    df['ACCIDENT_DATE']= pd.to_datetime(df['ACCIDENT_DATE'])
-    result = df.groupby([df['ACCIDENT_DATE'].dt.year, df['ACCIDENT_DATE'].dt.month]).agg({'ABS_CODE':sum})
-    return result
+def calculate_by_month():
+    connection = sqlite3.connect("database/accidentDatabase.db", detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
+    accidents_each_month = pd.read_sql("SELECT EXTRACT(YEAR FROM accidentDate) AS Year, EXTRACT(MONTH FROM accidentDate) AS Month FROM Accident;", connection)
+    return accidents_each_month
+    # Logically this should work.
+
+
+#OLD VERSION WITH PANDAS
+#Calculates the number of accidents in each month.
+#def calculate_by_month(df):
+    #df['ACCIDENT_DATE']= pd.to_datetime(df['ACCIDENT_DATE'])
+    #result = df.groupby([df['ACCIDENT_DATE'].dt.year, df['ACCIDENT_DATE'].dt.month]).agg({'ABS_CODE':sum})
+    #return result
 
 #test
-#df = calculate_by_month(df)
+#df = calculate_by_month()
 #print(df)
 #PARTIALLY WORKING
 
