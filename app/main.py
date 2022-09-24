@@ -24,25 +24,10 @@ class mainFrame(wx.Frame):
 
         # create a panel in the frame
         pnl = wx.Panel(self)
-        self.SetBackgroundColour((19,162,166,255))
+        #self.SetBackgroundColour((19,162,166,255))
+        self.SetBackgroundColour("white")
 
-        # button for Dataset
-        btn1 = wx.Button(pnl, size =(200, 40), label="Dataset")
-        bmp = wx.Bitmap('btn.png', wx.BITMAP_TYPE_PNG).ConvertToImage()
-        bmp = wx.Bitmap(bmp.Scale(30, 30, wx.IMAGE_QUALITY_HIGH))
-        btn1.SetBitmap(bmp)
-        self.Bind(wx.EVT_BUTTON, self.onDataset, btn1)
-        #  button for Analyse
-        btn2 = wx.Button(pnl, label="Analyse")
-        self.Bind(wx.EVT_BUTTON, self.onAnalyse, btn2)
-        #  button for Analyse
-        btn3 = wx.Button(pnl, label="Alcohol")
-        self.Bind(wx.EVT_BUTTON, self.onAlcohol, btn3)
-        #  button for Location
-        btn4 = wx.Button(pnl, label="Location")
-        self.Bind(wx.EVT_BUTTON, self.onLocation, btn4)
-
-        box = wx.StaticBox(pnl, wx.ID_ANY, "", pos =(0, 0), size =(780, 450))
+        box = wx.StaticBox(pnl, wx.ID_ANY, "", pos =(0, 0), size =(-1, 450))
         box.SetBackgroundColour("white")
         # put some text with a larger bold font on it
         st = wx.StaticText(box, label="Main Box")
@@ -75,13 +60,14 @@ class mainFrame(wx.Frame):
         grid.SetCellValue(0, 6, '3.1415')
         # Set the whole grid read only
         grid.EnableEditing(False)
-        # Sizer for grid
         sizer = wx.BoxSizer(wx.VERTICAL)
-        sizer.Add(grid, 1, wx.EXPAND, 5)
+        sizer.Add(grid, 0, wx.ALL | wx.EXPAND, 0)
         box.SetSizer(sizer)
+        
 
-        boxBtm = wx.StaticBox(pnl, wx.ID_ANY, "", pos =(0, 0), size =(780, 50))
+        boxBtm = wx.StaticBox(pnl, wx.ID_ANY, "", pos =(0, 0), size =(-1, 50))
         boxBtm.SetBackgroundColour("black")
+        
         # put some text with a larger bold font on it
         st = wx.StaticText(boxBtm, label="Bottom Box")
         font = st.GetFont()
@@ -89,14 +75,36 @@ class mainFrame(wx.Frame):
         font = font.Bold()
         st.SetFont(font)
         # and create a sizer to manage the layout of child widgets
-        sizer = wx.GridBagSizer(hgap=0, vgap=1)
-        sizer.Add(btn1, pos=(0,0), flag=wx.ALIGN_CENTER|wx.ALL, border=5)
-        sizer.Add(btn2, pos=(0,1), flag=wx.ALIGN_CENTER|wx.ALL, border=5)
-        sizer.Add(btn3, pos=(0,2), flag=wx.ALIGN_CENTER|wx.ALL, border=5)
-        sizer.Add(btn4, pos=(0,3), flag=wx.ALIGN_CENTER|wx.ALL, border=5)
-        sizer.Add(box, pos=(1,0), span=(0,4), flag=wx.ALIGN_CENTER|wx.ALL, border=5)
-        sizer.Add(boxBtm, pos=(2,0), span=(0,4), flag=wx.ALIGN_CENTER|wx.ALL, border=5)
-        pnl.SetSizerAndFit(sizer)
+        menubox = wx.StaticBox(pnl, wx.ID_ANY, "", pos =wx.DefaultPosition, size =(-1, 50))
+        menubox.SetBackgroundColour((19,162,166,255))
+        # button for Dataset
+        btn1 = wx.Button(pnl, size =(200, 40), label="Dataset")
+        bmp = wx.Bitmap('btn.png', wx.BITMAP_TYPE_PNG).ConvertToImage()
+        bmp = wx.Bitmap(bmp.Scale(30, 30, wx.IMAGE_QUALITY_HIGH))
+        btn1.SetBitmap(bmp)
+        self.Bind(wx.EVT_BUTTON, self.onDataset, btn1)
+        #  button for Analyse
+        btn2 = wx.Button(pnl, label="Analyse")
+        self.Bind(wx.EVT_BUTTON, self.onAnalyse, btn2)
+        #  button for Analyse
+        btn3 = wx.Button(pnl, label="Alcohol")
+        self.Bind(wx.EVT_BUTTON, self.onAlcohol, btn3)
+        #  button for Location
+        btn4 = wx.Button(pnl, label="Location")
+        self.Bind(wx.EVT_BUTTON, self.onLocation, btn4)
+        sizer = wx.BoxSizer(wx.HORIZONTAL)
+        sizer.Add(btn1, 0, wx.EXPAND, 0)
+        sizer.Add(btn2, 0, wx.EXPAND, 0)
+        sizer.Add(btn3, 0, wx.EXPAND, 0)
+        sizer.Add(btn4, 0, wx.EXPAND, 0)
+        menubox.SetSizer(sizer)
+        
+
+        # Sizer for grid
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        sizer.Add(menubox, 0, wx.ALL | wx.EXPAND,0)
+        sizer.Add(box, 5, wx.ALL |wx.EXPAND, 0)
+        sizer.Add(boxBtm, 0, wx.ALL |wx.EXPAND | wx.ALIGN_BOTTOM, 0)
         pnl.SetSizer(sizer)
 
         # create a menu bar
