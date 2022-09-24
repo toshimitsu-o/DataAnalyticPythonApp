@@ -10,20 +10,21 @@ except ImportError:
 
 APP_NAME = "Accident Analysis"
 
-class mainFrame(wx.Frame):
+class MainFrame(wx.Frame):
     """
     Main Frame
     """
 
     def __init__(self, *args, **kw):
         # ensure the parent's __init__ is called
-        super(mainFrame, self).__init__(*args, **kw)
+        super(MainFrame, self).__init__(*args, **kw)
         self.initialise()
             
     def initialise(self):
 
         # create a panel in the frame
         pnl = wx.Panel(self)
+        self.frame_number = 1
         #self.SetBackgroundColour((19,162,166,255))
         self.SetBackgroundColour("white")
 
@@ -113,6 +114,7 @@ class mainFrame(wx.Frame):
         charTl = wx.StaticText(boxBtm, label="Chart ")
         charTl.SetForegroundColour("white")
         cBtn1 = wx.Button(boxBtm, label="Hourly Average")
+        self.Bind(wx.EVT_BUTTON, self.onChartHour, cBtn1)
         cBtn2 = wx.Button(boxBtm, label="Accident Types")
         cBtn3 = wx.Button(boxBtm, label="By Month")
         cBtn4 = wx.Button(boxBtm, label="By Day")
@@ -187,6 +189,11 @@ class mainFrame(wx.Frame):
 
     def onLocation(self, event):
         wx.MessageBox("Location will happen")
+    
+    def onChartHour(self, event):
+        title = 'SubFrame {}'.format(self.frame_number)
+        frame = ChartFrame(title=title)
+        self.frame_number += 1
 
     def makeMenuBar(self):
         """
@@ -245,11 +252,16 @@ class mainFrame(wx.Frame):
                       APP_NAME,
                       wx.OK|wx.ICON_INFORMATION)
 
+class ChartFrame(wx.Frame):
+    """Class for chart frame window"""
+    def __init__(self, title, parent=None):
+        wx.Frame.__init__(self, parent=parent, title=title)
+        self.Show()
 
 if __name__ == '__main__':
     # When this module is run (not imported) then create the app, the
     # frame, show it, and start the event loop.
     app = wx.App()
-    frame = mainFrame(None, title=APP_NAME, size=(800,600))
+    frame = MainFrame(None, title=APP_NAME, size=(800,600))
     frame.Show()
     app.MainLoop()
