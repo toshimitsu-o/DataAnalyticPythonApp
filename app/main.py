@@ -27,20 +27,52 @@ class mainFrame(wx.Frame):
         #self.SetBackgroundColour((19,162,166,255))
         self.SetBackgroundColour("white")
 
+        # Add Search box
+        searchBox = wx.StaticBox(pnl, wx.ID_ANY, "", pos =(0, 0), size =(-1, 80))
+        searchBox.SetBackgroundColour("grey")
+        # Search box items
+        dateTl = wx.StaticText(searchBox, label="Date ")
+        dateFrCt = wx.TextCtrl(searchBox)
+        dateTo = wx.StaticText(searchBox, label="to ")
+        dateToCt = wx.TextCtrl(searchBox)
+        accTl = wx.StaticText(searchBox, label="Accident Type ")
+        accKyCt = wx.TextCtrl(searchBox)
+        typeList = ['Select from list', 'zero', 'one', 'two', 'three', 'four', 'five',
+                      'six', 'seven', 'eight']
+        accCh = wx.Choice(searchBox, choices=typeList)
+        outTl = wx.StaticText(searchBox, label="Output ")
+        outCb1 = wx.CheckBox(searchBox, label = 'Day')
+        outCb2 = wx.CheckBox(searchBox, label = 'Hit&Run')
+        outCb3 = wx.CheckBox(searchBox, label = 'Location')
+        searchBtn = wx.Button(searchBox, label="Search", size=(100, 100))
+        # Sizer 
+        sizer = wx.GridBagSizer(hgap=0, vgap=0)
+        # Date line
+        sizer.Add(dateTl, pos=(0,0), flag=wx.ALIGN_LEFT)
+        vSizer = wx.BoxSizer(wx.HORIZONTAL)
+        vSizer.Add(dateFrCt, 0, wx.ALL, 0)
+        vSizer.Add(dateTo, 0, wx.ALL, 0)
+        vSizer.Add(dateToCt, 0, wx.ALL, 0)
+        sizer.Add(vSizer, pos=(0,1), flag=wx.ALIGN_LEFT|wx.EXPAND)
+        # Accident type line
+        sizer.Add(accTl, pos=(1,0), flag=wx.ALIGN_LEFT)
+        vSizer = wx.BoxSizer(wx.HORIZONTAL)
+        vSizer.Add(accKyCt, 0, wx.ALL, 0)
+        vSizer.Add(accCh, 0, wx.ALL, 0)
+        sizer.Add(vSizer, pos=(1,1), flag=wx.ALIGN_LEFT|wx.EXPAND)
+        # Output line
+        sizer.Add(outTl, pos=(2,0), flag=wx.ALIGN_LEFT)
+        vSizer = wx.BoxSizer(wx.HORIZONTAL)
+        vSizer.Add(outCb1, 0, wx.ALL, 0)
+        vSizer.Add(outCb2, 0, wx.ALL, 0)
+        vSizer.Add(outCb3, 0, wx.ALL, 0)
+        sizer.Add(vSizer, pos=(2,1), flag=wx.ALIGN_LEFT|wx.EXPAND)
+        sizer.Add(searchBtn, pos=(0,2), span=(3,1), flag=wx.ALIGN_RIGHT|wx.ALIGN_BOTTOM|wx.EXPAND)
+        # Set sizer
+        searchBox.SetSizer(sizer)
+
         box = wx.StaticBox(pnl, wx.ID_ANY, "", pos =(0, 0), size =(-1, 450))
         box.SetBackgroundColour("white")
-
-        # Add Search box
-        searchBox = wx.StaticBox(pnl, wx.ID_ANY, "", pos =(0, 0), size =(-1, 450))
-        searchBox.SetBackgroundColour("grey")
-        st = wx.StaticText(searchBox, label="Date")
-        text_ctrl = wx.TextCtrl(searchBox)
-        sizer = wx.BoxSizer(wx.HORIZONTAL)
-        sizer.Add(st, 0, wx.EXPAND, 0)
-        sizer.Add(text_ctrl, 0, wx.EXPAND, 0)
-        searchBox.SetSizer(sizer)
-        
-        
 
         # Create a wxGrid object
         grid = wx.grid.Grid(box, -1)
@@ -71,20 +103,28 @@ class mainFrame(wx.Frame):
         # Set the whole grid read only
         grid.EnableEditing(False)
         sizer = wx.BoxSizer(wx.VERTICAL)
-        sizer.Add(searchBox, 0, wx.ALL, 1)
         sizer.Add(grid, 0, wx.ALL | wx.EXPAND, 0)
         box.SetSizer(sizer)
         
-
+        # Bottom box
         boxBtm = wx.StaticBox(pnl, wx.ID_ANY, "", pos =(0, 0), size =(-1, 50))
         boxBtm.SetBackgroundColour("black")
+        # Create items
+        charTl = wx.StaticText(boxBtm, label="Chart ")
+        charTl.SetForegroundColour("white")
+        cBtn1 = wx.Button(boxBtm, label="Hourly Average")
+        cBtn2 = wx.Button(boxBtm, label="Accident Types")
+        cBtn3 = wx.Button(boxBtm, label="By Month")
+        cBtn4 = wx.Button(boxBtm, label="By Day")
+        # Sizer
+        sizer = wx.BoxSizer(wx.HORIZONTAL)
+        sizer.Add(charTl, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 0)
+        sizer.Add(cBtn1, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 0)
+        sizer.Add(cBtn2, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 0)
+        sizer.Add(cBtn3, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 0)
+        sizer.Add(cBtn4, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 0)
+        boxBtm.SetSizer(sizer)
         
-        # put some text with a larger bold font on it
-        st = wx.StaticText(boxBtm, label="Bottom Box")
-        font = st.GetFont()
-        font.PointSize += 10
-        font = font.Bold()
-        st.SetFont(font)
         # and create a sizer to manage the layout of child widgets
         menubox = wx.StaticBox(pnl, wx.ID_ANY, "", pos =wx.DefaultPosition, size =(-1, 50))
         menubox.SetBackgroundColour((19,162,166,255))
@@ -95,13 +135,22 @@ class mainFrame(wx.Frame):
         btn1.SetBitmap(bmp)
         self.Bind(wx.EVT_BUTTON, self.onDataset, btn1)
         #  button for Analyse
-        btn2 = wx.Button(pnl, label="Analyse")
+        btn2 = wx.Button(pnl, size =(200, 40), label="Analyse")
+        bmp = wx.Bitmap('btn.png', wx.BITMAP_TYPE_PNG).ConvertToImage()
+        bmp = wx.Bitmap(bmp.Scale(30, 30, wx.IMAGE_QUALITY_HIGH))
+        btn2.SetBitmap(bmp)
         self.Bind(wx.EVT_BUTTON, self.onAnalyse, btn2)
         #  button for Analyse
-        btn3 = wx.Button(pnl, label="Alcohol")
+        btn3 = wx.Button(pnl, size =(200, 40), label="Alcohol")
+        bmp = wx.Bitmap('btn.png', wx.BITMAP_TYPE_PNG).ConvertToImage()
+        bmp = wx.Bitmap(bmp.Scale(30, 30, wx.IMAGE_QUALITY_HIGH))
+        btn3.SetBitmap(bmp)
         self.Bind(wx.EVT_BUTTON, self.onAlcohol, btn3)
         #  button for Location
-        btn4 = wx.Button(pnl, label="Location")
+        btn4 = wx.Button(pnl, size =(200, 40), label="Location")
+        bmp = wx.Bitmap('btn.png', wx.BITMAP_TYPE_PNG).ConvertToImage()
+        bmp = wx.Bitmap(bmp.Scale(30, 30, wx.IMAGE_QUALITY_HIGH))
+        btn4.SetBitmap(bmp)
         self.Bind(wx.EVT_BUTTON, self.onLocation, btn4)
         sizer = wx.BoxSizer(wx.HORIZONTAL)
         sizer.Add(btn1, 0, wx.EXPAND, 0)
@@ -114,6 +163,7 @@ class mainFrame(wx.Frame):
         # Sizer for grid
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(menubox, 0, wx.ALL | wx.EXPAND,0)
+        sizer.Add(searchBox, 0, wx.ALL | wx.EXPAND, 0)
         sizer.Add(box, 5, wx.ALL |wx.EXPAND, 0)
         sizer.Add(boxBtm, 0, wx.ALL |wx.EXPAND | wx.ALIGN_BOTTOM, 0)
         pnl.SetSizer(sizer)
