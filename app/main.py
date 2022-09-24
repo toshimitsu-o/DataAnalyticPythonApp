@@ -25,12 +25,12 @@ class MainFrame(wx.Frame):
         # create a panel in the frame
         pnl = wx.Panel(self)
         self.frame_number = 1
-        #self.SetBackgroundColour((19,162,166,255))
-        self.SetBackgroundColour("white")
+        self.SetBackgroundColour((19,162,166,255))
+        #self.SetBackgroundColour("white")
 
         # Add Search box
         searchBox = wx.StaticBox(pnl, wx.ID_ANY, "", pos =(0, 0), size =(-1, 80))
-        searchBox.SetBackgroundColour("grey")
+        searchBox.SetBackgroundColour((247,247,247,255))
         # Search box items
         dateTl = wx.StaticText(searchBox, label="Date ")
         dateFrCt = wx.TextCtrl(searchBox)
@@ -47,31 +47,53 @@ class MainFrame(wx.Frame):
         outCb3 = wx.CheckBox(searchBox, label = 'Location')
         searchBtn = wx.Button(searchBox, label="Search", size=(100, 100))
         # Sizer 
-        sizer = wx.GridBagSizer(hgap=0, vgap=0)
+        schSizer = wx.GridBagSizer(hgap=0, vgap=0)
         # Date line
-        sizer.Add(dateTl, pos=(0,0), flag=wx.ALIGN_LEFT)
+        schSizer.Add(dateTl, pos=(0,0), flag=wx.ALIGN_LEFT)
         vSizer = wx.BoxSizer(wx.HORIZONTAL)
         vSizer.Add(dateFrCt, 0, wx.ALL, 0)
         vSizer.Add(dateTo, 0, wx.ALL, 0)
         vSizer.Add(dateToCt, 0, wx.ALL, 0)
-        sizer.Add(vSizer, pos=(0,1), flag=wx.ALIGN_LEFT|wx.EXPAND)
+        schSizer.Add(vSizer, pos=(0,1), flag=wx.ALIGN_LEFT|wx.EXPAND)
         # Accident type line
-        sizer.Add(accTl, pos=(1,0), flag=wx.ALIGN_LEFT)
+        schSizer.Add(accTl, pos=(1,0), flag=wx.ALIGN_LEFT)
         vSizer = wx.BoxSizer(wx.HORIZONTAL)
         vSizer.Add(accKyCt, 0, wx.ALL, 0)
         vSizer.Add(accCh, 0, wx.ALL, 0)
-        sizer.Add(vSizer, pos=(1,1), flag=wx.ALIGN_LEFT|wx.EXPAND)
+        schSizer.Add(vSizer, pos=(1,1), flag=wx.ALIGN_LEFT|wx.EXPAND)
         # Output line
-        sizer.Add(outTl, pos=(2,0), flag=wx.ALIGN_LEFT)
+        schSizer.Add(outTl, pos=(2,0), flag=wx.ALIGN_LEFT)
         vSizer = wx.BoxSizer(wx.HORIZONTAL)
         vSizer.Add(outCb1, 0, wx.ALL, 0)
         vSizer.Add(outCb2, 0, wx.ALL, 0)
         vSizer.Add(outCb3, 0, wx.ALL, 0)
-        sizer.Add(vSizer, pos=(2,1), flag=wx.ALIGN_LEFT|wx.EXPAND)
-        sizer.Add(searchBtn, pos=(0,2), span=(3,1), flag=wx.ALIGN_RIGHT|wx.ALIGN_BOTTOM|wx.EXPAND)
+        schSizer.Add(vSizer, pos=(2,1), flag=wx.ALIGN_LEFT|wx.EXPAND)
+        schSizer.Add(searchBtn, pos=(0,2), span=(3,1), flag=wx.ALIGN_RIGHT|wx.ALIGN_BOTTOM|wx.EXPAND)
         # Set sizer
-        searchBox.SetSizer(sizer)
+        searchBox.SetSizer(schSizer)
 
+        # Box for summary
+        sumBox = wx.StaticBox(pnl, wx.ID_ANY, "", pos =(0, 0), size =(-1, -1))
+        sumBox.SetBackgroundColour("white")
+        # Items
+        sumTl = wx.StaticText(sumBox, label="Summary ")
+        found = wx.StaticText(sumBox, label="230 found (out of 23000)")
+        injury = wx.StaticText(sumBox, label="Injury: 200")
+        fatality = wx.StaticText(sumBox, label="fatality: 30")
+        # Sizer
+        sumSizer = wx.BoxSizer(wx.VERTICAL)
+        sumSizer.Add(sumTl, 0, wx.ALL | wx.EXPAND, 0)
+        sumSizer.Add(found, 0, wx.ALL | wx.EXPAND, 0)
+        sumSizer.Add(injury, 0, wx.ALL | wx.EXPAND, 0)
+        sumSizer.Add(fatality, 0, wx.ALL | wx.EXPAND, 0)
+        sumBox.SetSizer(sumSizer)
+
+        # Search Bar
+        schbarSizer = wx.BoxSizer(wx.HORIZONTAL)
+        schbarSizer.Add(searchBox, 5, wx.ALL | wx.ALIGN_CENTER_VERTICAL | wx.EXPAND, 0)
+        schbarSizer.Add(sumBox, 1, wx.ALL | wx.ALIGN_TOP | wx.EXPAND, 0)
+
+        # Box for grid
         box = wx.StaticBox(pnl, wx.ID_ANY, "", pos =(0, 0), size =(-1, 450))
         box.SetBackgroundColour("white")
 
@@ -80,12 +102,12 @@ class MainFrame(wx.Frame):
 
         # Then we call CreateGrid to set the dimensions of the grid
         # (100 rows and 10 columns in this example)
-        grid.CreateGrid(100, 10)
+        grid.CreateGrid(100, 20)
 
         # We can set the sizes of individual rows and columns
         # in pixels
-        grid.SetRowSize(0, 60)
-        grid.SetColSize(0, 120)
+        # grid.SetRowSize(0, 60)
+        # grid.SetColSize(0, 120)
 
         # And set grid cell contents as strings
         grid.SetCellValue(0, 0, 'wxGrid is good')
@@ -162,10 +184,10 @@ class MainFrame(wx.Frame):
         menubox.SetSizer(sizer)
         
 
-        # Sizer for grid
+        # Sizer for main structure
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(menubox, 0, wx.ALL | wx.EXPAND,0)
-        sizer.Add(searchBox, 0, wx.ALL | wx.EXPAND, 0)
+        sizer.Add(schbarSizer, 0, wx.ALL | wx.EXPAND, 0)
         sizer.Add(box, 5, wx.ALL |wx.EXPAND, 0)
         sizer.Add(boxBtm, 0, wx.ALL |wx.EXPAND | wx.ALIGN_BOTTOM, 0)
         pnl.SetSizer(sizer)
@@ -191,7 +213,7 @@ class MainFrame(wx.Frame):
         wx.MessageBox("Location will happen")
     
     def onChartHour(self, event):
-        title = 'SubFrame {}'.format(self.frame_number)
+        title = 'Chart {}'.format(self.frame_number)
         frame = ChartFrame(title=title)
         self.frame_number += 1
 
@@ -255,13 +277,42 @@ class MainFrame(wx.Frame):
 class ChartFrame(wx.Frame):
     """Class for chart frame window"""
     def __init__(self, title, parent=None):
-        wx.Frame.__init__(self, parent=parent, title=title)
+        wx.Frame.__init__(self, parent=parent, title=title, size=(1000,625))
+
+        # create a panel in the frame
+        pnl = wx.Panel(self)
+        self.SetBackgroundColour("white")
+
+        # bar box
+        box = wx.StaticBox(pnl, wx.ID_ANY, "", pos =(0, 0), size =(-1, 40))
+        box.SetBackgroundColour("black")
+        # Create items
+        charTl = wx.StaticText(box, label="Chart ")
+        charTl.SetForegroundColour("white")
+        # Sizer
+        sizer = wx.BoxSizer(wx.HORIZONTAL)
+        sizer.Add(charTl, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL | wx.EXPAND, 0)
+        box.SetSizer(sizer)
+
+        # Main
+        main = wx.StaticBox(pnl, wx.ID_ANY, "", pos =(0, 0), size =(-1, -1))
+        text = wx.StaticText(main, label="Chart will be inserted")
+        # Sizer
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        sizer.Add(text, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL | wx.EXPAND, 0)
+        main.SetSizer(sizer)
+
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        sizer.Add(box, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL | wx.EXPAND, 0)
+        sizer.Add(main, 5, wx.ALL | wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER | wx.EXPAND, 0)
+        pnl.SetSizer(sizer)
+
         self.Show()
 
 if __name__ == '__main__':
     # When this module is run (not imported) then create the app, the
     # frame, show it, and start the event loop.
     app = wx.App()
-    frame = MainFrame(None, title=APP_NAME, size=(800,600))
+    frame = MainFrame(None, title=APP_NAME, size=(1280,800))
     frame.Show()
     app.MainLoop()
