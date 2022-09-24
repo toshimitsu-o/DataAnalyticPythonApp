@@ -29,8 +29,18 @@ class mainFrame(wx.Frame):
 
         box = wx.StaticBox(pnl, wx.ID_ANY, "", pos =(0, 0), size =(-1, 450))
         box.SetBackgroundColour("white")
-        # put some text with a larger bold font on it
-        st = wx.StaticText(box, label="Main Box")
+
+        # Add Search box
+        searchBox = wx.StaticBox(pnl, wx.ID_ANY, "", pos =(0, 0), size =(-1, 450))
+        searchBox.SetBackgroundColour("grey")
+        st = wx.StaticText(searchBox, label="Date")
+        text_ctrl = wx.TextCtrl(searchBox)
+        sizer = wx.BoxSizer(wx.HORIZONTAL)
+        sizer.Add(st, 0, wx.EXPAND, 0)
+        sizer.Add(text_ctrl, 0, wx.EXPAND, 0)
+        searchBox.SetSizer(sizer)
+        
+        
 
         # Create a wxGrid object
         grid = wx.grid.Grid(box, -1)
@@ -61,6 +71,7 @@ class mainFrame(wx.Frame):
         # Set the whole grid read only
         grid.EnableEditing(False)
         sizer = wx.BoxSizer(wx.VERTICAL)
+        sizer.Add(searchBox, 0, wx.ALL, 1)
         sizer.Add(grid, 0, wx.ALL | wx.EXPAND, 0)
         box.SetSizer(sizer)
         
