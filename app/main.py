@@ -30,8 +30,71 @@ class MainFrame(wx.Frame):
         self.frame_number = 1
         #self.SetBackgroundColour((19,162,166,255))
         self.SetBackgroundColour("white")
+        
+        # create a menu bar
+        self.makeMenuBar()
 
-        # Add Search box
+        # Build main content structure
+        self.buidMain()
+
+        # Make a status bar
+        self.CreateStatusBar()
+        self.SetStatusText("Welcome to "+ APP_NAME)
+
+    def buidMain(self):
+        # Make menu box for buttons
+        self.makeMenuBox()
+        # Make search bar for search box and summary
+        self.makeSchbar()
+        # Make grid box
+        self.makeGridBox()
+        # Make bottom box for chart buttons
+        self.makeBtmBox()
+        # Sizer for main structure
+        self.mainSizer = wx.BoxSizer(wx.VERTICAL)
+        self.mainSizer.Add(self.menubox, 0, wx.ALL | wx.EXPAND,0)
+        self.mainSizer.Add(self.schbarSizer, 0, wx.ALL | wx.EXPAND, 0)
+        self.mainSizer.Add(self.box, 5, wx.ALL |wx.EXPAND, 0)
+        self.mainSizer.Add(self.boxBtm, 0, wx.ALL |wx.EXPAND | wx.ALIGN_BOTTOM, 0)
+        self.pnl.SetSizer(self.mainSizer)
+    
+    def makeMenuBox(self):
+        # Box for menu box buttons
+        self.menubox = wx.StaticBox(self.pnl, wx.ID_ANY, "", pos =wx.DefaultPosition, size =(-1, 50))
+        self.menubox.SetBackgroundColour((19,162,166,255))
+        # button for Dataset
+        self.btn1 = wx.Button(self.pnl, size =(200, 40), label="Dataset")
+        self.bmp = wx.Bitmap('btn.png', wx.BITMAP_TYPE_PNG).ConvertToImage()
+        self.bmp = wx.Bitmap(self.bmp.Scale(30, 30, wx.IMAGE_QUALITY_HIGH))
+        self.btn1.SetBitmap(self.bmp)
+        self.Bind(wx.EVT_BUTTON, self.onFileOpen, self.btn1)
+        #  button for Analyse
+        self.btn2 = wx.Button(self.pnl, size =(200, 40), label="Analyse")
+        self.bmp = wx.Bitmap('btn.png', wx.BITMAP_TYPE_PNG).ConvertToImage()
+        self.bmp = wx.Bitmap(self.bmp.Scale(30, 30, wx.IMAGE_QUALITY_HIGH))
+        self.btn2.SetBitmap(self.bmp)
+        self.Bind(wx.EVT_BUTTON, self.onAnalyse, self.btn2)
+        #  button for Analyse
+        self.btn3 = wx.Button(self.pnl, size =(200, 40), label="Alcohol")
+        self.bmp = wx.Bitmap('btn.png', wx.BITMAP_TYPE_PNG).ConvertToImage()
+        self.bmp = wx.Bitmap(self.bmp.Scale(30, 30, wx.IMAGE_QUALITY_HIGH))
+        self.btn3.SetBitmap(self.bmp)
+        self.Bind(wx.EVT_BUTTON, self.onAlcohol, self.btn3)
+        #  button for Location
+        self.btn4 = wx.Button(self.pnl, size =(200, 40), label="Location")
+        self.bmp = wx.Bitmap('btn.png', wx.BITMAP_TYPE_PNG).ConvertToImage()
+        self.bmp = wx.Bitmap(self.bmp.Scale(30, 30, wx.IMAGE_QUALITY_HIGH))
+        self.btn4.SetBitmap(self.bmp)
+        self.Bind(wx.EVT_BUTTON, self.onLocation, self.btn4)
+        self.sizer = wx.BoxSizer(wx.HORIZONTAL)
+        self.sizer.Add(self.btn1, 0, wx.EXPAND, 0)
+        self.sizer.Add(self.btn2, 0, wx.EXPAND, 0)
+        self.sizer.Add(self.btn3, 0, wx.EXPAND, 0)
+        self.sizer.Add(self.btn4, 0, wx.EXPAND, 0)
+        self.menubox.SetSizer(self.sizer)
+
+    def makeSearchBox(self):
+        # Make Search box
         self.searchBox = wx.StaticBox(self.pnl, wx.ID_ANY, "", pos =(0, 0), size =(-1, 80))
         self.searchBox.SetBackgroundColour((247,247,247,255))
         # Search box items
@@ -74,8 +137,9 @@ class MainFrame(wx.Frame):
         self.schSizer.Add(self.searchBtn, pos=(0,2), span=(3,1), flag=wx.ALIGN_RIGHT|wx.ALIGN_BOTTOM|wx.EXPAND)
         # Set sizer
         self.searchBox.SetSizer(self.schSizer)
-
-        # Box for summary
+    
+    def makeSumBox(self):
+        # Box for result summary
         self.sumBox = wx.StaticBox(self.pnl, wx.ID_ANY, "", pos =(0, 0), size =(-1, -1))
         self.sumBox.SetBackgroundColour("white")
         # Items
@@ -90,12 +154,18 @@ class MainFrame(wx.Frame):
         self.sumSizer.Add(self.injury, 0, wx.ALL | wx.EXPAND, 0)
         self.sumSizer.Add(self.fatality, 0, wx.ALL | wx.EXPAND, 0)
         self.sumBox.SetSizer(self.sumSizer)
-
+    
+    def makeSchbar(self):
+        # Make search box for search form
+        self.makeSearchBox()
+        # Make summary box for result summary
+        self.makeSumBox()
         # Search Bar
         self.schbarSizer = wx.BoxSizer(wx.HORIZONTAL)
         self.schbarSizer.Add(self.searchBox, 5, wx.ALL | wx.ALIGN_CENTER_VERTICAL | wx.EXPAND, 0)
         self.schbarSizer.Add(self.sumBox, 1, wx.ALL | wx.ALIGN_TOP | wx.EXPAND, 0)
-
+    
+    def makeGridBox(self):
         # Box for grid
         self.box = wx.StaticBox(self.pnl, wx.ID_ANY, "", pos =(0, 0), size =(-1, 450))
         self.box.SetBackgroundColour("white")
@@ -131,8 +201,9 @@ class MainFrame(wx.Frame):
         self.sizer = wx.BoxSizer(wx.VERTICAL)
         self.sizer.Add(grid, 0, wx.ALL | wx.EXPAND, 0)
         self.box.SetSizer(self.sizer)
-        
-        # Bottom box
+
+    def makeBtmBox(self):
+        # Bottom box for chart buttons
         self.boxBtm = wx.StaticBox(self.pnl, wx.ID_ANY, "", pos =(0, 0), size =(-1, 50))
         self.boxBtm.SetBackgroundColour("black")
         # Create items
@@ -151,84 +222,6 @@ class MainFrame(wx.Frame):
         self.sizer.Add(self.cBtn3, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 0)
         self.sizer.Add(self.cBtn4, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 0)
         self.boxBtm.SetSizer(self.sizer)
-        
-        # and create a sizer to manage the layout of child widgets
-        self.menubox = wx.StaticBox(self.pnl, wx.ID_ANY, "", pos =wx.DefaultPosition, size =(-1, 50))
-        self.menubox.SetBackgroundColour((19,162,166,255))
-        # button for Dataset
-        self.btn1 = wx.Button(self.pnl, size =(200, 40), label="Dataset")
-        self.bmp = wx.Bitmap('btn.png', wx.BITMAP_TYPE_PNG).ConvertToImage()
-        self.bmp = wx.Bitmap(self.bmp.Scale(30, 30, wx.IMAGE_QUALITY_HIGH))
-        self.btn1.SetBitmap(self.bmp)
-        self.Bind(wx.EVT_BUTTON, self.onDataset, self.btn1)
-        #  button for Analyse
-        self.btn2 = wx.Button(self.pnl, size =(200, 40), label="Analyse")
-        self.bmp = wx.Bitmap('btn.png', wx.BITMAP_TYPE_PNG).ConvertToImage()
-        self.bmp = wx.Bitmap(self.bmp.Scale(30, 30, wx.IMAGE_QUALITY_HIGH))
-        self.btn2.SetBitmap(self.bmp)
-        self.Bind(wx.EVT_BUTTON, self.onAnalyse, self.btn2)
-        #  button for Analyse
-        self.btn3 = wx.Button(self.pnl, size =(200, 40), label="Alcohol")
-        self.bmp = wx.Bitmap('btn.png', wx.BITMAP_TYPE_PNG).ConvertToImage()
-        self.bmp = wx.Bitmap(self.bmp.Scale(30, 30, wx.IMAGE_QUALITY_HIGH))
-        self.btn3.SetBitmap(self.bmp)
-        self.Bind(wx.EVT_BUTTON, self.onAlcohol, self.btn3)
-        #  button for Location
-        self.btn4 = wx.Button(self.pnl, size =(200, 40), label="Location")
-        self.bmp = wx.Bitmap('btn.png', wx.BITMAP_TYPE_PNG).ConvertToImage()
-        self.bmp = wx.Bitmap(self.bmp.Scale(30, 30, wx.IMAGE_QUALITY_HIGH))
-        self.btn4.SetBitmap(self.bmp)
-        self.Bind(wx.EVT_BUTTON, self.onLocation, self.btn4)
-        self.sizer = wx.BoxSizer(wx.HORIZONTAL)
-        self.sizer.Add(self.btn1, 0, wx.EXPAND, 0)
-        self.sizer.Add(self.btn2, 0, wx.EXPAND, 0)
-        self.sizer.Add(self.btn3, 0, wx.EXPAND, 0)
-        self.sizer.Add(self.btn4, 0, wx.EXPAND, 0)
-        self.menubox.SetSizer(self.sizer)
-        
-        # Dataset import
-        self.importBox = wx.StaticBox(self.pnl, wx.ID_ANY, "", pos =wx.DefaultPosition, size =(-1, 100))
-        self.importBox.SetBackgroundColour((247,247,247,255))
-        # Items
-        self.importTl = wx.StaticText(self.importBox, label="Import Dataset ")
-        #importTl.SetForegroundColour("white")
-        self.importBtn = wx.Button(self.importBox, label="Select a file")
-        self.Bind(wx.EVT_BUTTON, self.onFileOpen, self.importBtn)
-        # Sizer
-        self.sizer = wx.BoxSizer(wx.VERTICAL)
-        self.sizer.Add(self.importTl, 0, wx.ALL | wx.EXPAND,0)
-        self.sizer.Add(self.importBtn, 0, wx.ALL | wx.EXPAND,0)
-        self.importBox.SetSizer(self.sizer)
-
-        # create a menu bar
-        self.makeMenuBar()
-
-        # Build main content structure
-        if self.menu == "main":
-            self.buidImport()
-        else:
-            self.buidMain()
-
-        # and a status bar
-        self.CreateStatusBar()
-        self.SetStatusText("Welcome to "+ APP_NAME)
-    
-    def buidImport(self):
-        # Sizer for main structure
-        self.importSizer = wx.BoxSizer(wx.VERTICAL)
-        self.importSizer.Add(self.menubox, 0, wx.ALL | wx.EXPAND,0)
-        self.importSizer.Add(self.importBox, 5, wx.ALL |wx.EXPAND | wx.ALIGN_CENTER_VERTICAL, 0)
-        self.importSizer.Add(self.boxBtm, 0, wx.ALL |wx.EXPAND | wx.ALIGN_BOTTOM, 0)
-        self.pnl.SetSizer(self.importSizer)
-
-    def buidMain(self):
-        # Sizer for main structure
-        self.mainSizer = wx.BoxSizer(wx.VERTICAL)
-        self.mainSizer.Add(self.menubox, 0, wx.ALL | wx.EXPAND,0)
-        self.mainSizer.Add(self.schbarSizer, 0, wx.ALL | wx.EXPAND, 0)
-        self.mainSizer.Add(self.box, 5, wx.ALL |wx.EXPAND, 0)
-        self.mainSizer.Add(self.boxBtm, 0, wx.ALL |wx.EXPAND | wx.ALIGN_BOTTOM, 0)
-        self.pnl.SetSizer(self.mainSizer)
 
     def onFileOpen(self, event):
         # Ask the user what new file to open
@@ -248,17 +241,33 @@ class MainFrame(wx.Frame):
 
     def loadFile(self, filepath):
         filepath = str(filepath)
-        self.menu = "main"
+        self.importBox.Hide()
+        self.boxBtm.Show()
         #self.pnl.Update()
         wx.MessageBox("Filepath for Dataset is: " + filepath)
+    
+    def importBox(self):
+        #Dataset import
+        self.importBox = wx.StaticBox(self.pnl, wx.ID_ANY, "", pos =wx.DefaultPosition, size =(-1, 100))
+        self.importBox.SetBackgroundColour((247,247,247,255))
+        # Items
+        self.importTl = wx.StaticText(self.importBox, label="Import Dataset ")
+        #importTl.SetForegroundColour("white")
+        self.importBtn = wx.Button(self.importBox, label="Select a file")
+        self.Bind(wx.EVT_BUTTON, self.onFileOpen, self.importBtn)
+        # Sizer
+        self.sizer = wx.BoxSizer(wx.VERTICAL)
+        self.sizer.Add(self.importTl, 0, wx.ALL | wx.EXPAND,0)
+        self.sizer.Add(self.importBtn, 0, wx.ALL | wx.EXPAND,0)
+        self.importBox.SetSizer(self.sizer)
 
     def onDataset(self, event):
         wx.MessageBox("Dataset will happen")
 
     def onAnalyse(self, event):
         self.menu = "main"
-        self.importSizer.Destroy()
-        self.importBox.Destroy()
+        #self.importSizer.Destroy()
+        self.box.Hide()
         #self.buidMain()
         self.Update()
 
