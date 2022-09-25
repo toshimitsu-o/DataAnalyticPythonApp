@@ -244,7 +244,7 @@ class MainFrame(wx.Frame):
                 with open(pathname, 'r') as file:
                     self.loadFile(file)
             except IOError:
-                wx.LogError("Cannot open file '%s'." % newfile)
+                wx.LogError("Cannot open file")
 
     def loadFile(self, filepath):
         filepath = str(filepath)
