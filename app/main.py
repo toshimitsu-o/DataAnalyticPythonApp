@@ -5,10 +5,35 @@ Accident Analysis
 try:
     import wx
     import wx.grid
+    import sqlite3
 except ImportError:
     raise ImportError ("The wxPython module is required to run this program.")
 
 APP_NAME = "Accident Analysis"
+
+def connect():
+    """
+    This is the sqlite3 connection.
+    """
+    
+    con_str= '../database/accidentDatabase.db'
+    cnn = sqlite3.connect(con_str)
+    return cnn
+    cnn.close()
+
+def dataRowsCount():
+    """
+    To count the rows in the database.
+    """
+    
+    con = connect()
+    cur=con.cursor()
+    cur.execute("SELECT * FROM Accident")
+    rows=cur.fetchall()
+    i=0
+    for r in rows:
+        i+=1
+    return i
 
 class MainFrame(wx.Frame):
     """
@@ -40,6 +65,18 @@ class MainFrame(wx.Frame):
         # Make a status bar
         self.CreateStatusBar()
         self.SetStatusText("Welcome to "+ APP_NAME)
+    
+    def updateData(self):
+        cnn =connect()
+        cur = cnn.cursor()
+        cur.execute("SELECT * FROM Accident")
+        rows = cur.fetchall()
+        for i in range (0, len(rows)):
+            #self.grid.SetRowLabelValue(i, "")
+            self.grid.SetRowLabelSize(0)
+            for j in range(0, 13):
+                cell = rows[i]
+                self.grid.SetCellValue(i, j, str(cell[j]))
 
     def buidMain(self):
         # Make menu box for buttons
@@ -171,35 +208,43 @@ class MainFrame(wx.Frame):
         self.box.SetBackgroundColour("white")
 
         # Create a wxGrid object
-        grid = wx.grid.Grid(self.box, -1)
+        self.grid = wx.grid.Grid(self.box, -1)
 
-        # Then we call CreateGrid to set the dimensions of the grid
-        # (100 rows and 10 columns in this example)
-        grid.CreateGrid(100, 20)
+        # This is to create the grid with same rows as database.
+        r = dataRowsCount()
+        self.grid.CreateGrid(r, 13)
+        self.grid.SetColLabelValue(0, "No")
+        self.grid.SetColSize(0, 12)
+        self.grid.SetColLabelValue(1, "Date")
+        self.grid.SetColSize(1, 90)
+        self.grid.SetColLabelValue(2, "Time")
+        self.grid.SetColSize(2, 70)
+        self.grid.SetColLabelValue(3, "Type")
+        self.grid.SetColSize(3, 150)
+        self.grid.SetColLabelValue(4, "Day")
+        self.grid.SetColSize(4, 60)
+        self.grid.SetColLabelValue(5, "Severity")
+        self.grid.SetColSize(5, 150)
+        self.grid.SetColLabelValue(6, "Longitude")
+        self.grid.SetColSize(6, 70)
+        self.grid.SetColLabelValue(7, "Latitude")
+        self.grid.SetColSize(7, 70)
+        self.grid.SetColLabelValue(8, "LGA")
+        self.grid.SetColSize(8, 100)
+        self.grid.SetColLabelValue(9, "Region")
+        self.grid.SetColSize(9, 120)
+        self.grid.SetColLabelValue(10, "Fatalities")
+        self.grid.SetColSize(10, 60)
+        self.grid.SetColLabelValue(11, "Injuries")
+        self.grid.SetColSize(11, 60)
+        self.grid.SetColLabelValue(12, "Alcohol")
+        self.grid.SetColSize(12, 60)
+        self.updateData()
 
-        # We can set the sizes of individual rows and columns
-        # in pixels
-        # grid.SetRowSize(0, 60)
-        # grid.SetColSize(0, 120)
-
-        # And set grid cell contents as strings
-        grid.SetCellValue(0, 0, 'wxGrid is good')
-
-        # Colours can be specified for grid cell contents
-        grid.SetCellValue(3, 3, 'green on grey')
-        grid.SetCellTextColour(3, 3, wx.GREEN)
-        grid.SetCellBackgroundColour(3, 3, wx.LIGHT_GREY)
-
-        # We can specify the some cells will store numeric
-        # values rather than strings. Here we set grid column 5
-        # to hold floating point values displayed with width of 6
-        # and precision of 2
-        grid.SetColFormatFloat(5, 6, 2)
-        grid.SetCellValue(0, 6, '3.1415')
         # Set the whole grid read only
-        grid.EnableEditing(False)
+        self.grid.EnableEditing(False)
         self.sizer = wx.BoxSizer(wx.VERTICAL)
-        self.sizer.Add(grid, 0, wx.ALL | wx.EXPAND, 0)
+        self.sizer.Add(self.grid, 0, wx.ALL | wx.EXPAND, 0)
         self.box.SetSizer(self.sizer)
 
     def makeBtmBox(self):
