@@ -172,7 +172,7 @@ def getDateRange():
     """queries accident database and returns tuple of (minDate, maxDate)
     """
     
-    connection = sqlite3.connect("database/accidentDatabase.db", detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
+    connection = sqlite3.connect("app/accidentDatabase.db", detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
     c = connection.cursor()
     sqlmin = "SELECT MIN(accidentDate) FROM Accident;"
     sqlmax = "SELECT MAX(accidentDate) FROM Accident;"
@@ -185,7 +185,7 @@ def getDateRange():
 def getAccidentTypes():
     """queries accident database and returns a list of all unique accident types
     """
-    connection = sqlite3.connect("database/accidentDatabase.db", detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
+    connection = sqlite3.connect("app/accidentDatabase.db", detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
     accidents = pd.read_sql("SELECT accidentType FROM Accident;", connection)
     accidentTypes = accidents["accidentType"].unique()
     # converts from numpy.ndarray to list type
