@@ -1,5 +1,5 @@
 """
-Accident Analysis
+Accident Analysis wxPython Main Frame
 """
 
 try:
@@ -8,6 +8,8 @@ try:
     import sqlite3
 except ImportError:
     raise ImportError ("The wxPython module is required to run this program.")
+
+from chart import ChartFrame
 
 APP_NAME = "Accident Analysis"
 
@@ -46,9 +48,8 @@ class MainFrame(wx.Frame):
         self.initialise()
             
     def initialise(self):
-
         # Define state of program: main, alcohol, location
-        self.menu = ""
+        self.mode = "main"
 
         # create a panel in the frame
         self.pnl = wx.Panel(self)
@@ -262,13 +263,16 @@ class MainFrame(wx.Frame):
         self.charTl = wx.StaticText(self.boxBtm, label="Chart ")
         self.charTl.SetForegroundColour("white")
         self.cBtn1 = wx.Button(self.boxBtm, label="Hourly Average")
-        self.Bind(wx.EVT_BUTTON, self.onChartHour, self.cBtn1)
         self.cBtn2 = wx.Button(self.boxBtm, label="Accident Types")
         self.cBtn3 = wx.Button(self.boxBtm, label="By Month")
         self.cBtn4 = wx.Button(self.boxBtm, label="By Day")
         self.cBtn5 = wx.Button(self.boxBtm, label="LGA")
         self.cBtn6 = wx.Button(self.boxBtm, label="Region")
         self.cBtn7 = wx.Button(self.boxBtm, label="Map")
+        # Bind event handler with all buttons
+        buttons = [self.cBtn1,self.cBtn2,self.cBtn3,self.cBtn4,self.cBtn5,self.cBtn6,self.cBtn7]
+        for btn in buttons:
+            self.Bind(wx.EVT_BUTTON, self.onChart, btn)
 
         # Sizer
         self.boxBtmSizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -367,16 +371,15 @@ class MainFrame(wx.Frame):
         
         #wx.MessageBox("Location will happen")
     
-    def onChartHour(self, event):
+    def onChart(self, event):
+        type = event.GetEventObject().GetLabel()
         title = 'Chart {}'.format(self.frame_number)
-        frame = ChartFrame(title=title)
+        frame = ChartFrame(title=title, search="search obj", chartType=type, mode=self.mode)
         self.frame_number += 1
 
     def makeMenuBar(self):
         """
-        A menu bar is composed of menus, which are composed of menu items.
-        This method builds a set of menus and binds handlers to be called
-        when the menu item is selected.
+        A menu bar is composed of menus.
         """
 
         # Make a file menu
@@ -389,29 +392,19 @@ class MainFrame(wx.Frame):
         # When using a stock ID we don't need to specify the menu item's
         # label
         exitItem = fileMenu.Append(wx.ID_EXIT)
-
         # Now a help menu for the about item
         helpMenu = wx.Menu()
         aboutItem = helpMenu.Append(wx.ID_ABOUT)
-
-        # Make the menu bar and add the two menus to it. The '&' defines
-        # that the next letter is the "mnemonic" for the menu item. On the
-        # platforms that support it those letters are underlined and can be
-        # triggered from the keyboard.
+        # Make the menu bar and add items
         menuBar = wx.MenuBar()
         menuBar.Append(fileMenu, "&File")
         menuBar.Append(helpMenu, "&Help")
-
         # Give the menu bar to the frame
         self.SetMenuBar(menuBar)
-
-        # Finally, associate a handler function with the EVT_MENU event for
-        # each of the menu items. That means that when that menu item is
-        # activated then the associated handler function will be called.
+        # Bind actions to menu items
         self.Bind(wx.EVT_MENU, self.OnImport, importItem)
         self.Bind(wx.EVT_MENU, self.OnExit,  exitItem)
         self.Bind(wx.EVT_MENU, self.OnAbout, aboutItem)
-
 
     def OnExit(self, event):
         """Close the frame, terminating the application."""
@@ -422,47 +415,46 @@ class MainFrame(wx.Frame):
         """Import function will be here later"""
         wx.MessageBox("Import function will be linked here later.")
 
-
     def OnAbout(self, event):
         """Display an About Dialog"""
         wx.MessageBox("This app helps to analyse a dataset of Victoria State Accidents.",
                       APP_NAME,
                       wx.OK|wx.ICON_INFORMATION)
 
-class ChartFrame(wx.Frame):
-    """Class for chart frame window"""
-    def __init__(self, title, parent=None):
-        wx.Frame.__init__(self, parent=parent, title=title, size=(1000,625))
+# class ChartFrame(wx.Frame):
+#     """Class for chart frame window"""
+#     def __init__(self, title, parent=None):
+#         wx.Frame.__init__(self, parent=parent, title=title, size=(1000,625))
 
-        # create a panel in the frame
-        pnl = wx.Panel(self)
-        self.SetBackgroundColour("white")
+#         # create a panel in the frame
+#         pnl = wx.Panel(self)
+#         self.SetBackgroundColour("white")
 
-        # bar box
-        box = wx.StaticBox(pnl, wx.ID_ANY, "", pos =(0, 0), size =(-1, 40))
-        box.SetBackgroundColour("black")
-        # Create items
-        charTl = wx.StaticText(box, label="Chart ")
-        charTl.SetForegroundColour("white")
-        # Sizer
-        sizer = wx.BoxSizer(wx.HORIZONTAL)
-        sizer.Add(charTl, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL | wx.EXPAND, 0)
-        box.SetSizer(sizer)
+#         # bar box
+#         box = wx.StaticBox(pnl, wx.ID_ANY, "", pos =(0, 0), size =(-1, 40))
+#         box.SetBackgroundColour("black")
+#         # Create items
+#         charTl = wx.StaticText(box, label="Chart ")
+#         charTl.SetForegroundColour("white")
+#         # Sizer
+#         sizer = wx.BoxSizer(wx.HORIZONTAL)
+#         sizer.Add(charTl, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL | wx.EXPAND, 0)
+#         box.SetSizer(sizer)
 
-        # Main
-        main = wx.StaticBox(pnl, wx.ID_ANY, "", pos =(0, 0), size =(-1, -1))
-        text = wx.StaticText(main, label="Chart will be inserted")
-        # Sizer
-        sizer = wx.BoxSizer(wx.VERTICAL)
-        sizer.Add(text, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL | wx.EXPAND, 0)
-        main.SetSizer(sizer)
+#         # Main
+#         main = wx.StaticBox(pnl, wx.ID_ANY, "", pos =(0, 0), size =(-1, -1))
+#         text = wx.StaticText(main, label="Chart will be inserted")
+#         # Sizer
+#         sizer = wx.BoxSizer(wx.VERTICAL)
+#         sizer.Add(text, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL | wx.EXPAND, 0)
+#         main.SetSizer(sizer)
 
-        sizer = wx.BoxSizer(wx.VERTICAL)
-        sizer.Add(box, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL | wx.EXPAND, 0)
-        sizer.Add(main, 5, wx.ALL | wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER | wx.EXPAND, 0)
-        pnl.SetSizer(sizer)
+#         sizer = wx.BoxSizer(wx.VERTICAL)
+#         sizer.Add(box, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL | wx.EXPAND, 0)
+#         sizer.Add(main, 5, wx.ALL | wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER | wx.EXPAND, 0)
+#         pnl.SetSizer(sizer)
 
-        self.Show()
+#         self.Show()
 
 if __name__ == '__main__':
     # When this module is run (not imported) then create the app, the
