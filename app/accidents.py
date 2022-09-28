@@ -7,14 +7,18 @@ from datetime import datetime
 import sqlite3
 
 
-
 #creating a dataframe
-con = sqlite3.connect("app/accidentDatabase.db", detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
-cur = con.cursor()
-cur.execute("SELECT * FROM Accident")
-rows = cur.fetchall()
+# con = sqlite3.connect("database/accidentDatabase.db", detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
+# cur = con.cursor()
+# cur.execute("SELECT * FROM Accidents")
+# rows = cur.fetchall()
 #print(rows[1:3])
 
+def connection():
+    """creates sqlite connection to accidentDatabase
+    """
+    con = sqlite3.connect("database/accidentDatabase.db", detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
+    cur = con.cursor()
 
 ##Calculates the average number of accidents in each hour of the day.
 def hourly_average():
@@ -24,8 +28,8 @@ def hourly_average():
     #NOT WORKING 
 
 #test
-#test = hourly_average()
-#print(test)
+test = hourly_average()
+print(test)
 #NOT WORKING
 
 
