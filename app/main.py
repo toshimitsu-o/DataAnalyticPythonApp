@@ -4,6 +4,7 @@ Accident Analysis wxPython Main Frame
 
 try:
     import wx
+    import wx.adv
     import wx.grid
     import sqlite3
 except ImportError:
@@ -96,13 +97,6 @@ class MainFrame(wx.Frame):
         self.mainSizer.Add(self.boxBtm, 0, wx.ALL |wx.EXPAND | wx.ALIGN_BOTTOM, 0)
         self.pnl.SetSizer(self.mainSizer)
     
-    def showAnalyse(self):
-        pass
-
-    def showLocation(self):
-        self.cBtn1.Hide()
-        self.cBtn2.Hide()
-    
     def makeMenuBox(self):
         # Box for menu box buttons
         self.menubox = wx.StaticBox(self.pnl, wx.ID_ANY, "", pos =wx.DefaultPosition, size =(-1, 50))
@@ -144,9 +138,11 @@ class MainFrame(wx.Frame):
         self.searchBox.SetBackgroundColour((247,247,247,255))
         # Search box items
         self.dateTl = wx.StaticText(self.searchBox, label="Date ")
-        self.dateFrCt = wx.TextCtrl(self.searchBox)
+        self.dateFrCt = wx.adv.DatePickerCtrl(self.searchBox)
+        self.dateFrCt.SetRange(wx.DateTime.FromDMY(24,10,2020),wx.DateTime.FromDMY(24,5,2022))
         self.dateTo = wx.StaticText(self.searchBox, label="to ")
-        self.dateToCt = wx.TextCtrl(self.searchBox)
+        self.dateToCt = wx.adv.DatePickerCtrl(self.searchBox)
+        self.dateToCt.SetRange(wx.DateTime.FromDMY(24,10,2020),wx.DateTime.FromDMY(24,5,2022))
         self.accTl = wx.StaticText(self.searchBox, label="Accident Type ")
         self.accKyCt = wx.TextCtrl(self.searchBox)
         self.typeList = ['Select from list', 'zero', 'one', 'two', 'three', 'four', 'five',
@@ -157,14 +153,15 @@ class MainFrame(wx.Frame):
         self.outCb2 = wx.CheckBox(self.searchBox, label = 'Hit&Run')
         self.outCb3 = wx.CheckBox(self.searchBox, label = 'Location')
         self.searchBtn = wx.Button(self.searchBox, label="Search", size=(100, 100))
+        self.searchBtn.Bind(wx.EVT_BUTTON, self.onSearch)
         # Sizer 
         self.schSizer = wx.GridBagSizer(hgap=0, vgap=0)
         # Date line
-        self.schSizer.Add(self.dateTl, pos=(0,0), flag=wx.ALIGN_LEFT)
+        self.schSizer.Add(self.dateTl, pos=(0,0), flag=wx.ALIGN_LEFT|wx.ALIGN_CENTER_VERTICAL)
         self.vSizer = wx.BoxSizer(wx.HORIZONTAL)
-        self.vSizer.Add(self.dateFrCt, 0, wx.ALL, 0)
-        self.vSizer.Add(self.dateTo, 0, wx.ALL, 0)
-        self.vSizer.Add(self.dateToCt, 0, wx.ALL, 0)
+        self.vSizer.Add(self.dateFrCt, 0, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 0)
+        self.vSizer.Add(self.dateTo, 0, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 0)
+        self.vSizer.Add(self.dateToCt, 0, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 0)
         self.schSizer.Add(self.vSizer, pos=(0,1), flag=wx.ALIGN_LEFT|wx.EXPAND)
         # Accident type line
         self.schSizer.Add(self.accTl, pos=(1,0), flag=wx.ALIGN_LEFT)
@@ -184,14 +181,18 @@ class MainFrame(wx.Frame):
         self.searchBox.SetSizer(self.schSizer)
     
     def makeSumBox(self):
+        foundLbl = "230 found (out of 23000)"
+        injuryLbl = "Injury: 200"
+        fatalityLbl = "fatality: 30"
+
         # Box for result summary
         self.sumBox = wx.StaticBox(self.pnl, wx.ID_ANY, "", pos =(0, 0), size =(-1, -1))
         self.sumBox.SetBackgroundColour("white")
         # Items
         self.sumTl = wx.StaticText(self.sumBox, label="Summary ")
-        self.found = wx.StaticText(self.sumBox, label="230 found (out of 23000)")
-        self.injury = wx.StaticText(self.sumBox, label="Injury: 200")
-        self.fatality = wx.StaticText(self.sumBox, label="fatality: 30")
+        self.found = wx.StaticText(self.sumBox, label=foundLbl)
+        self.injury = wx.StaticText(self.sumBox, label=injuryLbl)
+        self.fatality = wx.StaticText(self.sumBox, label=fatalityLbl)
         # Sizer
         self.sumSizer = wx.BoxSizer(wx.VERTICAL)
         self.sumSizer.Add(self.sumTl, 0, wx.ALL | wx.EXPAND, 0)
@@ -332,12 +333,9 @@ class MainFrame(wx.Frame):
 
     def loadFile(self, filepath):
         filepath = str(filepath)
-        self.importBox.Hide()
-        self.boxBtm.Show()
-        #self.pnl.Update()
         wx.MessageBox("Filepath for Dataset is: " + filepath)
     
-    def importBox(self):
+    def importBox(self): # Not using this
         #Dataset import
         self.importBox = wx.StaticBox(self.pnl, wx.ID_ANY, "", pos =wx.DefaultPosition, size =(-1, 100))
         self.importBox.SetBackgroundColour((247,247,247,255))
@@ -352,14 +350,9 @@ class MainFrame(wx.Frame):
         self.sizer.Add(self.importBtn, 0, wx.ALL | wx.EXPAND,0)
         self.importBox.SetSizer(self.sizer)
 
-    def onDataset(self, event):
-        wx.MessageBox("Dataset will happen")
-
     def onAnalyse(self, event):
         self.mode = "main"
         self.setBoxBtmSizer(self.mode)
-
-        #wx.MessageBox("Analyse will happen")
 
     def onAlcohol(self, event):
         self.mode = "alcohol"
@@ -368,8 +361,13 @@ class MainFrame(wx.Frame):
     def onLocation(self, event):
         self.mode = "location"
         self.setBoxBtmSizer(self.mode)
-        
-        #wx.MessageBox("Location will happen")
+    
+    def onSearch(self, event):
+        dateFr = self.dateFrCt.GetValue().Format("%Y-%m-%d")
+        dateTo = self.dateToCt.GetValue().Format("%Y-%m-%d")
+        accKy = self.accKyCt.GetValue()
+        accCh = str(self.accCh.GetCurrentSelection())
+        wx.MessageBox("Search clicked" + str(dateFr) + str(dateTo) + accKy + accCh)
     
     def onChart(self, event):
         type = event.GetEventObject().GetLabel()
