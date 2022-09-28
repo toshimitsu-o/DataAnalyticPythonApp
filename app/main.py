@@ -16,7 +16,7 @@ def connect():
     This is the sqlite3 connection.
     """
     
-    con_str= '../database/accidentDatabase.db'
+    con_str= 'accidentDatabase.db'
     cnn = sqlite3.connect(con_str)
     return cnn
     cnn.close()
@@ -94,6 +94,13 @@ class MainFrame(wx.Frame):
         self.mainSizer.Add(self.box, 5, wx.ALL |wx.EXPAND, 0)
         self.mainSizer.Add(self.boxBtm, 0, wx.ALL |wx.EXPAND | wx.ALIGN_BOTTOM, 0)
         self.pnl.SetSizer(self.mainSizer)
+    
+    def showAnalyse(self):
+        pass
+
+    def showLocation(self):
+        self.cBtn1.Hide()
+        self.cBtn2.Hide()
     
     def makeMenuBox(self):
         # Box for menu box buttons
@@ -259,14 +266,49 @@ class MainFrame(wx.Frame):
         self.cBtn2 = wx.Button(self.boxBtm, label="Accident Types")
         self.cBtn3 = wx.Button(self.boxBtm, label="By Month")
         self.cBtn4 = wx.Button(self.boxBtm, label="By Day")
+        self.cBtn5 = wx.Button(self.boxBtm, label="LGA")
+        self.cBtn6 = wx.Button(self.boxBtm, label="Region")
+        self.cBtn7 = wx.Button(self.boxBtm, label="Map")
+
         # Sizer
-        self.sizer = wx.BoxSizer(wx.HORIZONTAL)
-        self.sizer.Add(self.charTl, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 0)
-        self.sizer.Add(self.cBtn1, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 0)
-        self.sizer.Add(self.cBtn2, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 0)
-        self.sizer.Add(self.cBtn3, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 0)
-        self.sizer.Add(self.cBtn4, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 0)
-        self.boxBtm.SetSizer(self.sizer)
+        self.boxBtmSizer = wx.BoxSizer(wx.HORIZONTAL)
+        self.setBoxBtmSizer()
+        self.boxBtm.SetSizer(self.boxBtmSizer)
+
+    def setBoxBtmSizer(self, mode=""):
+        if mode != "":
+            # Clear items in the sizer
+            for child in self.boxBtmSizer.GetChildren():
+                self.boxBtmSizer.Detach(child.Window)
+                self.boxBtmSizer.Layout()
+        if mode == "location":
+            self.cBtn1.Hide()
+            self.cBtn2.Hide()
+            self.cBtn3.Hide()
+            self.cBtn4.Hide()
+            self.cBtn5.Show()
+            self.cBtn6.Show()
+            self.cBtn7.Show()
+            self.boxBtmSizer.Add(self.charTl, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 0)
+            self.boxBtmSizer.Add(self.cBtn5, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 0)
+            self.boxBtmSizer.Add(self.cBtn6, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 0)
+            self.boxBtmSizer.Add(self.cBtn7, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 0)
+        else:
+            self.cBtn1.Show()
+            self.cBtn2.Show()
+            self.cBtn3.Show()
+            self.cBtn4.Show()
+            self.cBtn5.Hide()
+            self.cBtn6.Hide()
+            self.cBtn7.Hide()
+            self.boxBtmSizer.Add(self.charTl, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 0)
+            self.boxBtmSizer.Add(self.cBtn1, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 0)
+            self.boxBtmSizer.Add(self.cBtn2, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 0)
+            self.boxBtmSizer.Add(self.cBtn3, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 0)
+            self.boxBtmSizer.Add(self.cBtn4, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 0)
+        if mode != "":
+            # Update the layout
+            self.boxBtmSizer.Layout()
 
     def onFileOpen(self, event):
         # Ask the user what new file to open
@@ -310,19 +352,20 @@ class MainFrame(wx.Frame):
         wx.MessageBox("Dataset will happen")
 
     def onAnalyse(self, event):
-        self.menu = "main"
-        #self.importSizer.Destroy()
-        self.box.Hide()
-        #self.buidMain()
-        self.Update()
+        self.mode = "main"
+        self.setBoxBtmSizer(self.mode)
 
         #wx.MessageBox("Analyse will happen")
 
     def onAlcohol(self, event):
-        wx.MessageBox("Alcohol will happen")
+        self.mode = "alcohol"
+        self.setBoxBtmSizer(self.mode)
 
     def onLocation(self, event):
-        wx.MessageBox("Location will happen")
+        self.mode = "location"
+        self.setBoxBtmSizer(self.mode)
+        
+        #wx.MessageBox("Location will happen")
     
     def onChartHour(self, event):
         title = 'Chart {}'.format(self.frame_number)
