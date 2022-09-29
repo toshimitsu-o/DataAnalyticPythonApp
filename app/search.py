@@ -73,7 +73,7 @@ class Search:
         pass
 
     
-    def hourly_average(self):
+    def hourly_average(self, mode=None):
         """Calculates the average number of accidents in each hour from the search result and return data for generating a plot"""
         result = self.getResult(self)
         hourlyAccidentDict = dict()
@@ -92,7 +92,7 @@ class Search:
         # (maybe) convert the dict to tuple for plot module
         # return the data
     
-    def accident_type():
+    def accident_type(self, mode=None):
         """Calculate the number of accidents in each accident type."""
         connection = sqlite3.connect("app/accidentDatabase.db", detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
         accidents = pd.read_sql("SELECT accidentType, COUNT(*) FROM Accident GROUP BY accidentType ORDER BY COUNT(*) DESC ;", connection)
@@ -100,7 +100,7 @@ class Search:
         # Use dummy search object within the function and test by print
         return accidents
     
-    def calculate_by_month():
+    def calculate_by_month(self, mode=None):
         """Calculates the number of accidents in each month."""
         
         connection = sqlite3.connect("app/accidentDatabase.db", detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
@@ -108,21 +108,21 @@ class Search:
         return accidents_each_month
         # Needs to use criteria in search object: self
     
-    def calculate_by_day():
+    def calculate_by_day(self, mode=None):
         """Calculates the number of accidents in each day."""
         connection = sqlite3.connect("app/accidentDatabase.db", detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
         by_day = pd.read_sql("SELECT dayOfWeek, COUNT(*) FROM Accident GROUP BY dayOfWeek ORDER BY COUNT(*) DESC ;", connection)
         return by_day
         # Needs to use criteria in search object: self
 
-    def calculateLGA():
+    def calculateLGA(self):
         """alculates the number of accidents in each LGA"""
         connection = sqlite3.connect("app/accidentDatabase.db", detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
         LGA = pd.read_sql("SELECT lgaName, COUNT(*) FROM Accident GROUP BY lgaName ORDER BY COUNT(*) DESC ;", connection)
         return LGA
         # Needs to use criteria in search object: self
     
-    def calculate_region():
+    def calculate_region(self):
         """Calculates the number of accidents in each region."""
         connection = sqlite3.connect("app/accidentDatabase.db", detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
         region = pd.read_sql("SELECT regionName, COUNT(*) FROM Accident GROUP BY regionName ORDER BY COUNT(*) DESC ;", connection)
@@ -130,7 +130,3 @@ class Search:
         # Needs to use criteria in search object: self
         
         
-        
-x = Search.hourly_average()
-
-print(x)
