@@ -14,22 +14,31 @@ import sqlite3
 # rows = cur.fetchall()
 #print(rows[1:3])
 
-def connection():
-    """creates sqlite connection to accidentDatabase
-    """
-    con = sqlite3.connect("database/accidentDatabase.db", detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
-    cur = con.cursor()
+# def connection():
+#     """creates sqlite connection to accidentDatabase
+#     """
+#     con = sqlite3.connect("database/accidentDatabase.db", detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
+#     cur = con.cursor()
 
 ##Calculates the average number of accidents in each hour of the day.
 def hourly_average():
     connection = sqlite3.connect("app/accidentDatabase.db", detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
-    hourly_average = pd.read_sql("SELECT CAST(FLOOR(CAST(accidentDate AS float)) AS datetime) AS Day, DATEPART(hh, accidentDate) AS hour, AVG(COUNT(AccidentNo)) AS average FROM Accident GROUP BY CAST(FLOOR(CAST(accidentDate AS float)) AS datetime), DATEPART(hh, accidentDate);", connection)
-    return hourly_average
+    time = pd.read_sql("SELECT accidentTime from Accident", connection)
+    
+    # for i in date:
+    #     for j in time:
+    #         fullDate.append(date[i]+ " " + time[j])
+    #         print(type(fullDate))
+    #         print(fullDate)
+            
+    return time
+    # hourly_average = pd.read_sql("SELECT CAST(FLOOR(CAST(accidentDate AS float)) AS datetime) AS Day, DATEPART(hh, accidentTime) AS hour, AVG(COUNT(AccidentNo)) AS average FROM Accident GROUP BY CAST(FLOOR(CAST(accidentDate AS float)) AS datetime), DATEPART(hh, accidentDate);", connection)
+    # return hourly_average
     #NOT WORKING 
 
 #test
-test = hourly_average()
-print(test)
+# test = hourly_average()
+# print(test)
 #NOT WORKING
 
 
@@ -121,5 +130,7 @@ def calculate_region():
 #test = calculate_region()
 #print(test)
 #WORKING
+
+
     
 

@@ -196,9 +196,9 @@ def getAccidentTypes():
   
 
 
-x = getAccidentTypes()
-print(x)
-print(type(x))
+# x = getAccidentTypes()
+# print(x)
+# print(type(x))
 
         
 

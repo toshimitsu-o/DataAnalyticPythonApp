@@ -2,6 +2,10 @@
 
 import sqlite3
 from sqlite3 import Error
+from typing_extensions import Self
+import pandas as pd
+
+from accidents import hourly_average
 
 def connection():
     """creates sqlite connection to accidentDatabase
@@ -72,6 +76,14 @@ class Search:
     def hourly_average(self):
         """Calculates the average number of accidents in each hour from the search result and return data for generating a plot"""
         result = self.getResult(self)
+        hourlyAccidentDict = dict()
+        for hour in result["accidentTime"]:
+             hourlyAccidentDict[hour[0:1]] += 1
+        hourlyAvg = []
+        for hour in hourlyAccidentDict:
+            hourlyAvg.append((hourlyAccidentDict.get(hour), hourlyAccidentDict.get(hour)/len(result)))
+        return hourlyAvg
+        
         # Extract ACCIDENT_TIME into (maybe) list
 
         #  Create dic and go through the list
@@ -116,3 +128,9 @@ class Search:
         region = pd.read_sql("SELECT regionName, COUNT(*) FROM Accident GROUP BY regionName ORDER BY COUNT(*) DESC ;", connection)
         return region
         # Needs to use criteria in search object: self
+        
+        
+        
+x = Search.hourly_average()
+
+print(x)
