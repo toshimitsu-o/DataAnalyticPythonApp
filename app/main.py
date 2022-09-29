@@ -10,33 +10,34 @@ try:
 except ImportError:
     raise ImportError ("The wxPython module is required to run this program.")
 
+from search import Search
 from chart import ChartFrame
 
 APP_NAME = "Accident Analysis"
 
-def connect():
-    """
-    This is the sqlite3 connection.
-    """
+# def connect():
+#     """
+#     This is the sqlite3 connection.
+#     """
     
-    con_str= 'accidentDatabase.db'
-    cnn = sqlite3.connect(con_str)
-    return cnn
-    cnn.close()
+#     con_str= 'accidentDatabase.db'
+#     cnn = sqlite3.connect(con_str)
+#     return cnn
+#     cnn.close()
 
-def dataRowsCount():
-    """
-    To count the rows in the database.
-    """
+# def dataRowsCount():
+#     """
+#     To count the rows in the database.
+#     """
     
-    con = connect()
-    cur=con.cursor()
-    cur.execute("SELECT * FROM Accident")
-    rows=cur.fetchall()
-    i=0
-    for r in rows:
-        i+=1
-    return i
+#     con = connect()
+#     cur=con.cursor()
+#     cur.execute("SELECT * FROM Accident")
+#     rows=cur.fetchall()
+#     i=0
+#     for r in rows:
+#         i+=1
+#     return i
 
 class MainFrame(wx.Frame):
     """
@@ -51,6 +52,8 @@ class MainFrame(wx.Frame):
     def initialise(self):
         # Define state of program: main, alcohol, location
         self.mode = "main"
+
+        self.search = Search()
 
         # create a panel in the frame
         self.pnl = wx.Panel(self)
@@ -69,10 +72,7 @@ class MainFrame(wx.Frame):
         self.SetStatusText("Welcome to "+ APP_NAME)
     
     def updateData(self):
-        cnn =connect()
-        cur = cnn.cursor()
-        cur.execute("SELECT * FROM Accident")
-        rows = cur.fetchall()
+        rows = self.search.getResult()
         for i in range (0, len(rows)):
             #self.grid.SetRowLabelValue(i, "")
             self.grid.SetRowLabelSize(0)
@@ -220,7 +220,7 @@ class MainFrame(wx.Frame):
         self.grid = wx.grid.Grid(self.box, -1)
 
         # This is to create the grid with same rows as database.
-        r = dataRowsCount()
+        r = self.search.dataRowsCount()
         self.grid.CreateGrid(r, 13)
         self.grid.SetColLabelValue(0, "No")
         self.grid.SetColSize(0, 12)
@@ -363,16 +363,16 @@ class MainFrame(wx.Frame):
         self.setBoxBtmSizer(self.mode)
     
     def onSearch(self, event):
-        dateFr = self.dateFrCt.GetValue().Format("%Y-%m-%d")
-        dateTo = self.dateToCt.GetValue().Format("%Y-%m-%d")
-        accKy = self.accKyCt.GetValue()
-        accCh = str(self.accCh.GetCurrentSelection())
-        wx.MessageBox("Search clicked" + str(dateFr) + str(dateTo) + accKy + accCh)
+        self.search.From_Date = self.dateFrCt.GetValue().Format("%Y-%m-%d")
+        self.search.To_Date = self.dateToCt.GetValue().Format("%Y-%m-%d")
+        self.search.Accident_Type_Keyword = self.accKyCt.GetValue()
+        self.search.Accident_Type_List = str(self.accCh.GetCurrentSelection())
+        wx.MessageBox("Search clicked with search object:" + str(self.search))
     
     def onChart(self, event):
         type = event.GetEventObject().GetLabel()
         title = 'Chart {}'.format(self.frame_number)
-        frame = ChartFrame(title=title, search="search obj", chartType=type, mode=self.mode)
+        frame = ChartFrame(title=title, search=self.search, chartType=type, mode=self.mode)
         self.frame_number += 1
 
     def makeMenuBar(self):

@@ -7,6 +7,8 @@ try:
     from wx.lib.plot import PolyLine, PlotCanvas, PlotGraphics
 except ImportError:
     raise ImportError ("The wxPython module is required to run this program.")
+from re import search
+from search import Search
 
 def drawBarGraph():
     setWidth = 10
@@ -43,7 +45,7 @@ class ChartFrame(wx.Frame):
         charTl = wx.StaticText(box, label="Chart ")
         charTl.SetForegroundColour("white")
         # Testing some parameters
-        testTxt = wx.StaticText(box, label="search: "+ search + " chartType: " + chartType + " mode: " + mode)
+        testTxt = wx.StaticText(box, label="search: "+ str(search) + " chartType: " + chartType + " mode: " + mode)
         testTxt.SetForegroundColour("red")
         # Sizer
         sizer = wx.BoxSizer(wx.HORIZONTAL)
