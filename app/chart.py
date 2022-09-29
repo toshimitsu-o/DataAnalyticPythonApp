@@ -4,41 +4,40 @@ Accident Analysis wxPython Chart Frame
 
 try:
     import wx
-    from wx.lib.plot import PolyLine, PlotCanvas, PlotGraphics
+    #from wx.lib.plot import PolyLine, PlotCanvas, PlotGraphics
+    import numpy as np
+    import matplotlib
+    matplotlib.use('WXAgg')
+    from matplotlib.figure import Figure
+    from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
+    from matplotlib.backends.backend_wxagg import NavigationToolbar2WxAgg as NavigationToolbar2Wx
 except ImportError:
     raise ImportError ("The wxPython module is required to run this program.")
+from cProfile import label
 from re import search
+from tkinter import CENTER, RIGHT
 from search import Search
 
-def drawBarGraph():
-    setWidth = 10
-    # Bar graph
-    points1=[(1,0), (1,10)]
-    line1 = PolyLine(points1, colour='green', legend='Feb.', width=setWidth)
-    points1g=[(2,0), (2,4)]
-    line1g = PolyLine(points1g, colour='red', legend='Mar.', width=setWidth)
-    points1b=[(3,0), (3,6)]
-    line1b = PolyLine(points1b, colour='blue', legend='Apr.', width=setWidth)
-    points2=[(4,0), (4,12)]
-    line2 = PolyLine(points2, colour='Yellow', legend='May', width=setWidth)
-    points2g=[(5,0), (5,8)]
-    line2g = PolyLine(points2g, colour='orange', legend='June', width=setWidth)
-    points2b=[(6,0), (6,4)]
-    line2b = PolyLine(points2b, colour='brown', legend='July', width=setWidth)
-    return PlotGraphics([line1, line1g, line1b, line2, line2g, line2b],
-                        "Bar Graph - (Turn on Grid, Legend)", "Months", 
-                        "Number of Students")
+# Some data
+# Pie chart, where the slices will be ordered and plotted counter-clockwise :
+labels = 'Hogs', 'Frogs', 'Logs', 'Dogs'
+sizes = [15, 30, 45, 10]
+explode = (0, 0.1, 0, 0)  # Only "explode" the 2nd slice (i.e. 'Hogs'). 
+data = [23, 45, 56, 78, 213]
 
 class ChartFrame(wx.Frame):
     """Class for chart frame window"""
     def __init__(self, title, parent=None, search=None, chartType=None, mode=None):
-        wx.Frame.__init__(self, parent=parent, title=title, size=(1000,625))
+        self.search = search
+        self.chartType = chartType
+        self.mode = mode
+
+        wx.Frame.__init__(self, parent=parent, title=title, size=(800,600))
 
         # create a panel in the frame
         self.pnl = wx.Panel(self)
         self.SetBackgroundColour("white")
 
-        # bar box
         box = wx.StaticBox(self.pnl, wx.ID_ANY, "", pos =(0, 0), size =(-1, 40))
         box.SetBackgroundColour("black")
         # Create items
@@ -55,7 +54,11 @@ class ChartFrame(wx.Frame):
 
         # Main
         self.main = wx.StaticBox(self.pnl, wx.ID_ANY, "", pos =(0, 0), size =(-1, -1))
-        self.buildChart()
+
+        # Plot
+        self.makeCtrls()
+        self.plotLayout()
+        self.getChart()
 
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(box, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL | wx.EXPAND, 0)
@@ -63,33 +66,54 @@ class ChartFrame(wx.Frame):
         self.pnl.SetSizer(sizer)
 
         self.Show()
+        
+    #-----------------------------------------------------------------------
+
+    def makeCtrls(self):
+        """Create Matplotlib navigation toolbar"""
+        self.figure = Figure()
+        self.axes = self.figure.add_subplot(111)
+        self.canvas = FigureCanvas(self.main, -1, self.figure)
+        self.toolbar = NavigationToolbar2Wx(self.canvas)
+        self.toolbar.Realize()
+
+    def plotLayout(self):
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        sizer.Add(self.canvas, 1, wx.LEFT | wx.TOP | wx.GROW)
+        sizer.Add(self.toolbar, 0, wx.LEFT | wx.EXPAND)
+        self.main.SetSizer(sizer)
     
-    def buildChart(self):
-        # Create sizers
-        mainSizer = wx.BoxSizer(wx.VERTICAL)
-        checkSizer = wx.BoxSizer(wx.HORIZONTAL)
+    def getChart(self):
+        if self.mode == "alcohol":
+            self.drawMultiBarChart()
+        else:
+            self.drawBarChart()
         
-        # Create canvas and draw
-        self.canvas = PlotCanvas(self.main)
-        self.canvas.Draw(drawBarGraph())
-        
-        toggleGrid = wx.CheckBox(self.main, label="Grid")
-        toggleGrid.SetValue(True)
-        toggleGrid.Bind(wx.EVT_CHECKBOX, self.OnToggleGrid)
-        
-        toggleLegend = wx.CheckBox(self.main, label="Legend")
-        toggleLegend.SetValue(False)
-        toggleLegend.Bind(wx.EVT_CHECKBOX, self.OnToggleLegend)
-        
-        # Layout the widgets
-        mainSizer.Add(self.canvas, 1, wx.EXPAND | wx.ALL, 5)
-        checkSizer.Add(toggleGrid, 0, wx.ALL, 5)
-        checkSizer.Add(toggleLegend, 0, wx.ALL, 5)
-        mainSizer.Add(checkSizer)
-        self.main.SetSizer(mainSizer)
+    def drawBarChart(self):
+        labels = ['one', 'two', 'three', 'four', 'five']
+        data = [23,85, 72, 43, 52]
 
-    def OnToggleGrid(self, event):
-        self.canvas.enableGrid = event.IsChecked()  
+        # Make figure and axes.
+        self.axes.plot(1, 0)
+        self.axes.set_xlabel('Month')
+        self.axes.set_ylabel('Accident')
+        self.axes.set_title("I am title")
 
-    def OnToggleLegend(self, event):
-        self.canvas.enableLegend = event.IsChecked()
+        self.axes.bar(labels, data) 
+
+    def drawMultiBarChart(self):
+        labels = ['one', 'two', 'three', 'four', 'five']
+        data1 = [23,85, 72, 43, 52]
+        data2 = [42, 35, 21, 16, 9]
+        width = 0.3
+
+        # Make figure and axes.
+        self.axes.plot(1, 0)
+        self.axes.set_xlabel('Month')
+        self.axes.set_ylabel('Accident')
+
+        self.axes.bar(labels, data1, width=width, label='Alcohol Related')
+        self.axes.bar(np.arange(len(data2)) + width, data2, width=width, label='Non-Alcohol')
+        self.axes.legend()
+
+        self.axes.set_title("I am title")

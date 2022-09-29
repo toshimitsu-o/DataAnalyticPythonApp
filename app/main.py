@@ -6,7 +6,6 @@ try:
     import wx
     import wx.adv
     import wx.grid
-    import sqlite3
 except ImportError:
     raise ImportError ("The wxPython module is required to run this program.")
 
