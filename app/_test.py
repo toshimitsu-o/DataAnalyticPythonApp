@@ -1,5 +1,6 @@
-import pytest
-from search import Search
+from search import Search, connection
+import pandas as pd 
+
 
 def test_initial_value():
     obj_1 = Search(1, 2, 3, 4, 5, 6, 7)     
@@ -13,8 +14,15 @@ def test_initial_value():
     
 
 def test_hourly_average(self):
+    df = connection()
+    dummy = ["blah", "blah", "blah"]
     s = Search()
-    assert s.hourly_average() == 1
+    test = Search.hourly_average(df)
+    test2 = Search.hourly_average(dummy)
+    assert Search.hourly_average(df) == test
+    assert Search.hourly_average(df) != test2
+    
+
 
 
 
