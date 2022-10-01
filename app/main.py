@@ -138,10 +138,10 @@ class MainFrame(wx.Frame):
         # Search box items
         self.dateTl = wx.StaticText(self.searchBox, label="Date ")
         self.dateFrCt = wx.adv.DatePickerCtrl(self.searchBox)
-        self.dateFrCt.SetRange(wx.DateTime.FromDMY(24,10,2020),wx.DateTime.FromDMY(24,5,2022))
+        self.dateFrCt.SetRange(wx.DateTime.FromDMY(1,7,2013),wx.DateTime.FromDMY(1,2,2019))
         self.dateTo = wx.StaticText(self.searchBox, label="to ")
         self.dateToCt = wx.adv.DatePickerCtrl(self.searchBox)
-        self.dateToCt.SetRange(wx.DateTime.FromDMY(24,10,2020),wx.DateTime.FromDMY(24,5,2022))
+        self.dateToCt.SetRange(wx.DateTime.FromDMY(1,7,2013),wx.DateTime.FromDMY(1,2,2019))
         self.accTl = wx.StaticText(self.searchBox, label="Accident Type ")
         self.accKyCt = wx.TextCtrl(self.searchBox)
         self.typeList = ['Select from list', 'zero', 'one', 'two', 'three', 'four', 'five',
@@ -169,13 +169,13 @@ class MainFrame(wx.Frame):
         self.vSizer.Add(self.accCh, 0, wx.ALL, 0)
         self.schSizer.Add(self.vSizer, pos=(1,1), flag=wx.ALIGN_LEFT|wx.EXPAND)
         # Output line
-        self.schSizer.Add(self.outTl, pos=(2,0), flag=wx.ALIGN_LEFT)
-        self.vSizer = wx.BoxSizer(wx.HORIZONTAL)
-        self.vSizer.Add(self.outCb1, 0, wx.ALL, 0)
-        self.vSizer.Add(self.outCb2, 0, wx.ALL, 0)
-        self.vSizer.Add(self.outCb3, 0, wx.ALL, 0)
-        self.schSizer.Add(self.vSizer, pos=(2,1), flag=wx.ALIGN_LEFT|wx.EXPAND)
-        self.schSizer.Add(self.searchBtn, pos=(0,2), span=(3,1), flag=wx.ALIGN_RIGHT|wx.ALIGN_BOTTOM|wx.EXPAND)
+        # self.schSizer.Add(self.outTl, pos=(2,0), flag=wx.ALIGN_LEFT)
+        # self.vSizer = wx.BoxSizer(wx.HORIZONTAL)
+        # self.vSizer.Add(self.outCb1, 0, wx.ALL, 0)
+        # self.vSizer.Add(self.outCb2, 0, wx.ALL, 0)
+        # self.vSizer.Add(self.outCb3, 0, wx.ALL, 0)
+        #self.schSizer.Add(self.vSizer, pos=(2,1), flag=wx.ALIGN_LEFT|wx.EXPAND)
+        self.schSizer.Add(self.searchBtn, pos=(0,2), span=(2,1), flag=wx.ALIGN_RIGHT|wx.ALIGN_BOTTOM|wx.EXPAND)
         # Set sizer
         self.searchBox.SetSizer(self.schSizer)
     
@@ -215,6 +215,24 @@ class MainFrame(wx.Frame):
         self.box = wx.StaticBox(self.pnl, wx.ID_ANY, "", pos =(0, 0), size =(-1, 450))
         self.box.SetBackgroundColour("white")
 
+        self.buildGrid()
+
+        self.gridSizer = wx.BoxSizer(wx.VERTICAL)
+        self.gridSizer.Add(self.grid, 0, wx.ALL | wx.EXPAND, 0)
+        self.box.SetSizer(self.gridSizer)
+
+    def updateGrid(self):
+        self.grid.Destroy()
+        #self.gridSizer.Destroy(self.grid)
+        # Clear items in the sizer
+        # for child in self.gridSizer.GetChildren():
+        #     self.gridSizer.Detach(child.Window)
+        #     self.gridSizer.Layout()
+        self.buildGrid()
+        self.gridSizer.Add(self.grid, 0, wx.ALL | wx.EXPAND, 0)
+        self.gridSizer.Layout()
+    
+    def buildGrid(self):
         # Create a wxGrid object
         self.grid = wx.grid.Grid(self.box, -1)
 
@@ -251,9 +269,6 @@ class MainFrame(wx.Frame):
 
         # Set the whole grid read only
         self.grid.EnableEditing(False)
-        self.sizer = wx.BoxSizer(wx.VERTICAL)
-        self.sizer.Add(self.grid, 0, wx.ALL | wx.EXPAND, 0)
-        self.box.SetSizer(self.sizer)
 
     def makeBtmBox(self):
         # Bottom box for chart buttons
@@ -366,7 +381,8 @@ class MainFrame(wx.Frame):
         self.search.To_Date = self.dateToCt.GetValue().Format("%Y-%m-%d")
         self.search.Accident_Type_Keyword = self.accKyCt.GetValue()
         self.search.Accident_Type_List = str(self.accCh.GetCurrentSelection())
-        wx.MessageBox("Search clicked with search object:" + str(self.search))
+        #wx.MessageBox("Search clicked with search object:" + str(self.search))
+        self.updateGrid()
     
     def onChart(self, event):
         type = event.GetEventObject().GetLabel()
