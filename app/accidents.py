@@ -5,6 +5,8 @@ import pandas as pd
 import numpy as np
 from datetime import datetime
 import sqlite3
+from sqlite3 import Error
+from search import *
 
 
 #creating a dataframe
@@ -131,6 +133,27 @@ def calculate_region():
 #print(test)
 #WORKING
 
+def connection():
+    """creates sqlite connection to accidentDatabase
+    """
+    con = sqlite3.connect("accidentDatabase.db", detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
+    cur = con.cursor()
+    return con
 
-    
 
+
+def hourly_average():
+        """Calculates the average number of accidents in each hour from the search result and return data for generating a plot"""
+        result = Search.getResult()
+        hourlyAccidentDict = dict()
+        for hour in result["accidentTime"]:
+             hourlyAccidentDict[hour[0:1]] += 1
+        hourlyAvg = []
+        for hour, value in hourlyAccidentDict.iteritems():
+            hourlyAvg.append((hour, value/len(result)))
+        print(hourlyAvg)
+        
+        
+x = hourly_average()
+
+print(x)
