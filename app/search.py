@@ -122,13 +122,8 @@ class Search:
         for row in result:
             # print(row)
             for values in row[2]:
-                if values[0:2] not in hourlyAccidentDict:
-                    hourlyAccidentDict[values[0:2]]=1
-                else:
-                    hourlyAccidentDict[values[0:2]]+=1
-                for hour in values[0:2]:
-
-                    hourlyAccidentDict[hour[0:2]] += 1
+                print(values[:2])
+                hourlyAccidentDict[values[:2]] = hourlyAccidentDict.get(values[:2], 0) + 1
         print(hourlyAccidentDict)
         # hourlyAvg = []
         # for hour, value in hourlyAccidentDict.iteritems():
@@ -185,3 +180,6 @@ x = Search()
 x.hourly_average()
 
 # print(x)
+
+# y = ["18:00", "19:00", "20:00"]
+# print(y[0:2])
