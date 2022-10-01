@@ -206,3 +206,5 @@ def getAccidentTypes():
 # insertData("C:/Users/zeefe/OneDrive/Documents/Uni/Year 2/Trimester 2/Software Technologies/Git Repositories/2810ICT-2022-Assignment/2810ICT-2022-Assignment/dataset/Crash Statistics Victoria.csv")
 
 
+x = getDateRange()
+print(x)

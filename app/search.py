@@ -1,9 +1,11 @@
 """Class defines a search"""
 
 import sqlite3
-from sqlite3 import Error
+from sqlite3 import Error, connect
 from typing_extensions import Self
 import pandas as pd
+
+# from app.importData import getDateRange
 
 # from accidents import hourly_average
 
@@ -11,7 +13,6 @@ def connection():
     """creates sqlite connection to accidentDatabase
     """
     con = sqlite3.connect("accidentDatabase.db", detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
-    cur = con.cursor()
     return con
 
 class Search: 
@@ -24,11 +25,30 @@ class Search:
         self.Lga = Lga
         self.Region = Region
     
+    def getDateRange(self):
+        """queries accident database and returns tuple of (minDate, maxDate)
+        """
+    
+        connection = connection()
+        c = connection.cursor()
+        sqlmin = "SELECT MIN(accidentDate) FROM Accident;"
+        sqlmax = "SELECT MAX(accidentDate) FROM Accident;"
+        c.execute(sqlmin)
+        minDate = c.fetchall()
+        c.execute(sqlmax)
+        maxDate = c.fetchall()
+        return (minDate, maxDate)
+    
+    
     def getResult(self):
         """
         Get database records with the search criteria
         """
         # Set all search criteria to prepare sql query
+        # connection = connection()
+        # dateRange = self.getDateRange()
+        # minDate = dateRange[0]
+        # maxDate = dateRange[1]
         if self.From_Date:
             date1 = str(self.From_Date)
         else:
@@ -155,6 +175,6 @@ class Search:
         # Needs to use criteria in search object: self
         
 x = Search()
-x.hourly_average()
+x.getResult()
 
 # print(x)
