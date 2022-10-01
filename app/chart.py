@@ -86,6 +86,8 @@ class ChartFrame(wx.Frame):
     def getChart(self):
         if self.mode == "alcohol":
             self.drawMultiBarChart()
+        # elif self.mode == "location":
+        #     self.drawMapChart()
         else:
             self.drawBarChart()
         
@@ -117,3 +119,14 @@ class ChartFrame(wx.Frame):
         self.axes.legend()
 
         self.axes.set_title("I am title")
+    
+    def drawMapChart(self):
+        x = [144.9698,145.14671,144.80134,145.07011,144.9653,145.7914,145.00873,145.07229,145.02638,145.15439,145.04213,144.95479,145.06288,144.35796,145.07832,144.89081,145.16073,144.96245,144.99091]
+        y = [-37.82202,-37.83166,-37.74003,-37.17891,-37.81808,-38.23087,-37.90637,-37.80207,-37.82156,-37.84541,-37.73512,-37.66725,-37.67821,-38.0824,-37.70195,-37.82599,-37.66936,-37.8127,-37.86532]
+        #self.axes.plot(1, 0)
+        datafile = 'images/vicmap.png'
+        img = self.axes.imread(datafile)
+        self.axes.scatter(x, y, s=50, c='blue', alpha=0.3, edgecolors='none', label='Lable A')
+        #self.axes.imshow(img, zorder=0)
+        self.axes.legend()
+        self.axes.grid(True)

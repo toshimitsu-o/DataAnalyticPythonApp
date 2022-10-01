@@ -6,6 +6,7 @@ try:
     import wx
     import wx.adv
     import wx.grid
+    import matplotlib.pyplot as plt
 except ImportError:
     raise ImportError ("The wxPython module is required to run this program.")
 
@@ -285,9 +286,10 @@ class MainFrame(wx.Frame):
         self.cBtn6 = wx.Button(self.boxBtm, label="Region")
         self.cBtn7 = wx.Button(self.boxBtm, label="Map")
         # Bind event handler with all buttons
-        buttons = [self.cBtn1,self.cBtn2,self.cBtn3,self.cBtn4,self.cBtn5,self.cBtn6,self.cBtn7]
+        buttons = [self.cBtn1,self.cBtn2,self.cBtn3,self.cBtn4,self.cBtn5,self.cBtn6]
         for btn in buttons:
             self.Bind(wx.EVT_BUTTON, self.onChart, btn)
+        self.Bind(wx.EVT_BUTTON, self.onMap, self.cBtn7)
 
         # Sizer
         self.boxBtmSizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -389,6 +391,26 @@ class MainFrame(wx.Frame):
         title = 'Chart {}'.format(self.frame_number)
         frame = ChartFrame(title=title, search=self.search, chartType=type, mode=self.mode)
         self.frame_number += 1
+    
+    def onMap(self, event):
+        x = [144.9698,145.14671,144.80134,145.07011,144.9653,145.7914,145.00873,145.07229,145.02638,145.15439,145.04213,144.95479,145.06288,144.35796,145.07832,144.89081,145.16073,144.96245,144.99091]
+        y = [-37.82202,-37.83166,-37.74003,-37.17891,-37.81808,-38.23087,-37.90637,-37.80207,-37.82156,-37.84541,-37.73512,-37.66725,-37.67821,-38.0824,-37.70195,-37.82599,-37.66936,-37.8127,-37.86532]
+        
+        fig, ax = plt.subplots()
+        left = 140.95260170441142
+        right = 150.061662159373
+        bottom = -39.12502305202676
+        top = -33.992432778690606
+        plt.xlim([left, right])
+        plt.ylim([bottom, top])
+        datafile = 'images/vicmap.png'
+        img = plt.imread(datafile)
+        plt.imshow(img, zorder=0,extent=[left, right, bottom, top])
+        ax.scatter(x, y, zorder=1, s=20, c='blue', alpha=0.3, edgecolors='none', label='Lable A',)
+        
+        ax.legend()
+        #ax.grid(True)
+        plt.show()
 
     def makeMenuBar(self):
         """
