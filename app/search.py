@@ -117,17 +117,19 @@ class Search:
     def hourly_average(self):
         """Calculates the average number of accidents in each hour from the search result and return data for generating a plot"""
         result = self.getResult()
+        # print(result)
         hourlyAccidentDict = dict()
         for row in result:
-            for time in row:
-                if time[0:1] not in hourlyAccidentDict:
-                    hourlyAccidentDict[time[0:1]] = 1
-                else:
-                    hourlyAccidentDict[time[0:1]] += 1
-        hourlyAvg = []
-        for hour, value in hourlyAccidentDict.iteritems():
-            hourlyAvg.append((hour, value/len(result)))
-        print(hourlyAvg)
+            for values in row:
+                # print(values)
+                for time in values[2]:
+                    print(time) 
+                #     pass
+                    # hourlyAccidentDict[time[0:1]] += 1
+        # hourlyAvg = []
+        # for hour, value in hourlyAccidentDict.iteritems():
+        #     hourlyAvg.append((hour, value/len(result)))
+        # print(hourlyAvg)
         
         # Extract ACCIDENT_TIME into (maybe) list
 
@@ -175,6 +177,6 @@ class Search:
         # Needs to use criteria in search object: self
         
 x = Search()
-x.getResult()
+x.hourly_average()
 
 # print(x)
