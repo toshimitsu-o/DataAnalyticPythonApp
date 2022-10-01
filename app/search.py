@@ -11,7 +11,7 @@ import pandas as pd
 def connection():
     """creates sqlite connection to accidentDatabase
     """
-    con = sqlite3.connect("accidentDatabase.db", detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
+    con = sqlite3.connect("app/accidentDatabase.db", detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
     return con
 
 class Search: 
@@ -65,6 +65,7 @@ class Search:
             cur.execute(sql, data)  
             result = cur.fetchall()
             return result
+            # print(type(result))
         except Error as e:
             print(e)
 
@@ -117,18 +118,18 @@ class Search:
         """Calculates the average number of accidents in each hour from the search result and return data for generating a plot"""
         result = self.getResult()
         # print(result)
-        hourlyAccidentDict = dict()
-        result.keys()
-        for value in result[2]:
-            print(value)
-        
-        # for row in result:
-        #     for values in row:
-        #         # print(values)
-        #         for time in values[2]:
-        #             print(time) 
-                #     pass
-                    # hourlyAccidentDict[time[0:1]] += 1
+        hourlyAccidentDict = dict()        
+        for row in result:
+            # print(row)
+            for values in row[2]:
+                if values[0:2] not in hourlyAccidentDict:
+                    hourlyAccidentDict[values[0:2]]=1
+                else:
+                    hourlyAccidentDict[values[0:2]]+=1
+                for hour in values[0:2]:
+
+                    hourlyAccidentDict[hour[0:2]] += 1
+        print(hourlyAccidentDict)
         # hourlyAvg = []
         # for hour, value in hourlyAccidentDict.iteritems():
         #     hourlyAvg.append((hour, value/len(result)))
@@ -180,6 +181,7 @@ class Search:
         # Needs to use criteria in search object: self
         
 x = Search()
-x.getResult()
+# x.getResult()
+x.hourly_average()
 
 # print(x)
