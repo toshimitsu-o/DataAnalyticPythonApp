@@ -128,7 +128,7 @@ def createDatabase():
     """ create a database connection to a SQLite database """
     connection = None
     try:
-        connection = sqlite3.connect("accidentDatabase.db")
+        connection = sqlite3.connect("app/accidentDatabase.db")
         c = connection.cursor()
         c.execute(
             "DROP TABLE IF EXISTS Accident;")
@@ -159,7 +159,7 @@ def insertData(dataFileName):
     """
     connection = None
     try:
-        connection = sqlite3.connect("accidentDatabase.db", detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
+        connection = sqlite3.connect("app/accidentDatabase.db", detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
         c = connection.cursor()
         data = importData(dataFileName)
         c.executemany("INSERT INTO Accident VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", data)
@@ -203,8 +203,9 @@ def getAccidentTypes():
         
 
 # createDatabase()
-# insertData("C:/Users/zeefe/OneDrive/Documents/Uni/Year 2/Trimester 2/Software Technologies/Git Repositories/2810ICT-2022-Assignment/2810ICT-2022-Assignment/dataset/Crash Statistics Victoria.csv")
+createDatabase()
+insertData("C:/Users/zeefe/OneDrive/Documents/Uni/Year 2/Trimester 2/Software Technologies/Git Repositories/2810ICT-2022-Assignment/2810ICT-2022-Assignment/dataset/Crash Statistics Victoria.csv")
 
 
-x = getDateRange()
-print(x)
+# x = getDateRange()
+# print(x)

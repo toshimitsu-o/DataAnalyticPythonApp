@@ -1,8 +1,7 @@
 """Class defines a search"""
 
 import sqlite3
-from sqlite3 import Error, connect
-from typing_extensions import Self
+from sqlite3 import Error
 import pandas as pd
 
 # from app.importData import getDateRange
@@ -119,11 +118,15 @@ class Search:
         result = self.getResult()
         # print(result)
         hourlyAccidentDict = dict()
-        for row in result:
-            for values in row:
-                # print(values)
-                for time in values[2]:
-                    print(time) 
+        result.keys()
+        for value in result[2]:
+            print(value)
+        
+        # for row in result:
+        #     for values in row:
+        #         # print(values)
+        #         for time in values[2]:
+        #             print(time) 
                 #     pass
                     # hourlyAccidentDict[time[0:1]] += 1
         # hourlyAvg = []
@@ -177,6 +180,6 @@ class Search:
         # Needs to use criteria in search object: self
         
 x = Search()
-x.hourly_average()
+x.getResult()
 
 # print(x)
