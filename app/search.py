@@ -5,7 +5,7 @@ from sqlite3 import Error
 from typing_extensions import Self
 import pandas as pd
 
-from accidents import hourly_average
+#from accidents import hourly_average
 
 def connection():
     """creates sqlite connection to accidentDatabase
@@ -75,9 +75,9 @@ class Search:
     
     def hourly_average(self, mode=None):
         """Calculates the average number of accidents in each hour from the search result and return data for generating a plot"""
-        result = self.getResult(self)
+        result = self.getResult()
         hourlyAccidentDict = dict()
-        for hour in result["accidentTime"]:
+        for hour in result:
              hourlyAccidentDict[hour[0:1]] += 1
         hourlyAvg = []
         for hour in hourlyAccidentDict:
