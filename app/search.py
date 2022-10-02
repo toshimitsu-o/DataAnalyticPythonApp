@@ -3,6 +3,7 @@
 import sqlite3
 from sqlite3 import Error
 import pandas as pd
+import re as r
 
 # from app.importData import getDateRange
 
@@ -60,7 +61,7 @@ class Search:
         try:
             con = connection()
             cur = con.cursor()
-            sql = """SELECT * FROM Accident WHERE accidentDate BETWEEN ? AND ?"""
+            sql = """SELECT * FROM Accident WHERE accidentDate BETWEEN ? AND ?;"""
             data = (date1, date2)
             cur.execute(sql, data)  
             result = cur.fetchall()
@@ -78,6 +79,20 @@ class Search:
         for r in rows:
             i+=1
         return i
+    
+    def getTotalDays(self):
+        """queries database and returns a list of the difference between To_date and For_Date
+
+        Returns:
+            list: list of one int
+        """
+        con = connection()
+        cur = con.cursor()
+        sql = "SELECT CAST((JULIANDAY(?) - JULIANDAY(?) + 1) AS Integer);"
+        data = [self.To_Date, self.From_Date]
+        cur.execute(sql, data)
+        result = cur.fetchone()
+        return result
 
     def listAccidentType(self):
         """queries accident database and returns a list of all unique accident types
@@ -117,25 +132,28 @@ class Search:
     def hourly_average(self):
         """Calculates the average number of accidents in each hour from the search result and return data for generating a plot"""
         result = self.getResult()
-        # print(result)
+        #calculates number of days
+        dayResult = self.getTotalDays()
+        days = dayResult[0]
         hourList = []
         hourlyAccidentDict = dict()   
-        #iterates through rows from result     
+        #iterates through accidentTime column from result and appends to hourList 
         for row in result:
             hourList.append(row[2])
+        # appends hour from hourList as key in hourlyAccidentDict and increments +1 per associated record in hourList 
         for time in hourList:
-            # print(time[:2])
             hourlyAccidentDict[time[:2]] = hourlyAccidentDict.get(time[:2], 0) + 1
-            
-            # print(row)
-            #iterates through values within each row, row[2] is accidentTime
-        # print(hourList)
-        print(hourlyAccidentDict)
+        #converts dictionary into sorted list
         hourlyAvg = []
-        for k,v in hourlyAccidentDict:
-            print(type(k), type(v))
-            hourlyAvg.append((k, len(result)/int(v)))
-        print(hourlyAvg)
+        for key, val in hourlyAccidentDict.items():
+            sort = (key, val)
+            hourlyAvg.append(sort)
+        sortedHourlyAvg = sorted(hourlyAvg)
+        sortedAccidentList = []
+        for key in sortedHourlyAvg:
+            sortedAccidentList.append((key[0], key[1]/days))
+        result = sorted(sortedAccidentList)
+        return result
         
         # Extract ACCIDENT_TIME into (maybe) list
 
@@ -201,9 +219,11 @@ class Search:
         return region
         # Needs to use criteria in search object: self
         
-x = Search(To_Date = "2013-07-02", From_Date = "2013-07-01")
+x = Search(To_Date = "2013-08-23", From_Date = "2013-07-01")
 # x.getResult()
 x.hourly_average()
+# print(x.getTotalDays())
+# print(x)
 
 # print(x)
 
