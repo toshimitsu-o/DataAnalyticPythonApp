@@ -1,8 +1,9 @@
-from search import Search, hourly_average, getResult
+from search import Search
 from pandas.testing import assert_frame_equal 
 import unittest
 import pandas as pd
 from sqlite3 import Error
+import sqlite3
 
 class TestCases(unittest.TestCase):
 
@@ -12,7 +13,7 @@ class TestCases(unittest.TestCase):
             })
         expected = 1 #Need function implemented to return expected. Unsure what data type is returned.
 
-        actual = hourly_average(df)
+        actual = Search.hourly_average(df)
 
         assert_frame_equal(expected, actual)
 
@@ -22,9 +23,42 @@ class TestCases(unittest.TestCase):
 
         expected = Error
 
-        actual = getResult(self)
+        actual = Search.getResult(date1, date2)
 
         self.assertEqual(expected, actual)
+
+    def test_listAccidentType(self):
+        df = pd.DataFrame({
+            "ACCIDENT_TYPE": ["Struck Pedestrian", "Struck Pedestrian", "Struck Pedestrian", "Collision with vehicle"]
+        })
+        expected = ["Struck Pedestrian", "Collision with vehicle"]
+
+        actual = Search.listAccidentType(df)
+
+        assert_frame_equal(expected, actual)
+
+    def test_matchAccidentType(self):
+        Search.Accident_Type_Keyword = "Struck Pedestrian"
+        
+        expected = "Struck Pedestrian"
+
+        actual = Search.matchAccidentType(Search.Accident_Type_Keyword)
+
+        self.assertEqual(expected, actual)
+
+    def test_matchAccidentType_InvalidInput(self):
+        Search.Accident_Type_Keyword = "Collision with Dinosaur"
+        
+        expected = Error
+
+        actual = Search.matchAccidentType(Search.Accident_Type_Keyword)
+
+        self.assertEqual(expected, actual)
+
+    def test_calculate_by_month(self):
+        
+        
+
 
     
 
