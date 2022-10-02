@@ -1,26 +1,46 @@
-from search import Search, connection
-import pandas as pd 
+from search import Search, hourly_average, getResult
+from pandas.testing import assert_frame_equal 
+import unittest
+import pandas as pd
+from sqlite3 import Error
 
+class TestCases(unittest.TestCase):
 
-def test_initial_value():
-    obj_1 = Search(1, 2, 3, 4, 5, 6, 7)     
-    assert obj_1.To_Date == 1
-    assert obj_1.From_Date == 2
-    assert obj_1.Accident_Type_Keyword == 3
-    assert obj_1.Accident_Type_List == 4
-    assert obj_1.Output_Type == 5
-    assert obj_1.Lga == 6
-    assert obj_1.Region == 7
+    def test_hourly_average(self):
+        df = pd.DataFrame({
+            "ACCIDENT_TIME": ["18.30.00", "16.40.00", "13.15.00"]
+            })
+        expected = 1 #Need function implemented to return expected. Unsure what data type is returned.
+
+        actual = hourly_average(df)
+
+        assert_frame_equal(expected, actual)
+
+    def test_getResultInvalidDates(self):
+        date1 = "2012-07-01"
+        date2 = "2020-02-01"
+
+        expected = Error
+
+        actual = getResult(self)
+
+        self.assertEqual(expected, actual)
+
     
 
-def test_hourly_average(self):
-    df = connection()
-    dummy = ["blah", "blah", "blah"]
-    s = Search()
-    test = Search.hourly_average(df)
-    test2 = Search.hourly_average(dummy)
-    assert Search.hourly_average(df) == test
-    assert Search.hourly_average(df) != test2
+
+
+
+
+
+
+
+
+    
+
+
+
+    
     
 
 
