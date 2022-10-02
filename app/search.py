@@ -120,6 +120,10 @@ class Search:
         """Find a match with keyword and return the matched Accident type as string"""
         word = self.Accident_Type_Keyword
         types = self.listAccidentType()
+        
+        for i in types:
+            r.search(word, i)
+            
         if word in types:
             return True
         else:
