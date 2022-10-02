@@ -118,9 +118,11 @@ class Search:
         """Calculates the average number of accidents in each hour from the search result and return data for generating a plot"""
         result = self.getResult()
         # print(result)
-        hourlyAccidentDict = dict()        
+        hourlyAccidentDict = dict()   
+        #iterates through rows from result     
         for row in result:
             # print(row)
+            #iterates through values within each row, row[2] is accidentTime
             for values in row[2]:
                 print(values[:2])
                 hourlyAccidentDict[values[:2]] = hourlyAccidentDict.get(values[:2], 0) + 1
@@ -138,13 +140,23 @@ class Search:
         # (maybe) convert the dict to tuple for plot module
         # return the data
     
-    def accident_type():
+    def accident_type(self):
         """Calculate the number of accidents in each accident type."""
         connection = connection()
-        accidents = pd.read_sql("SELECT accidentType, COUNT(*) FROM Accident GROUP BY accidentType ORDER BY COUNT(*) DESC ;", connection)
-        # Needs to query with criteria in search object: self
-        # Use dummy search object within the function and test by print
-        return accidents
+        #checks if accident type is valid
+        word = self.matchAccidentType()
+        if word == True:
+            cur = connection.cursor()
+            sql = "SELECT accidentType, COUNT(*) FROM Accident GROUP BY accidentType ORDER BY COUNT(*) DESC WHERE accidentType LIKE ? AND accidentDate BETWEEN ? AND ?;"
+            data = (self.Accident_Type_Keyword, self.To_Date, self.From_Date)
+            cur.execute(sql, data)
+            result = cur.fetchall()
+            return result
+            # accidents = pd.read_sql(sql, connection)
+            
+            # # Needs to query with criteria in search object: self
+            # # Use dummy search object within the function and test by print
+            # return accidents
     
     def calculate_by_month():
         """Calculates the number of accidents in each month."""
@@ -154,18 +166,29 @@ class Search:
         return accidents_each_month
         # Needs to use criteria in search object: self
     
-    def calculate_by_day():
+    def calculate_by_day(self):
         """Calculates the number of accidents in each day."""
         connection = connection()
-        by_day = pd.read_sql("SELECT dayOfWeek, COUNT(*) FROM Accident GROUP BY dayOfWeek ORDER BY COUNT(*) DESC ;", connection)
-        return by_day
+        cur = connection.cursor()
+        sql = "SELECT dayOfWeek, COUNT(*) FROM Accident GROUP BY dayOfWeek ORDER BY COUNT(*) DESC WHERE accidentDate BEWTEEN ? AND ?;"
+        data = (self.To_Date, self.From_Date)
+        cur.execute(sql, data)  
+        result = cur.fetchall()
+        # by_day = pd.read_sql(sql, connection)
+        return result
         # Needs to use criteria in search object: self
 
-    def calculateLGA():
+    def calculateLGA(self):
         """alculates the number of accidents in each LGA"""
         connection = connection()
-        LGA = pd.read_sql("SELECT lgaName, COUNT(*) FROM Accident GROUP BY lgaName ORDER BY COUNT(*) DESC ;", connection)
-        return LGA
+        cur = connection.cursor()
+        sql = "SELECT lgaName, COUNT(*) FROM Accident GROUP BY lgaName ORDER BY COUNT(*) DESC WHERE lgaName LIKE ? AND accidentDate BETWEEN ? AND ?;"
+        data = (self.Lga, self.To_Date, self.From_Date)
+        cur.execute(sql, data)
+        result = cur.fetchall()
+        return result
+        # LGA = pd.read_sql("SELECT lgaName, COUNT(*) FROM Accident GROUP BY lgaName ORDER BY COUNT(*) DESC ;", connection)
+        # return LGA
         # Needs to use criteria in search object: self
     
     def calculate_region():
@@ -175,7 +198,7 @@ class Search:
         return region
         # Needs to use criteria in search object: self
         
-x = Search()
+x = Search(To_Date = "2013-07-02", From_Date = "2013-07-01")
 # x.getResult()
 x.hourly_average()
 
