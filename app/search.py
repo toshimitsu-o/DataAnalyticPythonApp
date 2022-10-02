@@ -11,7 +11,7 @@ import pandas as pd
 def connection():
     """creates sqlite connection to accidentDatabase
     """
-    con = sqlite3.connect("app/accidentDatabase.db", detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
+    con = sqlite3.connect("accidentDatabase.db", detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
     return con
 
 class Search: 
