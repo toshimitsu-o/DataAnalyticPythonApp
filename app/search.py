@@ -11,7 +11,7 @@ import pandas as pd
 def connection():
     """creates sqlite connection to accidentDatabase
     """
-    con = sqlite3.connect("app/accidentDatabase.db", detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
+    con = sqlite3.connect("accidentDatabase.db", detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
     return con
 
 class Search: 
@@ -118,19 +118,24 @@ class Search:
         """Calculates the average number of accidents in each hour from the search result and return data for generating a plot"""
         result = self.getResult()
         # print(result)
+        hourList = []
         hourlyAccidentDict = dict()   
         #iterates through rows from result     
         for row in result:
+            hourList.append(row[2])
+        for time in hourList:
+            # print(time[:2])
+            hourlyAccidentDict[time[:2]] = hourlyAccidentDict.get(time[:2], 0) + 1
+            
             # print(row)
             #iterates through values within each row, row[2] is accidentTime
-            for values in row[2]:
-                print(values[:2])
-                hourlyAccidentDict[values[:2]] = hourlyAccidentDict.get(values[:2], 0) + 1
+        # print(hourList)
         print(hourlyAccidentDict)
-        # hourlyAvg = []
-        # for hour, value in hourlyAccidentDict.iteritems():
-        #     hourlyAvg.append((hour, value/len(result)))
-        # print(hourlyAvg)
+        hourlyAvg = []
+        for k,v in hourlyAccidentDict:
+            print(type(k), type(v))
+            hourlyAvg.append((k, len(result)/int(v)))
+        print(hourlyAvg)
         
         # Extract ACCIDENT_TIME into (maybe) list
 
@@ -144,14 +149,12 @@ class Search:
         """Calculate the number of accidents in each accident type."""
         connection = connection()
         #checks if accident type is valid
-        word = self.matchAccidentType()
-        if word == True:
-            cur = connection.cursor()
-            sql = "SELECT accidentType, COUNT(*) FROM Accident GROUP BY accidentType ORDER BY COUNT(*) DESC WHERE accidentType LIKE ? AND accidentDate BETWEEN ? AND ?;"
-            data = (self.Accident_Type_Keyword, self.To_Date, self.From_Date)
-            cur.execute(sql, data)
-            result = cur.fetchall()
-            return result
+        cur = connection.cursor()
+        sql = "SELECT accidentType, COUNT(*) FROM Accident GROUP BY accidentType ORDER BY COUNT(*) DESC WHERE accidentType LIKE ? AND accidentDate BETWEEN ? AND ?;"
+        data = (self.Accident_Type_Keyword, self.To_Date, self.From_Date)
+        cur.execute(sql, data)
+        result = cur.fetchall()
+        return result
             # accidents = pd.read_sql(sql, connection)
             
             # # Needs to query with criteria in search object: self
