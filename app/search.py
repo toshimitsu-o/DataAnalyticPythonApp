@@ -128,5 +128,3 @@ class Search:
         region = pd.read_sql("SELECT regionName, COUNT(*) FROM Accident GROUP BY regionName ORDER BY COUNT(*) DESC ;", connection)
         return region
         # Needs to use criteria in search object: self
-        
-        

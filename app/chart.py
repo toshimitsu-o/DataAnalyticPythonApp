@@ -101,7 +101,7 @@ class ChartFrame(wx.Frame):
         self.axes.set_ylabel('Accident')
         self.axes.set_title("I am title")
 
-        self.axes.bar(labels, data) 
+        self.axes.bar(labels, data)
 
     def drawMultiBarChart(self):
         labels = ['one', 'two', 'three', 'four', 'five']
