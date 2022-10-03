@@ -17,6 +17,15 @@ class TestCases(unittest.TestCase):
 
         assert_frame_equal(expected, actual)
 
+    def test_hourly_averageOutputType(self):
+        df = pd.DataFrame({
+            "accidentTime": ["18.30.00", "16.40.00", "13.15.00"]
+            })
+        expected = 1 #Need function implemented to return expected. Unsure what data type is returned.
+
+        self.assertIsInstance(expected, tuple)
+        
+
     def test_getResultInvalidDates(self):
         date1 = "2012-07-01"
         date2 = "2020-02-01"
@@ -48,6 +57,14 @@ class TestCases(unittest.TestCase):
 
         assert_frame_equal(expected, actual)
 
+    def test_listAccidentType_OutputType(self):
+        df = pd.DataFrame({
+            "accidentType": ["Struck Pedestrian", "Struck Pedestrian", "Struck Pedestrian", "Collision with vehicle"]
+        })
+        expected = ["Struck Pedestrian", "Collision with vehicle"]
+   
+        self.assertIsInstance(expected, list)
+
     def test_matchAccidentType(self):
         Search.Accident_Type_Keyword = "Struck Pedestrian"
         
@@ -56,6 +73,13 @@ class TestCases(unittest.TestCase):
         actual = Search.matchAccidentType(Search.Accident_Type_Keyword)
 
         self.assertEqual(expected, actual)
+
+    def test_matchAccidentType_OutputType(self):
+        Search.Accident_Type_Keyword = "Struck Pedestrian"
+        
+        expected = "Struck Pedestrian"
+
+        self.assertIsInstance(expected, str)
 
     def test_matchAccidentType_InvalidInput(self):
         Search.Accident_Type_Keyword = "Collision with Dinosaur"
