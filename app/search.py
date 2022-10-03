@@ -33,8 +33,8 @@ class Search:
             tuple: (minDate, maxDate)
         """
     
-        connection = connection()
-        c = connection.cursor()
+        con = connection()
+        c = con.cursor()
         sqlmin = "SELECT MIN(accidentDate) FROM Accident;"
         sqlmax = "SELECT MAX(accidentDate) FROM Accident;"
         c.execute(sqlmin)
@@ -61,16 +61,44 @@ class Search:
             date2 = str(self.To_Date)
         else:
             date2 = "2019-02-01"
+        if self.Accident_Type_Keyword:
+            accidentType = str(self.Accident_Type_Keyword)
+        else:
+            accidentType = None
+        if self.Lga:
+            lga = str(self.Lga)
+        else:
+            lga = None
+        if self.Region:
+            region = str(self.Region)
+        else:
+            region = None
+            
+        sql = "SELECT * FROM Accident WHERE accidentDate BETWEEN ? AND ? "
+        accidentSql = "AND accidentType LIKE '%' || ? || '%'"
+        lgaSql = "AND lgaName LIKE '%' || ? || '%' "
+        regionSql = "AND regionName LIKE '%' || ? || '%'"
+        endSql = ";"
+        data = [date1, date2]
 
         try:
             con = connection()
             cur = con.cursor()
-            sql = """SELECT * FROM Accident WHERE accidentDate BETWEEN ? AND ?;"""
-            data = (date1, date2)
+            if accidentType is not None:
+                data.append(accidentType)
+                sql += accidentSql
+            elif lga is not None:
+                data.append(lga)
+                sql += lgaSql
+            elif region is not None:
+                data.append(region)
+                sql+= regionSql
+                     
+            # print(sql+endSql)
+            # print(data)
             cur.execute(sql, data)  
             result = cur.fetchall()
             return result
-            # print(type(result))
         except Error as e:
             print(e)
 
@@ -117,7 +145,7 @@ class Search:
         
         except Error as e:
             print(e)
-
+            
     def matchAccidentType(self):
         """Find a match with self.keyword out of list of unique accidentTypes
 
@@ -133,18 +161,6 @@ class Search:
                 matchedList.append(accident)
         return matchedList
             
-        
-        # for keyword in types:
-        #     r.match(word, keyword)
-            
-        # if word in types:
-        #     return True
-        # else:
-        #     return "Accident keyword not valid"
-        
-        # find a match (maybe use re module for regular expression)
-        # pass
-
     
     def hourly_average(self, mode=None):
         """Calculates the average number of accidents in each hour from the search result and returns data for generating a plot
@@ -177,7 +193,7 @@ class Search:
         return result
 
     
-    def calcAllAccidentType(self):
+    def calcAllAccidentType(self, mode=None):
         """calculates nnumber of accidents of all accident types
 
         Returns:
@@ -199,7 +215,7 @@ class Search:
             accidentList.append(sort)
         return accidentList
     
-    def accident_type(self):
+    def accident_type(self, mode=None):
         """Calculates the number of accidents with accident keyword
 
         Returns:
@@ -221,7 +237,7 @@ class Search:
             accidentNumList.append(sort)
         print(accidentNumList)
     
-    def calculate_by_month(self):
+    def calculate_by_month(self, mode=None):
         """Calculates the number of accidents in each month.
 
         Returns:
@@ -244,7 +260,7 @@ class Search:
         sortedMonthlyAccidentList = sorted(monthlyAccidentList)
         return sortedMonthlyAccidentList
     
-    def calculate_by_day(self):
+    def calculate_by_day(self, mode=None):
         """Calculates the number of accidents in each day.
 
         Returns:
@@ -268,6 +284,42 @@ class Search:
         sortedDailyAccidentList = sorted(dailyAccidentList, key = lambda d: day.index(d[0]))
         return sortedDailyAccidentList
         
+    def listLgas(self):
+        """queries accident database and returns a list of all unique Lga names
+
+        Returns:
+            list: ['lgaName', ...]
+        """
+        
+        try:
+            con = connection()
+            accidents = pd.read_sql("SELECT lgaName FROM Accident;", con)
+            lgaNames = accidents["lgaName"].unique()
+            # converts from numpy.ndarray to list type
+            lgaNameList = []
+            for i in lgaNames:
+                lgaNameList.append(i)
+            return lgaNameList
+        
+        except Error as e:
+            print(e)
+            
+    def matchLga(self):
+        """Find a match with self.keyword out of list of unique accidentTypes
+
+        Returns:
+            list: ['accidentType', ...]
+        """
+        result = self.getResult()
+        word = self.Lga
+        types = self.listLgas()
+        matchedList = []
+        for accident in types:
+            if bool((r.search(word, accident, r.IGNORECASE))):
+                matchedList.append(accident)
+        return matchedList
+            
+            
     def calcAllLgas(self):
         """Calculates the number of accidents in each LGA
 
@@ -293,19 +345,55 @@ class Search:
             tuple: (lgaName, numofAccidents)
         """
         result = self.getResult()
-        lga = self.Lga
+        lga = self.matchLga()
         accidentNum = dict()
         # iterates through result and appends self.Lga as key in accidentNum dict, increments +1 per associated record in result else continues
         for row in result:
-            if row[8] == lga:
+            if row[8] in lga:
                 accidentNum[row[8]] = accidentNum.get(row[8], 0) + 1
             else:
                 continue
         # converts accidentNum dict to tuple
-        accidentNumList = None
+        accidentNumList = []
         for key, val in accidentNum.items():
-            accidentNumList = (key, val)
+            sort = (key, val)
+            accidentNumList.append(sort)
         return accidentNumList
+    
+    def listRegions(self):
+        """queries accident database and returns a list of all unique region names
+
+        Returns:
+            list: ['regionName', ...]
+        """
+        
+        try:
+            con = connection()
+            accidents = pd.read_sql("SELECT regionName FROM Accident;", con)
+            regionNames = accidents["regionName"].unique()
+            # converts from numpy.ndarray to list type
+            regionNameList = []
+            for i in regionNames:
+                regionNameList.append(i)
+            return regionNameList
+        
+        except Error as e:
+            print(e)
+            
+    def matchRegions(self):
+        """Find a match with self.Region out of list of unique region names
+
+        Returns:
+            list: ['regionName', ...]
+        """
+        result = self.getResult()
+        word = self.Region
+        types = self.listRegions()
+        matchedList = []
+        for accident in types:
+            if bool((r.search(word, accident, r.IGNORECASE))):
+                matchedList.append(accident)
+        return matchedList
         
     def calcAllRegions(self):
         """Calculates the number of accidents in each region.
@@ -333,25 +421,26 @@ class Search:
             tuple: (regionName, numofAccidents)
         """
         result = self.getResult()
-        region = self.Region
+        region = self.matchRegions()
         accidentNum = dict()
         # iterates through result and appends self.Region as key in accidentNum dict, increments +1 per associated record in result else continues
         for row in result:
-            if row[9] == region:
+            if row[9] in region:
                 accidentNum[row[9]] = accidentNum.get(row[9], 0) + 1
             else:
                 continue
         # converts accidentNum dict to tuple
-        accidentNumList = None
+        accidentNumList = []
         for key, val in accidentNum.items():
-            accidentNumList = (key, val)
+            sort = (key, val)
+            accidentNumList.append(sort)
         return accidentNumList
 
         
 x = Search(To_Date = "2014-08-23", From_Date = "2013-07-01", Accident_Type_Keyword="collision", Lga= "BAYSIDE", Region= 'EASTERN REGION')
 # x.getResult()
-x.accident_type()
-# print(y)
+y = x.calculate_region()
+print(y)
 # print(x.getTotalDays())
 # print(x)
 
