@@ -4,6 +4,7 @@ import sqlite3
 from sqlite3 import Error
 import pandas as pd
 import re as r
+from collections import OrderedDict
 
 # from app.importData import getDateRange
 
@@ -211,14 +212,31 @@ class Search:
     
     def calculate_by_day(self):
         """Calculates the number of accidents in each day."""
-        con = connection()
-        cur = con.cursor()
-        sql = "SELECT dayOfWeek, COUNT(*) FROM Accident WHERE accidentDate BEWTEEN ? AND ? GROUP BY dayOfWeek ORDER BY COUNT(*) DESC;"
-        data = (self.To_Date, self.From_Date)
-        cur.execute(sql, data)  
-        result = cur.fetchall()
+        result = self.getResult()
+        dailyAccidentDict = dict() 
+        for row in result:
+            #iterates through result and ignores row if day of week column == None
+            if row[4] == None:
+                continue
+            #iterates through result and appends day of week as key in dailyAccidentDict and increments +1 per associated record in result
+            else:
+                dailyAccidentDict[row[4]] = dailyAccidentDict.get(row[4], 0) + 1
+        dailyAccidentList = []
+        # converts dailyAccidentDict into an ordered list
+        for key, val in dailyAccidentDict.items():
+            sort = (key, val)
+            dailyAccidentList.append(sort)
+        day = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+        sortedDailyAccidentList = sorted(dailyAccidentList, key = lambda d: day.index(d[0]))
+        return sortedDailyAccidentList
+        # # con = connection()
+        # cur = con.cursor()
+        # sql = "SELECT dayOfWeek, COUNT(*) FROM Accident WHERE accidentDate BETWEEN ? AND ? GROUP BY dayOfWeek ORDER BY COUNT(*) DESC;"
+        # data = (self.To_Date, self.From_Date)
+        # cur.execute(sql, data)  
+        # result = cur.fetchall()
         # by_day = pd.read_sql(sql, connection)
-        return result
+        # print(result)
         # Needs to use criteria in search object: self
 
     def calculateLGA(self):
@@ -243,7 +261,7 @@ class Search:
         
 x = Search(To_Date = "2014-08-23", From_Date = "2013-07-01", Accident_Type_Keyword="Struck Pedestrian", Lga= "Bayside")
 # x.getResult()
-x.calculate_by_month()
+x.calculate_by_day()
 # print(y)
 # print(x.getTotalDays())
 # print(x)
