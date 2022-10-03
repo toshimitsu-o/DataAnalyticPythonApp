@@ -107,7 +107,7 @@ class Search:
         
         try:
             con = connection()
-            accidents = pd.read_sql("SELECT accidentType FROM Accident;", connection)
+            accidents = pd.read_sql("SELECT accidentType FROM Accident;", con)
             accidentTypes = accidents["accidentType"].unique()
             # converts from numpy.ndarray to list type
             accidentList = []
@@ -119,17 +119,28 @@ class Search:
             print(e)
 
     def matchAccidentType(self):
-        """Find a match with keyword and return the matched Accident type as string"""
+        """Find a match with self.keyword out of list of unique accidentTypes
+
+        Returns:
+            list: ['accidentType', ...]
+        """
+        result = self.getResult()
         word = self.Accident_Type_Keyword
         types = self.listAccidentType()
-        
-        for i in types:
-            r.search(word, i)
+        matchedList = []
+        for accident in types:
+            if bool((r.search(word, accident, r.IGNORECASE))):
+                matchedList.append(accident)
+        return matchedList
             
-        if word in types:
-            return True
-        else:
-            return "Accident keyword not valid"
+        
+        # for keyword in types:
+        #     r.match(word, keyword)
+            
+        # if word in types:
+        #     return True
+        # else:
+        #     return "Accident keyword not valid"
         
         # find a match (maybe use re module for regular expression)
         # pass
@@ -192,22 +203,23 @@ class Search:
         """Calculates the number of accidents with accident keyword
 
         Returns:
-            tuple: (accidentType, NumofAccidents) 
+            list: [(accidentType, NumofAccidents), ...] 
         """
         result = self.getResult()
-        accidentType = self.Accident_Type_Keyword
+        accidentType = self.matchAccidentType()
         accidentNum = dict()
         # iterates through result and appends self.Accident_Type_Keyword as key in accidentNum dict, increments +1 per associated record in result else continues
         for row in result:
-            if row[3] == accidentType:
+            if row[3] in accidentType:
                 accidentNum[row[3]] = accidentNum.get(row[3], 0) + 1
             else:
                 continue
-        # converts dictionary into a tuple
-        accidentNumList = None
+        # converts dictionary into a list
+        accidentNumList = []
         for key, val in accidentNum.items():
-            accidentNumList = (key, val)
-        return accidentNumList
+            sort = (key, val)
+            accidentNumList.append(sort)
+        print(accidentNumList)
     
     def calculate_by_month(self):
         """Calculates the number of accidents in each month.
@@ -336,9 +348,9 @@ class Search:
         return accidentNumList
 
         
-x = Search(To_Date = "2014-08-23", From_Date = "2013-07-01", Accident_Type_Keyword="Struck Pedestrian", Lga= "BAYSIDE", Region= 'EASTERN REGION')
+x = Search(To_Date = "2014-08-23", From_Date = "2013-07-01", Accident_Type_Keyword="collision", Lga= "BAYSIDE", Region= 'EASTERN REGION')
 # x.getResult()
-x.calculate_region()
+x.accident_type()
 # print(y)
 # print(x.getTotalDays())
 # print(x)
