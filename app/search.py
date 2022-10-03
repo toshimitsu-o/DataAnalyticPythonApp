@@ -190,25 +190,32 @@ class Search:
         #converts dictionary into sorted list
         hourlyAvg = []
         alcHourlyAvg = []
+        combinedDict = dict()
         if mode == 'alcohol':
-            for key, val in alcHourlyAccidentDict.items():
+            for d in (hourlyAccidentDict, alcHourlyAccidentDict):
+                for key, val in d.items():
+                    combinedDict[key].append(val) 
+            for key, val in combinedDict.items():
                 sort = (key, val)
                 alcHourlyAvg.append(sort)
-            sortedAlcHourlyAvg = sorted(alcHourlyAvg)
-            sortedAlcAccidentList = []
+                sortedAlcHourlyAvg = sorted(alcHourlyAvg)
+                sortedAlcAccidentList = []
             for key in sortedAlcHourlyAvg:
                 sortedAlcAccidentList.append((key[0], key[1]/days))
-        for key, val in hourlyAccidentDict.items():
-            sort = (key, val)
-            hourlyAvg.append(sort)
-        sortedHourlyAvg = sorted(hourlyAvg)
-        sortedAccidentList = []
-        for key in sortedHourlyAvg:
-            sortedAccidentList.append((key[0], key[1]/days))
-        if mode == 'alcohol':
-            result = 
-        result = sorted(sortedAccidentList)
-        return result
+                result = sorted(sortedAccidentList)
+                return result
+        else:
+            for key, val in hourlyAccidentDict.items():
+                sort = (key, val)
+                hourlyAvg.append(sort)
+            sortedHourlyAvg = sorted(hourlyAvg)
+            sortedAccidentList = []
+            for key in sortedHourlyAvg:
+                sortedAccidentList.append((key[0], key[1]/days))
+            # if mode == 'alcohol':
+            #     result = 
+            result = sorted(sortedAccidentList)
+            return result
 
     
     def calcAllAccidentType(self, mode=None):
