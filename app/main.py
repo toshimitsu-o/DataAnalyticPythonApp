@@ -60,6 +60,8 @@ class MainFrame(wx.Frame):
         self.frame_number = 1
         #self.SetBackgroundColour((19,162,166,255))
         self.SetBackgroundColour("white")
+
+        self.accidentTypes = self.search.listAccidentType()
         
         # create a menu bar
         self.makeMenuBar()
@@ -145,8 +147,7 @@ class MainFrame(wx.Frame):
         self.dateToCt.SetRange(wx.DateTime.FromDMY(1,7,2013),wx.DateTime.FromDMY(1,2,2019))
         self.accTl = wx.StaticText(self.searchBox, label="Accident Type ")
         self.accKyCt = wx.TextCtrl(self.searchBox)
-        self.typeList = ['Select from list', 'zero', 'one', 'two', 'three', 'four', 'five',
-                      'six', 'seven', 'eight']
+        self.typeList = self.accidentTypes
         self.accCh = wx.Choice(self.searchBox, choices=self.typeList)
         self.outTl = wx.StaticText(self.searchBox, label="Output ")
         self.outCb1 = wx.CheckBox(self.searchBox, label = 'Day')
@@ -382,8 +383,8 @@ class MainFrame(wx.Frame):
         self.search.From_Date = self.dateFrCt.GetValue().Format("%Y-%m-%d")
         self.search.To_Date = self.dateToCt.GetValue().Format("%Y-%m-%d")
         self.search.Accident_Type_Keyword = self.accKyCt.GetValue()
-        self.search.Accident_Type_List = str(self.accCh.GetCurrentSelection())
-        #wx.MessageBox("Search clicked with search object:" + str(self.search))
+        self.search.Accident_Type_List = self.accidentTypes[(self.accCh.GetCurrentSelection())]
+        #print(self.search)
         self.updateGrid()
     
     def onChart(self, event):

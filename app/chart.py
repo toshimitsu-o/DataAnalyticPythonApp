@@ -18,21 +18,16 @@ from re import search
 from tkinter import CENTER, RIGHT
 from search import Search
 
-# Some data
-# Pie chart, where the slices will be ordered and plotted counter-clockwise :
-labels = 'Hogs', 'Frogs', 'Logs', 'Dogs'
-sizes = [15, 30, 45, 10]
-explode = (0, 0.1, 0, 0)  # Only "explode" the 2nd slice (i.e. 'Hogs'). 
-data = [23, 45, 56, 78, 213]
-
 class ChartFrame(wx.Frame):
     """Class for chart frame window"""
-    def __init__(self, title, parent=None, search=None, chartType=None, mode=None):
+    def __init__(self, title, search:Search, chartType, mode, parent=None):
         self.search = search
         self.chartType = chartType
         self.mode = mode
 
         wx.Frame.__init__(self, parent=parent, title=title, size=(800,600))
+
+        self.result = None
 
         # create a panel in the frame
         self.pnl = wx.Panel(self)
@@ -43,13 +38,10 @@ class ChartFrame(wx.Frame):
         # Create items
         charTl = wx.StaticText(box, label="Chart ")
         charTl.SetForegroundColour("white")
-        # Testing some parameters
-        testTxt = wx.StaticText(box, label="search: "+ str(search) + " chartType: " + chartType + " mode: " + mode)
-        testTxt.SetForegroundColour("red")
+
         # Sizer
         sizer = wx.BoxSizer(wx.HORIZONTAL)
         sizer.Add(charTl, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL | wx.EXPAND, 0)
-        sizer.Add(testTxt, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL | wx.EXPAND, 0)
         box.SetSizer(sizer)
 
         # Main
@@ -84,6 +76,43 @@ class ChartFrame(wx.Frame):
         self.main.SetSizer(sizer)
     
     def getChart(self):
+        print(self.search.From_Date)
+        
+        if self.chartType == "Hourly Average":
+            self.result = self.search.hourly_average(mode=self.mode)
+            print(self.result)
+            if self.mode == "alcohol":
+                self.drawMultiBarChart()
+            else:
+                self.drawBarChart()
+        elif self.chartType == "Accident Types":
+            self.result = self.search.accident_type(mode=self.mode)
+            print(self.result)
+            if self.mode == "alcohol":
+                self.drawMultiBarChart()
+            else:
+                self.drawBarChart()
+        elif self.chartType == "By Month":
+            self.result = self.search.calculate_by_month(mode=self.mode)
+            if self.mode == "alcohol":
+                self.drawMultiBarChart()
+            else:
+                self.drawBarChart()
+        elif self.chartType == "By Day":
+            self.result = self.search.calculate_by_day(mode=self.mode)
+            if self.mode == "alcohol":
+                self.drawMultiBarChart()
+            else:
+                self.drawBarChart()
+        elif self.chartType == "LGA":
+            self.result = self.search.calcAllLgas()
+            self.drawBarChart()
+        elif self.chartType == "Region":
+            self.result = self.search.calcAllRegions()
+            self.drawBarChart()
+        else:
+            pass
+
         if self.mode == "alcohol":
             self.drawMultiBarChart()
         # elif self.mode == "location":
@@ -92,14 +121,16 @@ class ChartFrame(wx.Frame):
             self.drawBarChart()
         
     def drawBarChart(self):
-        labels = ['one', 'two', 'three', 'four', 'five']
-        data = [23,85, 72, 43, 52]
+        # labels = ['one', 'two', 'three', 'four', 'five']
+        # data = [23,85, 72, 43, 52]
+        labels = [i[0] for i in self.result]
+        data = [i[1] for i in self.result]
 
         # Make figure and axes.
         self.axes.plot(1, 0)
         self.axes.set_xlabel('Month')
         self.axes.set_ylabel('Accident')
-        self.axes.set_title("I am title")
+        self.axes.set_title(self.chartType)
 
         self.axes.bar(labels, data)
 
