@@ -169,10 +169,10 @@ class Search:
     
     def accident_type(self):
         """Calculate the number of accidents in each accident type."""
-        connection = connection()
+        con = connection()
         #checks if accident type is valid
-        cur = connection.cursor()
-        sql = "SELECT accidentType, COUNT(*) FROM Accident GROUP BY accidentType ORDER BY COUNT(*) DESC WHERE accidentType LIKE ? AND accidentDate BETWEEN ? AND ?;"
+        cur = con.cursor()
+        sql = "SELECT accidentType, COUNT(*) FROM Accident WHERE accidentType LIKE ? AND accidentDate BETWEEN ? AND ? GROUP BY accidentType ORDER BY COUNT(*) DESC;"
         data = (self.Accident_Type_Keyword, self.To_Date, self.From_Date)
         cur.execute(sql, data)
         result = cur.fetchall()
@@ -183,19 +183,37 @@ class Search:
             # # Use dummy search object within the function and test by print
             # return accidents
     
-    def calculate_by_month():
+    def calculate_by_month(self):
         """Calculates the number of accidents in each month."""
-        
-        connection = connection()
-        accidents_each_month = pd.read_sql("SELECT EXTRACT(YEAR FROM accidentDate) AS Year, EXTRACT(MONTH FROM accidentDate) AS Month FROM Accident;", connection)
-        return accidents_each_month
+        result = self.getResult()
+        dateList = []
+        monthlyAccidentDict = dict()   
+        #iterates through accidentDate column from result and appends full date to dateList 
+        for row in result:
+            dateList.append(row[1])
+        # appends month from dateList as key in monthlyAccidentDict and increments +1 per associated record in dateList 
+        for date in dateList:
+            monthlyAccidentDict[date[5:7]] = monthlyAccidentDict.get(date[5:7], 0) + 1
+        # converts dictionary into sorted list
+        monthlyAccidentList = []
+        for key, val in monthlyAccidentDict.items():
+            sort = (key, val)
+            monthlyAccidentList.append(sort)
+        sortedMonthlyAccidentList = sorted(monthlyAccidentList)
+        print(sortedMonthlyAccidentList)
+        # sql = "SELECT accidentDate FROM Accident WHERE accidentDate BETWEEN ? AND ?"
+        # data = (self.To_Date, self.From_Date)
+        # cur.execute(sql, data)
+        # result = cur.fetchall()
+        # accidents_each_month = pd.read_sql("SELECT EXTRACT(YEAR FROM accidentDate) AS Year, EXTRACT(MONTH FROM accidentDate) AS Month FROM Accident;", connection)
+        # print(result)
         # Needs to use criteria in search object: self
     
     def calculate_by_day(self):
         """Calculates the number of accidents in each day."""
-        connection = connection()
-        cur = connection.cursor()
-        sql = "SELECT dayOfWeek, COUNT(*) FROM Accident GROUP BY dayOfWeek ORDER BY COUNT(*) DESC WHERE accidentDate BEWTEEN ? AND ?;"
+        con = connection()
+        cur = con.cursor()
+        sql = "SELECT dayOfWeek, COUNT(*) FROM Accident WHERE accidentDate BEWTEEN ? AND ? GROUP BY dayOfWeek ORDER BY COUNT(*) DESC;"
         data = (self.To_Date, self.From_Date)
         cur.execute(sql, data)  
         result = cur.fetchall()
@@ -205,9 +223,9 @@ class Search:
 
     def calculateLGA(self):
         """alculates the number of accidents in each LGA"""
-        connection = connection()
-        cur = connection.cursor()
-        sql = "SELECT lgaName, COUNT(*) FROM Accident GROUP BY lgaName ORDER BY COUNT(*) DESC WHERE lgaName LIKE ? AND accidentDate BETWEEN ? AND ?;"
+        con = connection()
+        cur = con.cursor()
+        sql = "SELECT lgaName, COUNT(*) FROM Accident WHERE lgaName LIKE ? AND accidentDate BETWEEN ? AND ? GROUP BY lgaName ORDER BY COUNT(*) DESC;"
         data = (self.Lga, self.To_Date, self.From_Date)
         cur.execute(sql, data)
         result = cur.fetchall()
@@ -218,14 +236,15 @@ class Search:
     
     def calculate_region():
         """Calculates the number of accidents in each region."""
-        connection = connection()
+        con = connection()
         region = pd.read_sql("SELECT regionName, COUNT(*) FROM Accident GROUP BY regionName ORDER BY COUNT(*) DESC ;", connection)
         return region
         # Needs to use criteria in search object: self
         
-x = Search(To_Date = "2013-08-23", From_Date = "2013-07-01")
+x = Search(To_Date = "2014-08-23", From_Date = "2013-07-01", Accident_Type_Keyword="Struck Pedestrian", Lga= "Bayside")
 # x.getResult()
-x.hourly_average()
+x.calculate_by_month()
+# print(y)
 # print(x.getTotalDays())
 # print(x)
 
