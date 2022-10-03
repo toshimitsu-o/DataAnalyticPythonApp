@@ -70,6 +70,10 @@ class Search:
             date2 = str(self.To_Date)
         else:
             date2 = "2019-02-01"
+        if self.Accident_Type_List:
+            accidentList = str(self.Accident_Type_List)
+        else:
+            accidentList = None
         if self.Accident_Type_Keyword:
             accidentType = str(self.Accident_Type_Keyword)
         else:
@@ -93,7 +97,7 @@ class Search:
         try:
             con = connection()
             cur = con.cursor()
-            if accidentType is not None:
+            if accidentType or accidentList is not None:
                 data.append(accidentType)
                 sql += accidentSql
             elif lga is not None:
@@ -169,6 +173,44 @@ class Search:
             if bool((r.search(word, accident, r.IGNORECASE))):
                 matchedList.append(accident)
         return matchedList
+    
+    def accidentTypeList(self, mode=None):
+        """Calculates the number of accidents with accident keyword
+
+        Returns:
+            list: [(accidentType, NumofAccidents), ...] 
+        """
+        result = self.getResult()
+        accidentType = self.matchAccidentType()
+        accidentNum = dict()
+        alcAccidentNum = dict()
+        # iterates through result and appends self.Accident_Type_Keyword as key in accidentNum dict, increments +1 per associated record in result else continues
+        for row in result:
+            if row[3] in accidentType:
+                accidentNum[row[3]] = accidentNum.get(row[3], 0) + 1
+            elif mode == "alcohol" and row[-1] == 1:
+                alcAccidentNum[row[3]] = alcAccidentNum.get(row[3], 0) + 1
+            else:
+                continue
+        # converts dictionary into a list
+        accidentNumList = []
+        alcAccidentNumList = []
+        combinedDict = dict()
+        if mode == 'alcohol':
+            for d in (accidentNum, alcAccidentNum):
+                for key, val in d.items():
+                    combinedDict[key].append(val) 
+            for key, val in combinedDict.items():
+                sort = (key, val)
+                alcAccidentNumList.append(sort)
+                sortedAlcAccidents = sorted(alcAccidentNumList)
+            return sortedAlcAccidents
+        else:
+            for key, val in accidentNum.items():
+                sort = (key, val)
+                accidentNumList.append(sort)
+            return accidentNumList
+        
             
     
     def hourly_average(self, mode=None):
@@ -544,7 +586,7 @@ class Search:
         
 x = Search(To_Date = "2014-08-23", From_Date = "2013-07-01", Accident_Type_Keyword="collision", Lga= "BAYSIDE", Region= 'EASTERN REGION')
 # x.getResult()
-y = x.hourly_average()
+y = x.hourly_average(mode='alcohol')
 print(y)
 # print(x.getTotalDays())
 # print(x)
