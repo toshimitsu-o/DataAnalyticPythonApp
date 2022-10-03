@@ -225,20 +225,36 @@ class Search:
             list: [(accidentType, numofAccidents), ...]
         """
         result = self.getResult()
-        accidentDict = dict() 
+        accidentDict = dict()
+        alcAccidentDict = dict() 
         for row in result:
             #iterates through result and ignores row if day of week column == None
             if row[3] == None:
                 continue
+            # if mode = alcohol
+            if mode == 'alcohol' and row[-1] == 1:
+                accidentDict[row[3]] = accidentDict.get(row[3], 0) + 1
             #iterates through result and appends day of week as key in dailyAccidentDict and increments +1 per associated record in result
             else:
-                accidentDict[row[3]] = accidentDict.get(row[3], 0) + 1
+                alcAccidentDict[row[3]] = alcAccidentDict.get(row[3], 0) + 1
         accidentList = []
+        alcAccidentList = []
+        combinedDict = dict()
         # converts dailyAccidentDict into an ordered list
-        for key, val in accidentDict.items():
-            sort = (key, val)
-            accidentList.append(sort)
-        return accidentList
+        if mode == 'alcohol':
+            for d in (accidentDict, alcAccidentDict):
+                for key, val in d.items():
+                    combinedDict[key].append(val) 
+            for key, val in combinedDict.items():
+                sort = (key, val)
+                alcAccidentList.append(sort)
+                sortedAlcAccidents = sorted(alcAccidentList)
+            return sortedAlcAccidents
+        else:
+            for key, val in accidentDict.items():
+                sort = (key, val)
+                accidentList.append(sort)
+            return accidentList
     
     def accident_type(self, mode=None):
         """Calculates the number of accidents with accident keyword
@@ -249,18 +265,33 @@ class Search:
         result = self.getResult()
         accidentType = self.matchAccidentType()
         accidentNum = dict()
+        alcAccidentNum = dict()
         # iterates through result and appends self.Accident_Type_Keyword as key in accidentNum dict, increments +1 per associated record in result else continues
         for row in result:
             if row[3] in accidentType:
                 accidentNum[row[3]] = accidentNum.get(row[3], 0) + 1
+            elif mode == "alcohol" and row[-1] == 1:
+                alcAccidentNum[row[3]] = alcAccidentNum.get(row[3], 0) + 1
             else:
                 continue
         # converts dictionary into a list
         accidentNumList = []
-        for key, val in accidentNum.items():
-            sort = (key, val)
-            accidentNumList.append(sort)
-        print(accidentNumList)
+        alcAccidentNumList = []
+        combinedDict = dict()
+        if mode == 'alcohol':
+            for d in (accidentNum, alcAccidentNum):
+                for key, val in d.items():
+                    combinedDict[key].append(val) 
+            for key, val in combinedDict.items():
+                sort = (key, val)
+                alcAccidentNumList.append(sort)
+                sortedAlcAccidents = sorted(alcAccidentNumList)
+            return sortedAlcAccidents
+        else:
+            for key, val in accidentNum.items():
+                sort = (key, val)
+                accidentNumList.append(sort)
+            return accidentNumList
     
     def calculate_by_month(self, mode=None):
         """Calculates the number of accidents in each month.
@@ -289,15 +320,18 @@ class Search:
         alcMonthlyAccidentList = []
         combinedDict = dict()
         if mode == 'alcohol':
+            # combines monthlyAccidentDict and alcMonthlyAccidentDict into 1 dictionary if mode= alcohol
             for d in (monthlyAccidentDict, alcMonthlyAccidentDict):
                 for key, val in d.items():
                     combinedDict[key].append(val) 
+            # converts combinedDict into a sorted list
             for key, val in combinedDict.items():
                 sort = (key, val)
                 alcMonthlyAccidentList.append(sort)
             sortedAlcMonthlyAccidentList = sorted(alcMonthlyAccidentList)
             result = sortedAlcMonthlyAccidentList
         else:
+            # converts dictionary into sorted list
             for key, val in monthlyAccidentDict.items():
                 sort = (key, val)
                 monthlyAccidentList.append(sort)
