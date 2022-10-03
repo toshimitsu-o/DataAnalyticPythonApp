@@ -175,18 +175,18 @@ class Search:
         return matchedList
     
     def accidentTypeList(self, mode=None):
-        """Calculates the number of accidents with accident keyword
+        """Calculates the number of accidents with accident keyword using accident_type_list
 
         Returns:
             list: [(accidentType, NumofAccidents), ...] 
         """
         result = self.getResult()
-        accidentType = self.matchAccidentType()
+        accidentType = self.Accident_Type_List
         accidentNum = dict()
         alcAccidentNum = dict()
         # iterates through result and appends self.Accident_Type_Keyword as key in accidentNum dict, increments +1 per associated record in result else continues
         for row in result:
-            if row[3] in accidentType:
+            if row[3] == accidentType:
                 accidentNum[row[3]] = accidentNum.get(row[3], 0) + 1
             elif mode == "alcohol" and row[-1] == 1:
                 alcAccidentNum[row[3]] = alcAccidentNum.get(row[3], 0) + 1
