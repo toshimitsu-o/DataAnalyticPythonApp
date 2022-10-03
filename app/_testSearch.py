@@ -17,6 +17,16 @@ class TestCases(unittest.TestCase):
 
         assert_frame_equal(expected, actual)
 
+    def test_hourly_averageCount(self):
+        df = pd.DataFrame({
+            "accidentTime": ["18.30.00", "16.40.00", "13.15.00"]
+            })
+        expected = 1 #Need function implemented to return expected. Unsure what data type is returned.
+
+        actual = Search.hourly_average(df)
+
+        self.assertCountEqual(expected, actual)
+
     def test_hourly_averageOutputType(self):
         df = pd.DataFrame({
             "accidentTime": ["18.30.00", "16.40.00", "13.15.00"]
@@ -57,6 +67,16 @@ class TestCases(unittest.TestCase):
 
         assert_frame_equal(expected, actual)
 
+    def test_listAccidentTypeCount(self):
+        df = pd.DataFrame({
+            "accidentType": ["Struck Pedestrian", "Struck Pedestrian", "Struck Pedestrian", "Collision with vehicle"]
+        })
+        expected = ["Struck Pedestrian", "Collision with vehicle"]
+
+        actual = Search.listAccidentType(df)
+
+        self.assertCountEqual(expected, actual)
+
     def test_listAccidentType_OutputType(self):
         df = pd.DataFrame({
             "accidentType": ["Struck Pedestrian", "Struck Pedestrian", "Struck Pedestrian", "Collision with vehicle"]
@@ -73,6 +93,15 @@ class TestCases(unittest.TestCase):
         actual = Search.matchAccidentType(Search.Accident_Type_Keyword)
 
         self.assertEqual(expected, actual)
+
+    def test_matchAccidentTypeCount(self):
+        Search.Accident_Type_Keyword = "Struck Pedestrian"
+        
+        expected = "Struck Pedestrian"
+
+        actual = Search.matchAccidentType(Search.Accident_Type_Keyword)
+
+        self.assertCountEqual(expected, actual)
 
     def test_matchAccidentType_OutputType(self):
         Search.Accident_Type_Keyword = "Struck Pedestrian"
@@ -110,6 +139,17 @@ class TestCases(unittest.TestCase):
 
         self.assertEqual(expected, actual)
 
+    def test_calculate_by_monthCount(self):
+        df = pd.DataFrame({
+            "accidentDate": ["1/7/2015", "1/9/2015", "2/4/2015", "3/4/2015"]
+        })
+
+        expected = {"January": 2, "Feburary":1, "March":1}
+
+        actual = Search.calculate_by_month(df)
+
+        self.assertCountEqual(expected, actual)
+
     def test_calculate_by_monthOutputType(self):
         df = pd.DataFrame({
             "accidentDate": ["1/7/2015", "1/9/2015", "2/4/2015", "3/4/2015"]
@@ -129,6 +169,17 @@ class TestCases(unittest.TestCase):
         actual = Search.calculate_by_day(df)
 
         self.assertEqual(expected, actual)
+
+    def test_calculate_by_dayCount(self):
+        df = pd.DataFrame({
+            "dayOfWeek": ["Friday", "Friday", "Friday", "Tuesday", "Sunday"]
+        })
+
+        expected = {"Friday": 3, "Tuesday": 1, "Sunday": 1}
+
+        actual = Search.calculate_by_day(df)
+
+        self.assertCountEqual(expected, actual)
 
     def test_calculate_by_dayOutputType(self):
         df = pd.DataFrame({
@@ -150,6 +201,17 @@ class TestCases(unittest.TestCase):
 
        self.assertEqual(expected, actual)
 
+    def test_calculate_regionCount(self):
+       df = pd.DataFrame({
+            "regionName": ["METROPOLITAN NORTH WEST REGION", "METROPOLITAN SOUTH EAST REGION", "METROPOLITAN SOUTH EAST REGION", "NORTHERN REGION", "NORTHERN REGION"]
+        })
+
+       expected = {"METROPOLITAN NORTH WEST REGION": 1, "METROPOLITAN SOUTH EAST REGION": 2, "NORTHERN REGION": 2}
+
+       actual = Search.calculate_region(df)
+
+       self.assertCountEqual(expected, actual)
+
     def test_calculate_regionOutputType(self):
        df = pd.DataFrame({
             "regionName": ["METROPOLITAN NORTH WEST REGION", "METROPOLITAN SOUTH EAST REGION", "METROPOLITAN SOUTH EAST REGION", "NORTHERN REGION", "NORTHERN REGION"]
@@ -169,6 +231,17 @@ class TestCases(unittest.TestCase):
         actual = Search.calculateLGA(df)
 
         self.assertEqual(expected, actual)
+
+    def test_calculateLGACount(self):
+        df = pd.DataFrame({
+            "lgaName": ["MELBOURNE", "MELRBOURNE", "MELBOURNE", "BRIMBANK"]
+        })
+
+        expected = {"MELBOURNE": 3, "BRIMBANK":1}
+
+        actual = Search.calculateLGA(df)
+
+        self.assertCountEqual(expected, actual)
 
     def test_calculateLGA_OutputType(self):
         df = pd.DataFrame({
