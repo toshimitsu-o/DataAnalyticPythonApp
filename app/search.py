@@ -202,7 +202,7 @@ class Search:
                 sortedAlcAccidentList = []
             for key in sortedAlcHourlyAvg:
                 sortedAlcAccidentList.append((key[0], key[1]/days))
-                result = sorted(sortedAccidentList)
+                result = sorted(sortedAlcAccidentList)
                 return result
         else:
             for key, val in hourlyAccidentDict.items():
@@ -270,20 +270,39 @@ class Search:
         """
         result = self.getResult()
         dateList = []
-        monthlyAccidentDict = dict()   
+        alcDateList = []
+        monthlyAccidentDict = dict()
+        alcMonthlyAccidentDict = dict()   
         #iterates through accidentDate column from result and appends full date to dateList 
         for row in result:
             dateList.append(row[1])
+            if mode == 'alcohol' and row[-1] == 1:
+                alcDateList.append(row[1])
         # appends month from dateList as key in monthlyAccidentDict and increments +1 per associated record in dateList 
         for date in dateList:
             monthlyAccidentDict[date[5:7]] = monthlyAccidentDict.get(date[5:7], 0) + 1
+        if mode == "alcohol":
+            for date in alcDateList:
+                alcMonthlyAccidentDict[date[5:7]] = alcMonthlyAccidentDict.get(date[5:7], 0) + 1
         # converts dictionary into sorted list
         monthlyAccidentList = []
-        for key, val in monthlyAccidentDict.items():
-            sort = (key, val)
-            monthlyAccidentList.append(sort)
-        sortedMonthlyAccidentList = sorted(monthlyAccidentList)
-        return sortedMonthlyAccidentList
+        alcMonthlyAccidentList = []
+        combinedDict = dict()
+        if mode == 'alcohol':
+            for d in (monthlyAccidentDict, alcMonthlyAccidentDict):
+                for key, val in d.items():
+                    combinedDict[key].append(val) 
+            for key, val in combinedDict.items():
+                sort = (key, val)
+                alcMonthlyAccidentList.append(sort)
+            sortedAlcMonthlyAccidentList = sorted(alcMonthlyAccidentList)
+            result = sortedAlcMonthlyAccidentList
+        else:
+            for key, val in monthlyAccidentDict.items():
+                sort = (key, val)
+                monthlyAccidentList.append(sort)
+            sortedMonthlyAccidentList = sorted(monthlyAccidentList)
+            return sortedMonthlyAccidentList
     
     def calculate_by_day(self, mode=None):
         """Calculates the number of accidents in each day.
@@ -293,10 +312,12 @@ class Search:
         """
         result = self.getResult()
         dailyAccidentDict = dict() 
+        alcDailyAccidentDict = dict()
         for row in result:
             #iterates through result and ignores row if day of week column == None
             if row[4] == None:
                 continue
+            
             #iterates through result and appends day of week as key in dailyAccidentDict and increments +1 per associated record in result
             else:
                 dailyAccidentDict[row[4]] = dailyAccidentDict.get(row[4], 0) + 1
