@@ -146,7 +146,7 @@ class Search:
         # pass
 
     
-    def hourly_average(self):
+    def hourly_average(self, mode=None):
         """Calculates the average number of accidents in each hour from the search result and returns data for generating a plot
 
         Returns:
