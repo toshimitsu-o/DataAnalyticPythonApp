@@ -464,7 +464,7 @@ class Search:
         
 x = Search(To_Date = "2014-08-23", From_Date = "2013-07-01", Accident_Type_Keyword="collision", Lga= "BAYSIDE", Region= 'EASTERN REGION')
 # x.getResult()
-y = x.calculate_region()
+y = x.hourly_average()
 print(y)
 # print(x.getTotalDays())
 # print(x)
