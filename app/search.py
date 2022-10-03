@@ -170,14 +170,26 @@ class Search:
     
     def accident_type(self):
         """Calculate the number of accidents in each accident type."""
-        con = connection()
-        #checks if accident type is valid
-        cur = con.cursor()
-        sql = "SELECT accidentType, COUNT(*) FROM Accident WHERE accidentType LIKE ? AND accidentDate BETWEEN ? AND ? GROUP BY accidentType ORDER BY COUNT(*) DESC;"
-        data = (self.Accident_Type_Keyword, self.To_Date, self.From_Date)
-        cur.execute(sql, data)
-        result = cur.fetchall()
-        return result
+        result = self.getResult()
+        accidentType = self.Accident_Type_Keyword
+        accidentNum = dict()
+        for row in result:
+            if row[3] == accidentType:
+                accidentNum[row[3]] = accidentNum.get(row[3], 0) + 1
+            else:
+                continue
+        accidentNumList = None
+        for key, val in accidentNum.items():
+            accidentNumList = (key, val)
+        print(accidentNumList)
+        # con = connection()
+        # #checks if accident type is valid
+        # cur = con.cursor()
+        # sql = "SELECT accidentType, COUNT(*) FROM Accident WHERE accidentType LIKE ? AND accidentDate BETWEEN ? AND ? GROUP BY accidentType ORDER BY COUNT(*) DESC;"
+        # data = (self.Accident_Type_Keyword, self.To_Date, self.From_Date)
+        # cur.execute(sql, data)
+        # result = cur.fetchall()
+        # return result
             # accidents = pd.read_sql(sql, connection)
             
             # # Needs to query with criteria in search object: self
@@ -241,27 +253,47 @@ class Search:
 
     def calculateLGA(self):
         """alculates the number of accidents in each LGA"""
-        con = connection()
-        cur = con.cursor()
-        sql = "SELECT lgaName, COUNT(*) FROM Accident WHERE lgaName LIKE ? AND accidentDate BETWEEN ? AND ? GROUP BY lgaName ORDER BY COUNT(*) DESC;"
-        data = (self.Lga, self.To_Date, self.From_Date)
-        cur.execute(sql, data)
-        result = cur.fetchall()
-        return result
+        result = self.getResult()
+        lgaAccidentDict = dict()
+        #iterates through result and appends lgaName as key in lgaAccidentDict and increments +1 per associated record in result
+        for row in result:
+            lgaAccidentDict[row[8]] = lgaAccidentDict.get(row[8], 0) + 1
+        lgaAccidentList = []
+        # converts dailyAccidentDict into a list
+        for key, val in lgaAccidentDict.items():
+            sort = (key, val)
+            lgaAccidentList.append(sort)
+        return lgaAccidentList
+        # con = connection()
+        # cur = con.cursor()
+        # sql = "SELECT lgaName, COUNT(*) FROM Accident WHERE lgaName LIKE ? AND accidentDate BETWEEN ? AND ? GROUP BY lgaName ORDER BY COUNT(*) DESC;"
+        # data = (self.Lga, self.To_Date, self.From_Date)
+        # cur.execute(sql, data)
+        # result = cur.fetchall()
+        # return result
         # LGA = pd.read_sql("SELECT lgaName, COUNT(*) FROM Accident GROUP BY lgaName ORDER BY COUNT(*) DESC ;", connection)
         # return LGA
         # Needs to use criteria in search object: self
     
-    def calculate_region():
+    def calculate_region(self):
         """Calculates the number of accidents in each region."""
-        con = connection()
-        region = pd.read_sql("SELECT regionName, COUNT(*) FROM Accident GROUP BY regionName ORDER BY COUNT(*) DESC ;", connection)
-        return region
-        # Needs to use criteria in search object: self
+        result = self.getResult()
+        regionAccidentDict = dict()
+        #iterates through result and appends regionName as key in regionAccidentDict and increments +1 per associated record in result
+        for row in result:
+            regionAccidentDict[row[9]] = regionAccidentDict.get(row[9], 0) + 1
+        # print(regionAccidentDict)
+        regionAccidentList = []
+        # converts regionAccidentDict into a list
+        for key, val in regionAccidentDict.items():
+            sort = (key, val)
+            regionAccidentList.append(sort)
+        return regionAccidentList
+
         
-x = Search(To_Date = "2014-08-23", From_Date = "2013-07-01", Accident_Type_Keyword="Struck Pedestrian", Lga= "Bayside")
+x = Search(To_Date = "2014-08-23", From_Date = "2013-07-01", Accident_Type_Keyword="Struck Pedestrian", Lga= "Bayside", Region= 'Western Region')
 # x.getResult()
-x.calculate_by_day()
+x.accident_type()
 # print(y)
 # print(x.getTotalDays())
 # print(x)
