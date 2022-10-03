@@ -168,8 +168,25 @@ class Search:
         # (maybe) convert the dict to tuple for plot module
         # return the data
     
+    def calcAllAccidentType(self):
+        result = self.getResult()
+        accidentDict = dict() 
+        for row in result:
+            #iterates through result and ignores row if day of week column == None
+            if row[3] == None:
+                continue
+            #iterates through result and appends day of week as key in dailyAccidentDict and increments +1 per associated record in result
+            else:
+                accidentDict[row[3]] = accidentDict.get(row[3], 0) + 1
+        accidentList = []
+        # converts dailyAccidentDict into an ordered list
+        for key, val in accidentDict.items():
+            sort = (key, val)
+            accidentList.append(sort)
+        return accidentList
+    
     def accident_type(self):
-        """Calculate the number of accidents in each accident type."""
+        """Calculate the number of accidents with accident keyword"""
         result = self.getResult()
         accidentType = self.Accident_Type_Keyword
         accidentNum = dict()
@@ -181,7 +198,7 @@ class Search:
         accidentNumList = None
         for key, val in accidentNum.items():
             accidentNumList = (key, val)
-        print(accidentNumList)
+        return accidentNumList
         # con = connection()
         # #checks if accident type is valid
         # cur = con.cursor()
@@ -250,8 +267,8 @@ class Search:
         # by_day = pd.read_sql(sql, connection)
         # print(result)
         # Needs to use criteria in search object: self
-
-    def calculateLGA(self):
+        
+    def calcAllLgas(self):
         """alculates the number of accidents in each LGA"""
         result = self.getResult()
         lgaAccidentDict = dict()
@@ -264,6 +281,33 @@ class Search:
             sort = (key, val)
             lgaAccidentList.append(sort)
         return lgaAccidentList
+
+    def calculateLGA(self):
+        """alculates the number of accidents in each LGA"""
+        result = self.getResult()
+        lga = self.Lga
+        accidentNum = dict()
+        for row in result:
+            if row[8] == lga:
+                accidentNum[row[8]] = accidentNum.get(row[8], 0) + 1
+            else:
+                continue
+        # print(accidentNum)
+        accidentNumList = None
+        for key, val in accidentNum.items():
+            accidentNumList = (key, val)
+        return accidentNumList
+    
+        # lgaAccidentDict = dict()
+        # #iterates through result and appends lgaName as key in lgaAccidentDict and increments +1 per associated record in result
+        # for row in result:
+        #     lgaAccidentDict[row[8]] = lgaAccidentDict.get(row[8], 0) + 1
+        # lgaAccidentList = []
+        # # converts dailyAccidentDict into a list
+        # for key, val in lgaAccidentDict.items():
+        #     sort = (key, val)
+        #     lgaAccidentList.append(sort)
+        # return lgaAccidentList
         # con = connection()
         # cur = con.cursor()
         # sql = "SELECT lgaName, COUNT(*) FROM Accident WHERE lgaName LIKE ? AND accidentDate BETWEEN ? AND ? GROUP BY lgaName ORDER BY COUNT(*) DESC;"
@@ -274,8 +318,8 @@ class Search:
         # LGA = pd.read_sql("SELECT lgaName, COUNT(*) FROM Accident GROUP BY lgaName ORDER BY COUNT(*) DESC ;", connection)
         # return LGA
         # Needs to use criteria in search object: self
-    
-    def calculate_region(self):
+        
+    def calcAllRegions(self):
         """Calculates the number of accidents in each region."""
         result = self.getResult()
         regionAccidentDict = dict()
@@ -289,11 +333,38 @@ class Search:
             sort = (key, val)
             regionAccidentList.append(sort)
         return regionAccidentList
+    
+    def calculate_region(self):
+        """Calculates the number of accidents in each region."""
+        result = self.getResult()
+        region = self.Region
+        accidentNum = dict()
+        for row in result:
+            if row[9] == region:
+                accidentNum[row[9]] = accidentNum.get(row[9], 0) + 1
+            else:
+                continue
+        accidentNumList = None
+        for key, val in accidentNum.items():
+            accidentNumList = (key, val)
+        return accidentNumList
+        # print(accidentNum)
+        # regionAccidentDict = dict()
+        # #iterates through result and appends regionName as key in regionAccidentDict and increments +1 per associated record in result
+        # for row in result:
+        #     regionAccidentDict[row[9]] = regionAccidentDict.get(row[9], 0) + 1
+        # # print(regionAccidentDict)
+        # regionAccidentList = []
+        # # converts regionAccidentDict into a list
+        # for key, val in regionAccidentDict.items():
+        #     sort = (key, val)
+        #     regionAccidentList.append(sort)
+        # return regionAccidentList
 
         
-x = Search(To_Date = "2014-08-23", From_Date = "2013-07-01", Accident_Type_Keyword="Struck Pedestrian", Lga= "Bayside", Region= 'Western Region')
+x = Search(To_Date = "2014-08-23", From_Date = "2013-07-01", Accident_Type_Keyword="Struck Pedestrian", Lga= "BAYSIDE", Region= 'EASTERN REGION')
 # x.getResult()
-x.accident_type()
+x.calculate_region()
 # print(y)
 # print(x.getTotalDays())
 # print(x)
