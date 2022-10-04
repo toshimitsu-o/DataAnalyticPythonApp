@@ -413,34 +413,54 @@ class Search:
         result = self.getResult()
         dateList = []
         alcDateList = []
+        regDateList = []
         monthlyAccidentDict = dict()
         alcMonthlyAccidentDict = dict()   
+        regMonthlyAccidentDict = dict()
         #iterates through accidentDate column from result and appends full date to dateList 
         for row in result:
             dateList.append(row[1])
-            if mode == 'alcohol' and row[-1] == 1:
-                alcDateList.append(row[1])
+            if mode == 'alcohol':
+                if row[-1] == 1:
+                    alcDateList.append(row[1])
+                if row[-1] == 0:
+                    regDateList.append(row[1])
         # appends month from dateList as key in monthlyAccidentDict and increments +1 per associated record in dateList 
         for date in dateList:
             monthlyAccidentDict[date[5:7]] = monthlyAccidentDict.get(date[5:7], 0) + 1
         if mode == "alcohol":
             for date in alcDateList:
                 alcMonthlyAccidentDict[date[5:7]] = alcMonthlyAccidentDict.get(date[5:7], 0) + 1
+            for date in regDateList:
+                regMonthlyAccidentDict[date[5:7]] = regMonthlyAccidentDict.get(date[5:7], 0) + 1
         # converts dictionary into sorted list
         monthlyAccidentList = []
         alcMonthlyAccidentList = []
         combinedDict = dict()
         if mode == 'alcohol':
             # combines monthlyAccidentDict and alcMonthlyAccidentDict into 1 dictionary if mode= alcohol
-            for d in (monthlyAccidentDict, alcMonthlyAccidentDict):
-                for key, val in d.items():
-                    combinedDict[key].append(val) 
-            # converts combinedDict into a sorted list
-            for key, val in combinedDict.items():
+            for key, val in alcMonthlyAccidentDict.items():
                 sort = (key, val)
                 alcMonthlyAccidentList.append(sort)
             sortedAlcMonthlyAccidentList = sorted(alcMonthlyAccidentList)
-            result = sortedAlcMonthlyAccidentList
+            
+            for key, val in regMonthlyAccidentDict.items():
+                sort = (key, val)
+                monthlyAccidentList.append(sort)
+            sortedMonthlyAccidentList = sorted(monthlyAccidentList)
+            
+            return [sortedAlcMonthlyAccidentList, sortedMonthlyAccidentList]
+            
+            
+            # for d in (monthlyAccidentDict, alcMonthlyAccidentDict):
+            #     for key, val in d.items():
+            #         combinedDict[key].append(val) 
+            # # converts combinedDict into a sorted list
+            # for key, val in combinedDict.items():
+            #     sort = (key, val)
+            #     alcMonthlyAccidentList.append(sort)
+            # sortedAlcMonthlyAccidentList = sorted(alcMonthlyAccidentList)
+            # result = sortedAlcMonthlyAccidentList
         else:
             # converts dictionary into sorted list
             for key, val in monthlyAccidentDict.items():
