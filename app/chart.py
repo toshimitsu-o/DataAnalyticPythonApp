@@ -76,7 +76,6 @@ class ChartFrame(wx.Frame):
         self.main.SetSizer(sizer)
     
     def getChart(self):
-        print(self.search.From_Date)
         
         if self.chartType == "Hourly Average":
             self.result = self.search.hourly_average(mode=self.mode)
@@ -94,12 +93,14 @@ class ChartFrame(wx.Frame):
                 self.drawBarChart()
         elif self.chartType == "By Month":
             self.result = self.search.calculate_by_month(mode=self.mode)
+            print(self.result)
             if self.mode == "alcohol":
                 self.drawMultiBarChart()
             else:
                 self.drawBarChart()
         elif self.chartType == "By Day":
             self.result = self.search.calculate_by_day(mode=self.mode)
+            print(self.result)
             if self.mode == "alcohol":
                 self.drawMultiBarChart()
             else:
@@ -135,9 +136,9 @@ class ChartFrame(wx.Frame):
         self.axes.bar(labels, data)
 
     def drawMultiBarChart(self):
-        labels = ['one', 'two', 'three', 'four', 'five']
-        data1 = [23,85, 72, 43, 52]
-        data2 = [42, 35, 21, 16, 9]
+        labels = [i[0] for i in self.result[0]]
+        data1 = [i[1] for i in self.result[0]]
+        data2 = [i[1] for i in self.result[1]]
         width = 0.3
 
         # Make figure and axes.
@@ -149,7 +150,7 @@ class ChartFrame(wx.Frame):
         self.axes.bar(np.arange(len(data2)) + width, data2, width=width, label='Non-Alcohol')
         self.axes.legend()
 
-        self.axes.set_title("I am title")
+        self.axes.set_title(self.chartType)
     
     def drawMapChart(self):
         x = [144.9698,145.14671,144.80134,145.07011,144.9653,145.7914,145.00873,145.07229,145.02638,145.15439,145.04213,144.95479,145.06288,144.35796,145.07832,144.89081,145.16073,144.96245,144.99091]
