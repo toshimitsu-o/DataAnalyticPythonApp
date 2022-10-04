@@ -238,6 +238,8 @@ class Search:
             hourList.append(row[2])
             if mode == 'alcohol' and row[-1] == 1:
                 alcHourList.append(row[2])
+        # print(hourList, sep=':     ')
+        # print(alcHourList)
         # appends hour from hourList as key in hourlyAccidentDict and increments +1 per associated record in hourList 
         for time in hourList:
             hourlyAccidentDict[time[:2]] = hourlyAccidentDict.get(time[:2], 0) + 1
@@ -248,19 +250,41 @@ class Search:
         hourlyAvg = []
         alcHourlyAvg = []
         combinedDict = dict()
+        # print(alcHourlyAccidentDict)
+        # print(hourlyAccidentDict)
         if mode == 'alcohol':
-            for d in (hourlyAccidentDict, alcHourlyAccidentDict):
-                for key, val in d.items():
-                    combinedDict[key].append(val) 
-            for key, val in combinedDict.items():
+            for key, val in alcHourlyAccidentDict.items():
                 sort = (key, val)
                 alcHourlyAvg.append(sort)
                 sortedAlcHourlyAvg = sorted(alcHourlyAvg)
-                sortedAlcAccidentList = []
+            sortedAlcAccidentList = []
             for key in sortedAlcHourlyAvg:
                 sortedAlcAccidentList.append((key[0], key[1]/days))
-                result = sorted(sortedAlcAccidentList)
-                return result
+            finalAlcAccidentList = sorted(sortedAlcAccidentList)
+            
+            for key, val in hourlyAccidentDict.items():
+                sort = (key, val)
+                hourlyAvg.append(sort)
+                sortedHourlyAvg = sorted(hourlyAvg)
+            sortedAccidentList = []
+            for key in alcHourlyAvg:
+                sortedAccidentList.append((key[0], key[1]/days))
+            finalAccidentList = sorted(sortedAccidentList)
+            
+            return finalAlcAccidentList, finalAccidentList 
+            
+            # for d in (hourlyAccidentDict, alcHourlyAccidentDict):
+            #     for key, val in d.items():
+            #         combinedDict[key].append(val) 
+            # for key, val in combinedDict.items():
+            #     sort = (key, val)
+            #     alcHourlyAvg.append(sort)
+            #     sortedAlcHourlyAvg = sorted(alcHourlyAvg)
+            #     sortedAlcAccidentList = []
+            # for key in sortedAlcHourlyAvg:
+            #     sortedAlcAccidentList.append((key[0], key[1]/days))
+            #     result = sorted(sortedAlcAccidentList)
+            #     return result
         else:
             for key, val in hourlyAccidentDict.items():
                 sort = (key, val)
@@ -592,7 +616,7 @@ class Search:
         
 x = Search(To_Date = "2014-08-23", From_Date = "2013-07-01", Accident_Type_List="Collision with vehicle", Lga= "BAYSIDE", Region= 'EASTERN REGION')
 # x.getResult()
-y = x.accidentTypeList(mode='alcohol')
+y = x.hourly_average(mode='alcohol')
 print(y)
 # print(x.getTotalDays())
 # print(x)
