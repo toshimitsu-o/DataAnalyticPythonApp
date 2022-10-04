@@ -12,6 +12,7 @@ except ImportError:
 
 from search import Search
 from chart import ChartFrame
+import importData
 
 APP_NAME = "Accident Analysis"
 
@@ -62,7 +63,9 @@ class MainFrame(wx.Frame):
         #self.SetBackgroundColour((19,162,166,255))
         self.SetBackgroundColour("white")
 
+        # Make a list of accident types
         self.accidentTypes = self.search.listAccidentType()
+        self.accidentTypes.insert(0, "All types")
         
         # create a menu bar
         self.makeMenuBar()
@@ -351,7 +354,9 @@ class MainFrame(wx.Frame):
 
     def loadFile(self, filepath):
         filepath = str(filepath)
-        wx.MessageBox("Filepath for Dataset is: " + filepath)
+        data = importData.importData(filepath)
+        importData.createDatabase(data)
+        #wx.MessageBox("Filepath for Dataset is: " + filepath)
     
     def importBox(self): # Not using this
         #Dataset import
@@ -384,7 +389,10 @@ class MainFrame(wx.Frame):
         self.search.From_Date = self.dateFrCt.GetValue().Format("%Y-%m-%d")
         self.search.To_Date = self.dateToCt.GetValue().Format("%Y-%m-%d")
         self.search.Accident_Type_Keyword = self.accKyCt.GetValue()
-        self.search.Accident_Type_List = self.accidentTypes[(self.accCh.GetCurrentSelection())]
+        if self.accCh.GetCurrentSelection() == 0: # If all is selected
+            self.search.Accident_Type_List = None
+        else:
+            self.search.Accident_Type_List = self.accidentTypes[(self.accCh.GetCurrentSelection())]
         #print(self.search)
         self.updateGrid()
     
