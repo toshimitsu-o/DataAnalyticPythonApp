@@ -499,8 +499,7 @@ class Search:
                 if row[-1] == 1:
                     alcDailyAccidentDict[row[4]] = alcDailyAccidentDict.get(row[4], 0) + 1
                 elif row[-1] == 0:
-                    if row[-1] == 1:
-                        regDailyAccidentDict[row[4]] = regDailyAccidentDict.get(row[4], 0) + 1
+                    regDailyAccidentDict[row[4]] = regDailyAccidentDict.get(row[4], 0) + 1
             #iterates through result and appends day of week as key in dailyAccidentDict and increments +1 per associated record in result
             else:
                 dailyAccidentDict[row[4]] = dailyAccidentDict.get(row[4], 0) + 1
