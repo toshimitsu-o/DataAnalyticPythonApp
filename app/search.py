@@ -191,12 +191,16 @@ class Search:
         accidentType = self.Accident_Type_List
         accidentNum = dict()
         alcAccidentNum = dict()
+        regAccidentNum = dict()
         # iterates through result and appends self.Accident_Type_Keyword as key in accidentNum dict, increments +1 per associated record in result else continues
         for row in result:
             if row[3] == accidentType:
                 accidentNum[row[3]] = accidentNum.get(row[3], 0) + 1
-                if mode == "alcohol" and row[-1] == 1:
-                    alcAccidentNum[row[3]] = alcAccidentNum.get(row[3], 0) + 1
+                if mode == "alcohol":
+                    if row[-1] == 1:
+                        alcAccidentNum[row[3]] = alcAccidentNum.get(row[3], 0) + 1
+                    elif row[-1] == 0:
+                        regAccidentNum[row[3]] = regAccidentNum.get(row[3], 0) + 1
             else:
                 continue
         # converts dictionary into a list
@@ -207,7 +211,7 @@ class Search:
             for key, val in alcAccidentNum.items():
                 sort = (key, val)
                 alcAccidentNumList.append(sort)
-            for key, val in accidentNum.items():
+            for key, val in regAccidentNum.items():
                 sort = (key, val)
                 accidentNumList.append(sort)
             return [alcAccidentNumList, accidentNumList]
@@ -224,6 +228,9 @@ class Search:
 
         Returns:
             list: [(hour, numofAccidents), ...]
+        if mode = 'alcohol':
+        Returns:
+            list: [[(hour, avgAlcAccidentRate), ...][(hour, avgNonAlcAccidentRate), ...]]
         """
         result = self.getResult()
         #calculates number of days
@@ -231,13 +238,18 @@ class Search:
         days = dayResult[0]
         hourList = []
         alcHourList = []
+        regHourList = []
         hourlyAccidentDict = dict()   
         alcHourlyAccidentDict = dict()
+        regHourlyAccidentDict = dict()
         #iterates through accidentTime column from result and appends to hourList 
         for row in result:
             hourList.append(row[2])
-            if mode == 'alcohol' and row[-1] == 1:
-                alcHourList.append(row[2])
+            if mode == 'alcohol':
+                if row[-1] == 1:
+                    alcHourList.append(row[2])
+                elif row[-1] == 0:
+                    regHourList.append(row[2])
         # print(hourList, sep=':     ')
         # print(alcHourList)
         # appends hour from hourList as key in hourlyAccidentDict and increments +1 per associated record in hourList 
@@ -246,10 +258,11 @@ class Search:
         if mode == 'alcohol':
             for time in alcHourList:
                 alcHourlyAccidentDict[time[:2]] = alcHourlyAccidentDict.get(time[:2], 0) + 1
+            for time in regHourList:
+                regHourlyAccidentDict[time[:2]] = regHourlyAccidentDict.get(time[:2], 0) + 1
         #converts dictionary into sorted list
         hourlyAvg = []
         alcHourlyAvg = []
-        combinedDict = dict()
         # print(alcHourlyAccidentDict)
         # print(hourlyAccidentDict)
         if mode == 'alcohol':
@@ -262,7 +275,7 @@ class Search:
                 sortedAlcAccidentList.append((key[0], key[1]/days))
             finalAlcAccidentList = sorted(sortedAlcAccidentList)
             
-            for key, val in hourlyAccidentDict.items():
+            for key, val in regHourlyAccidentDict.items():
                 sort = (key, val)
                 hourlyAvg.append(sort)
                 sortedHourlyAvg = sorted(hourlyAvg)
