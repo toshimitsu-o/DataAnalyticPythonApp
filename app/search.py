@@ -97,8 +97,11 @@ class Search:
         try:
             con = connection()
             cur = con.cursor()
-            if accidentType or accidentList is not None:
+            if accidentType is not None:
                 data.append(accidentType)
+                sql += accidentSql
+            if accidentList is not None:
+                data.append(accidentList)
                 sql += accidentSql
             elif lga is not None:
                 data.append(lga)
@@ -164,6 +167,7 @@ class Search:
 
         Returns:
             list: ['accidentType', ...]
+            
         """
         result = self.getResult()
         word = self.Accident_Type_Keyword
@@ -179,6 +183,9 @@ class Search:
 
         Returns:
             list: [(accidentType, NumofAccidents), ...] 
+        if mode= 'alcohol
+        Returns:
+            list: [[(accidentType, numOfAlcoholAccidents)], [(accidentType, numOfAccidents)]]
         """
         result = self.getResult()
         accidentType = self.Accident_Type_List
@@ -188,23 +195,22 @@ class Search:
         for row in result:
             if row[3] == accidentType:
                 accidentNum[row[3]] = accidentNum.get(row[3], 0) + 1
-            elif mode == "alcohol" and row[-1] == 1:
-                alcAccidentNum[row[3]] = alcAccidentNum.get(row[3], 0) + 1
+                if mode == "alcohol" and row[-1] == 1:
+                    alcAccidentNum[row[3]] = alcAccidentNum.get(row[3], 0) + 1
             else:
                 continue
         # converts dictionary into a list
         accidentNumList = []
         alcAccidentNumList = []
-        combinedDict = dict()
+        # if mode = alcohol converts alc and nonAlc data into two lists
         if mode == 'alcohol':
-            for d in (accidentNum, alcAccidentNum):
-                for key, val in d.items():
-                    combinedDict[key].append(val) 
-            for key, val in combinedDict.items():
+            for key, val in alcAccidentNum.items():
                 sort = (key, val)
                 alcAccidentNumList.append(sort)
-                sortedAlcAccidents = sorted(alcAccidentNumList)
-            return sortedAlcAccidents
+            for key, val in accidentNum.items():
+                sort = (key, val)
+                accidentNumList.append(sort)
+            return [alcAccidentNumList, accidentNumList]
         else:
             for key, val in accidentNum.items():
                 sort = (key, val)
@@ -586,7 +592,7 @@ class Search:
         
 x = Search(To_Date = "2014-08-23", From_Date = "2013-07-01", Accident_Type_List="Collision with vehicle", Lga= "BAYSIDE", Region= 'EASTERN REGION')
 # x.getResult()
-y = x.accidentTypeList()
+y = x.accidentTypeList(mode='alcohol')
 print(y)
 # print(x.getTotalDays())
 # print(x)
