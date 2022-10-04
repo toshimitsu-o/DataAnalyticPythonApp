@@ -280,7 +280,7 @@ class Search:
                 hourlyAvg.append(sort)
                 sortedHourlyAvg = sorted(hourlyAvg)
             sortedAccidentList = []
-            for key in alcHourlyAvg:
+            for key in sortedHourlyAvg:
                 sortedAccidentList.append((key[0], key[1]/days))
             finalAccidentList = sorted(sortedAccidentList)
             
