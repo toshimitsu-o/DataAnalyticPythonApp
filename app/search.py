@@ -317,17 +317,24 @@ class Search:
 
         Returns:
             list: [(accidentType, numofAccidents), ...]
+        if mode = 'alcohol'
+        Returns:
+            list: [[(accidentType, numofAlcoholAccidents), ...], [(accidentType, numofNonAlcoholAccidents), ...]]
         """
         result = self.getResult()
         accidentDict = dict()
         alcAccidentDict = dict() 
+        regAccidentDict = dict()
         for row in result:
             #iterates through result and ignores row if day of week column == None
             if row[3] == None:
                 continue
             # if mode = alcohol
-            if mode == 'alcohol' and row[-1] == 1:
-                accidentDict[row[3]] = accidentDict.get(row[3], 0) + 1
+            if mode == 'alcohol':
+                if row[-1] == 1:
+                    accidentDict[row[3]] = accidentDict.get(row[3], 0) + 1
+                elif row[-1] == 1:
+                    regAccidentDict[row[3]] = regAccidentDict.get(row[3], 0) + 1
             #iterates through result and appends day of week as key in dailyAccidentDict and increments +1 per associated record in result
             else:
                 alcAccidentDict[row[3]] = alcAccidentDict.get(row[3], 0) + 1
@@ -336,14 +343,16 @@ class Search:
         combinedDict = dict()
         # converts dailyAccidentDict into an ordered list
         if mode == 'alcohol':
-            for d in (accidentDict, alcAccidentDict):
-                for key, val in d.items():
-                    combinedDict[key].append(val) 
-            for key, val in combinedDict.items():
+            # for d in (accidentDict, alcAccidentDict):
+            #     for key, val in d.items():
+            #         combinedDict[key].append(val) 
+            for key, val in alcAccidentDict.items():
                 sort = (key, val)
                 alcAccidentList.append(sort)
-                sortedAlcAccidents = sorted(alcAccidentList)
-            return sortedAlcAccidents
+            for key, val in accidentDict.items():
+                sort = (key, val)
+                accidentList.append(sort)
+            return [alcAccidentList, accidentList]
         else:
             for key, val in accidentDict.items():
                 sort = (key, val)
@@ -409,6 +418,9 @@ class Search:
 
         Returns:
             list: [(month, numofAccidents),...]
+        if mode = 'alcohol'
+        Returns:
+            list: [[(month, numOfAlcAccidents), ...] [(month, numOfNonAlcAccidents), ...]]
         """
         result = self.getResult()
         dateList = []
@@ -478,30 +490,41 @@ class Search:
         result = self.getResult()
         dailyAccidentDict = dict() 
         alcDailyAccidentDict = dict()
+        regDailyAccidentDict = dict()
         for row in result:
             #iterates through result and ignores row if day of week column == None
             if row[4] == None:
                 continue
-            elif mode == "alcohol" and row[-1] == 1:
-                alcDailyAccidentDict[row[4]] = alcDailyAccidentDict.get(row[4], 0) + 1
+            if mode == "alcohol":
+                if row[-1] == 1:
+                    alcDailyAccidentDict[row[4]] = alcDailyAccidentDict.get(row[4], 0) + 1
+                elif row[-1] == 0:
+                    if row[-1] == 1:
+                        regDailyAccidentDict[row[4]] = regDailyAccidentDict.get(row[4], 0) + 1
             #iterates through result and appends day of week as key in dailyAccidentDict and increments +1 per associated record in result
             else:
                 dailyAccidentDict[row[4]] = dailyAccidentDict.get(row[4], 0) + 1
         dailyAccidentList = []
         alcDailyAccidentList = []
-        combinedDict = dict()
         # combines 2 dictionaries if mode = alcohol
         if mode == 'alcohol':
-            for d in (dailyAccidentDict, alcDailyAccidentDict):
-                for key, val in d.items():
-                    combinedDict[key].append(val) 
+            # for d in (dailyAccidentDict, alcDailyAccidentDict):
+            #     for key, val in d.items():
+            #         combinedDict[key].append(val) 
             # converts combinedDict into an ordered list
-            for key, val in combinedDict.items():
+            for key, val in alcDailyAccidentDict.items():
                 sort = (key, val)
                 alcDailyAccidentList.append(sort)
             day = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
             sortedAlcDailyAccidentList = sorted(alcDailyAccidentList, key = lambda d: day.index(d[0]))
-            return sortedAlcDailyAccidentList
+            
+            for key, val in regDailyAccidentDict.items():
+                sort = (key, val)
+                dailyAccidentList.append(sort)
+            day = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+            sortedDailyAccidentList = sorted(dailyAccidentList, key = lambda d: day.index(d[0]))
+            
+            return [sortedAlcDailyAccidentList, sortedDailyAccidentList]
         else:
             # convertes dailyAccidentDict into an ordered list
             for key, val in dailyAccidentDict.items():
