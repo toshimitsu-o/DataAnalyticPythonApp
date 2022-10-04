@@ -284,7 +284,7 @@ class Search:
                 sortedAccidentList.append((key[0], key[1]/days))
             finalAccidentList = sorted(sortedAccidentList)
             
-            return finalAlcAccidentList, finalAccidentList 
+            return [finalAlcAccidentList, finalAccidentList] 
             
             # for d in (hourlyAccidentDict, alcHourlyAccidentDict):
             #     for key, val in d.items():
@@ -360,27 +360,44 @@ class Search:
         accidentType = self.matchAccidentType()
         accidentNum = dict()
         alcAccidentNum = dict()
+        regAccidentNum = dict()
         # iterates through result and appends self.Accident_Type_Keyword as key in accidentNum dict, increments +1 per associated record in result else continues
         for row in result:
             if row[3] in accidentType:
                 accidentNum[row[3]] = accidentNum.get(row[3], 0) + 1
-            elif mode == "alcohol" and row[-1] == 1:
-                alcAccidentNum[row[3]] = alcAccidentNum.get(row[3], 0) + 1
+            if mode == "alcohol":
+                if row[-1] == 1:
+                    alcAccidentNum[row[3]] = alcAccidentNum.get(row[3], 0) + 1
+                if row[-1] == 0:
+                    regAccidentNum[row[3]] = regAccidentNum.get(row[3], 0) + 1
             else:
                 continue
         # converts dictionary into a list
         accidentNumList = []
         alcAccidentNumList = []
-        combinedDict = dict()
         if mode == 'alcohol':
-            for d in (accidentNum, alcAccidentNum):
-                for key, val in d.items():
-                    combinedDict[key].append(val) 
-            for key, val in combinedDict.items():
+            
+            for key, val in alcAccidentNum.items():
                 sort = (key, val)
                 alcAccidentNumList.append(sort)
                 sortedAlcAccidents = sorted(alcAccidentNumList)
-            return sortedAlcAccidents
+            
+            for key, val in regAccidentNum.items():
+                sort = (key, val)
+                accidentNumList.append(sort)
+                sortedAccidents = sorted(accidentNumList)
+                
+            return [sortedAlcAccidents, sortedAccidents]
+            
+        #     for d in (accidentNum, alcAccidentNum):
+        #         for key, val in d.items():
+        #             combinedDict[key].append(val) 
+        #     for key, val in combinedDict.items():
+        #         sort = (key, val)
+        #         alcAccidentNumList.append(sort)
+        #         sortedAlcAccidents = sorted(alcAccidentNumList)
+        #     return sortedAlcAccidents
+        
         else:
             for key, val in accidentNum.items():
                 sort = (key, val)
