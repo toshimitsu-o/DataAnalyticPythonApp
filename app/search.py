@@ -200,7 +200,7 @@ class Search:
             list: [(accidentType, NumofAccidents), ...] 
         if mode= 'alcohol
         Returns:
-            list: [[(accidentType, numOfAlcoholAccidents)], [(accidentType, numOfAccidents)]]
+            list: [[(accidentType, numOfAlcoholAccidents), ...], [(accidentType, numOfAccidents), ...]]
         """
         result = self.getResult()
         accidentType = self.Accident_Type_List
@@ -606,7 +606,7 @@ class Search:
         """Calculates the number of accidents within a given lga
 
         Returns:
-            tuple: (lgaName, numofAccidents)
+            list: [(lgaName, numofAccidents), ...]
         """
         result = self.getResult()
         lga = self.matchLga()
@@ -682,7 +682,7 @@ class Search:
         """calculates the num of accidents within a given region
 
         Returns:
-            tuple: (regionName, numofAccidents)
+            list: [(regionName, numofAccidents), ...]
         """
         result = self.getResult()
         region = self.matchRegions()
