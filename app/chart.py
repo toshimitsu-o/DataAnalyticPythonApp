@@ -14,6 +14,7 @@ try:
 except ImportError:
     raise ImportError ("The wxPython module is required to run this program.")
 from cProfile import label
+from ctypes import alignment
 from re import search
 from tkinter import CENTER, RIGHT
 from search import Search
@@ -46,6 +47,7 @@ class ChartFrame(wx.Frame):
 
         # Main
         self.main = wx.StaticBox(self.pnl, wx.ID_ANY, "", pos =(0, 0), size =(-1, -1))
+        self.main.SetFont(wx.Font(5, wx.SWISS, wx.NORMAL, wx.BOLD, False,'Arial'))
 
         # Plot
         self.makeCtrls()
@@ -71,7 +73,7 @@ class ChartFrame(wx.Frame):
 
     def plotLayout(self):
         sizer = wx.BoxSizer(wx.VERTICAL)
-        sizer.Add(self.canvas, 1, wx.ALL | wx.GROW, 0)
+        sizer.Add(self.canvas, 1, wx.LEFT | wx.EXPAND, 0)
         sizer.Add(self.toolbar, 0, wx.ALL | wx.EXPAND, 0)
         self.main.SetSizer(sizer)
     
@@ -131,6 +133,7 @@ class ChartFrame(wx.Frame):
         self.axes.plot(1, 0)
         self.axes.set_xlabel('Accident')
         self.axes.set_title(self.chartType)
+        #self.axes.set_animated(True)
 
         self.axes.barh(labels, data)
 

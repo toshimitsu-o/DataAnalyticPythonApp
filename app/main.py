@@ -179,42 +179,42 @@ class MainFrame(wx.Frame):
     
     def makeMenuBox(self):
         # Box for menu box buttons
-        self.menubox = wx.StaticBox(self.pnl, wx.ID_ANY, "", pos =wx.DefaultPosition, size =(-1, 50))
+        self.menubox = wx.StaticBox(self.pnl, wx.ID_ANY, "", pos =wx.DefaultPosition, size =(-1, 55))
         self.menubox.SetBackgroundColour((19,162,166,255))
         # button for Dataset
-        self.btn1 = wx.Button(self.pnl, size =(200, 40), label="Dataset")
+        self.btn1 = wx.Button(self.pnl, size =(160, 40), label="Dataset")
         self.bmp = wx.Bitmap('btn.png', wx.BITMAP_TYPE_PNG).ConvertToImage()
         self.bmp = wx.Bitmap(self.bmp.Scale(30, 30, wx.IMAGE_QUALITY_HIGH))
         self.btn1.SetBitmap(self.bmp)
         self.Bind(wx.EVT_BUTTON, self.onFileOpen, self.btn1)
         #  button for Analyse
-        self.btn2 = wx.Button(self.pnl, size =(200, 40), label="Analyse")
+        self.btn2 = wx.Button(self.pnl, size =(160, 40), label="Analyse")
         self.bmp = wx.Bitmap('btn.png', wx.BITMAP_TYPE_PNG).ConvertToImage()
         self.bmp = wx.Bitmap(self.bmp.Scale(30, 30, wx.IMAGE_QUALITY_HIGH))
         self.btn2.SetBitmap(self.bmp)
         self.Bind(wx.EVT_BUTTON, self.onAnalyse, self.btn2)
         #  button for Analyse
-        self.btn3 = wx.Button(self.pnl, size =(200, 40), label="Alcohol")
+        self.btn3 = wx.Button(self.pnl, size =(160, 40), label="Alcohol")
         self.bmp = wx.Bitmap('btn.png', wx.BITMAP_TYPE_PNG).ConvertToImage()
         self.bmp = wx.Bitmap(self.bmp.Scale(30, 30, wx.IMAGE_QUALITY_HIGH))
         self.btn3.SetBitmap(self.bmp)
         self.Bind(wx.EVT_BUTTON, self.onAlcohol, self.btn3)
         #  button for Location
-        self.btn4 = wx.Button(self.pnl, size =(200, 40), label="Location")
+        self.btn4 = wx.Button(self.pnl, size =(160, 40), label="Location")
         self.bmp = wx.Bitmap('btn.png', wx.BITMAP_TYPE_PNG).ConvertToImage()
         self.bmp = wx.Bitmap(self.bmp.Scale(30, 30, wx.IMAGE_QUALITY_HIGH))
         self.btn4.SetBitmap(self.bmp)
         self.Bind(wx.EVT_BUTTON, self.onLocation, self.btn4)
         self.sizer = wx.BoxSizer(wx.HORIZONTAL)
-        self.sizer.Add(self.btn1, 0, wx.EXPAND, 0)
-        self.sizer.Add(self.btn2, 0, wx.EXPAND, 0)
-        self.sizer.Add(self.btn3, 0, wx.EXPAND, 0)
-        self.sizer.Add(self.btn4, 0, wx.EXPAND, 0)
+        self.sizer.Add(self.btn1, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL | wx.EXPAND, 5)
+        self.sizer.Add(self.btn2, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL | wx.EXPAND, 5)
+        self.sizer.Add(self.btn3, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL | wx.EXPAND, 5)
+        self.sizer.Add(self.btn4, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL | wx.EXPAND, 5)
         self.menubox.SetSizer(self.sizer)
 
     def makeSearchBox(self):
         # Make Search box
-        self.searchBox = wx.StaticBox(self.pnl, wx.ID_ANY, "", pos =(0, 0), size =(-1, 80))
+        self.searchBox = wx.StaticBox(self.pnl, wx.ID_ANY, "", pos =(0, 0), size =(-1, 60))
         self.searchBox.SetBackgroundColour((247,247,247,255))
         # Search box items
         self.dateTl = wx.StaticText(self.searchBox, label="Date ")
@@ -230,7 +230,7 @@ class MainFrame(wx.Frame):
         self.outCb1 = wx.CheckBox(self.searchBox, label = 'Day')
         self.outCb2 = wx.CheckBox(self.searchBox, label = 'Hit&Run')
         self.outCb3 = wx.CheckBox(self.searchBox, label = 'Location')
-        self.searchBtn = wx.Button(self.searchBox, label="Search", size=(100, 100))
+        self.searchBtn = wx.Button(self.searchBox, label="Search", size=(100, 30))
         self.searchBtn.Bind(wx.EVT_BUTTON, self.onSearch)
         # Sizer 
         self.schSizer = wx.GridBagSizer(hgap=0, vgap=0)
@@ -404,10 +404,10 @@ class MainFrame(wx.Frame):
             self.cBtn5.Show()
             self.cBtn6.Show()
             self.cBtn7.Show()
-            self.boxBtmSizer.Add(self.charTl, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 0)
-            self.boxBtmSizer.Add(self.cBtn5, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 0)
-            self.boxBtmSizer.Add(self.cBtn6, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 0)
-            self.boxBtmSizer.Add(self.cBtn7, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 0)
+            self.boxBtmSizer.Add(self.charTl, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
+            self.boxBtmSizer.Add(self.cBtn5, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
+            self.boxBtmSizer.Add(self.cBtn6, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
+            self.boxBtmSizer.Add(self.cBtn7, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
         else:
             self.cBtn1.Show()
             self.cBtn2.Show()
@@ -416,11 +416,11 @@ class MainFrame(wx.Frame):
             self.cBtn5.Hide()
             self.cBtn6.Hide()
             self.cBtn7.Hide()
-            self.boxBtmSizer.Add(self.charTl, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 0)
-            self.boxBtmSizer.Add(self.cBtn1, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 0)
-            self.boxBtmSizer.Add(self.cBtn2, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 0)
-            self.boxBtmSizer.Add(self.cBtn3, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 0)
-            self.boxBtmSizer.Add(self.cBtn4, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 0)
+            self.boxBtmSizer.Add(self.charTl, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
+            self.boxBtmSizer.Add(self.cBtn1, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
+            self.boxBtmSizer.Add(self.cBtn2, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
+            self.boxBtmSizer.Add(self.cBtn3, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
+            self.boxBtmSizer.Add(self.cBtn4, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
         if mode != "":
             # Update the layout
             self.boxBtmSizer.Layout()
