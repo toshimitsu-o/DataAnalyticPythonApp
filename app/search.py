@@ -450,9 +450,9 @@ class Search:
         dateList = []
         alcDateList = []
         regDateList = []
-        monthlyAccidentDict = dict()
-        alcMonthlyAccidentDict = dict()   
-        regMonthlyAccidentDict = dict()
+        monthlyAccidentDict = {'00': 0, '01' : 0, '02' : 0, '03' : 0, '04': 0, '05' : 0, '06' : 0, '07' : 0, '08': 0, '09' : 0, '10' : 0, '11' : 0,'12': 0}
+        alcMonthlyAccidentDict = {'00': 0, '01' : 0, '02' : 0, '03' : 0, '04': 0, '05' : 0, '06' : 0, '07' : 0, '08': 0, '09' : 0, '10' : 0, '11' : 0,'12': 0}   
+        regMonthlyAccidentDict = {'00': 0, '01' : 0, '02' : 0, '03' : 0, '04': 0, '05' : 0, '06' : 0, '07' : 0, '08': 0, '09' : 0, '10' : 0, '11' : 0,'12': 0}
         #iterates through accidentDate column from result and appends full date to dateList 
         for row in result:
             dateList.append(row[1])
@@ -511,9 +511,9 @@ class Search:
             list: [(dayofWeek, numofAccidents), ...]
         """
         result = self.getResult()
-        dailyAccidentDict = dict() 
-        alcDailyAccidentDict = dict()
-        regDailyAccidentDict = dict()
+        dailyAccidentDict = {'Monday': 0, 'Tuesday' : 0, 'Wednesday' : 0, 'Thursday' : 0, 'Friday': 0, 'Saturday' : 0, 'Sunday' : 0} 
+        alcDailyAccidentDict = {'Monday': 0, 'Tuesday' : 0, 'Wednesday' : 0, 'Thursday' : 0, 'Friday': 0, 'Saturday' : 0, 'Sunday' : 0}
+        regDailyAccidentDict = {'Monday': 0, 'Tuesday' : 0, 'Wednesday' : 0, 'Thursday' : 0, 'Friday': 0, 'Saturday' : 0, 'Sunday' : 0}
         for row in result:
             #iterates through result and ignores row if day of week column == None
             if row[4] == None:
