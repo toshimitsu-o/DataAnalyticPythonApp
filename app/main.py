@@ -51,11 +51,15 @@ class MainFrame(wx.Frame):
         self.initialise()
             
     def initialise(self):
+        # Initial values
+
         # Define state of program: main, alcohol, location
         self.mode = "main"
-        #self.rows = None
+        self.search = Search(To_Date=None, From_Date =None, Accident_Type_List=None, Lga=None, Region=None)
+        self.resultDb = None
+        self.minDate = ""
+        self.maxDate = ""
 
-        self.search = Search()
 
         # create a panel in the frame
         self.pnl = wx.Panel(self)
@@ -63,9 +67,30 @@ class MainFrame(wx.Frame):
         #self.SetBackgroundColour((19,162,166,255))
         self.SetBackgroundColour("white")
 
-        # Make a list of accident types
-        self.accidentTypes = self.search.listAccidentType()
-        self.accidentTypes.insert(0, "All types")
+        # try:
+        #     self.result = self.search.getResult()
+        # except:
+        #     wx.MessageBox("Dataset is empty. Please select Dataset in the menu bar to import.")
+
+        if self.search.checkTable():
+            # Get and set dates
+            dateRange = self.search.getDateRange()
+            print(dateRange)
+            self.minDate = dateRange[0]
+            self.maxDate = dateRange[1]
+            self.search.From_Date = self.minDate
+            self.search.To_Date = self.maxDate
+            # Get result from database
+            self.resultDb = self.search.getResult()
+
+            # Make a list of accident types
+            listAccidentTpes = self.search.listAccidentType()
+            if (listAccidentTpes):
+                self.accidentTypes = self.search.listAccidentType()
+                self.accidentTypes.insert(0, "All types")
+            
+        else:
+            self.accidentTypes = ["No Accident Types"]
         
         # create a menu bar
         self.makeMenuBar()
@@ -76,15 +101,23 @@ class MainFrame(wx.Frame):
         # Make a status bar
         self.CreateStatusBar()
         self.SetStatusText("Welcome to "+ APP_NAME)
+
+        # If dataset is empty
+        if not self.resultDb:
+            # Disable buttons
+            wx.MessageBox("Dataset is empty. Please select Dataset in the menu bar to import.")
     
     def updateData(self):
-        self.rows = self.search.getResult()
-        for i in range (0, len(self.rows)):
-            #self.grid.SetRowLabelValue(i, "")
-            self.grid.SetRowLabelSize(0)
-            for j in range(0, 13):
-                cell = self.rows[i]
-                self.grid.SetCellValue(i, j, str(cell[j]))
+        if self.resultDb:
+            self.rows = self.resultDb
+            for i in range (0, len(self.rows)):
+                #self.grid.SetRowLabelValue(i, "")
+                self.grid.SetRowLabelSize(0)
+                for j in range(0, 13):
+                    cell = self.rows[i]
+                    self.grid.SetCellValue(i, j, str(cell[j]))
+        else:
+            wx.MessageBox("Dataset is empty. Please select Dataset in the menu bar to import.")
 
     def buidMain(self):
         # Make menu box for buttons
@@ -145,10 +178,19 @@ class MainFrame(wx.Frame):
         # Search box items
         self.dateTl = wx.StaticText(self.searchBox, label="Date ")
         self.dateFrCt = wx.adv.DatePickerCtrl(self.searchBox)
-        self.dateFrCt.SetRange(wx.DateTime.FromDMY(1,7,2013),wx.DateTime.FromDMY(1,2,2019))
+        minY = int(self.minDate[0:4])
+        minM = int(self.minDate[5:7].lstrip('0'))-1
+        print(minM)
+        minD = int(self.minDate[-2:].lstrip('0'))
+        maxY = int(self.maxDate[0:4])
+        maxM = int(self.maxDate[5:7].lstrip('0'))-1
+        maxD = int(self.maxDate[-2:].lstrip('0'))
+        self.dateFrCt.SetValue(wx.DateTime.FromDMY(minD,minM,minY))
+        self.dateFrCt.SetRange(wx.DateTime.FromDMY(minD,minM,minY),wx.DateTime.FromDMY(maxD,maxM,maxY))
         self.dateTo = wx.StaticText(self.searchBox, label="to ")
         self.dateToCt = wx.adv.DatePickerCtrl(self.searchBox)
-        self.dateToCt.SetRange(wx.DateTime.FromDMY(1,7,2013),wx.DateTime.FromDMY(1,2,2019))
+        self.dateToCt.SetValue(wx.DateTime.FromDMY(maxD,maxM,maxY))
+        self.dateToCt.SetRange(wx.DateTime.FromDMY(minD,minM,minY),wx.DateTime.FromDMY(maxD,maxM,maxY))
         self.accTl = wx.StaticText(self.searchBox, label="Accident Type ")
         self.accKyCt = wx.TextCtrl(self.searchBox)
         self.typeList = self.accidentTypes
@@ -242,39 +284,40 @@ class MainFrame(wx.Frame):
         # Create a wxGrid object
         self.grid = wx.grid.Grid(self.box, -1)
 
-        # This is to create the grid with same rows as database.
-        r = self.search.dataRowsCount()
-        self.grid.CreateGrid(r, 13)
-        self.grid.SetColLabelValue(0, "No")
-        self.grid.SetColSize(0, 12)
-        self.grid.SetColLabelValue(1, "Date")
-        self.grid.SetColSize(1, 90)
-        self.grid.SetColLabelValue(2, "Time")
-        self.grid.SetColSize(2, 70)
-        self.grid.SetColLabelValue(3, "Type")
-        self.grid.SetColSize(3, 150)
-        self.grid.SetColLabelValue(4, "Day")
-        self.grid.SetColSize(4, 60)
-        self.grid.SetColLabelValue(5, "Severity")
-        self.grid.SetColSize(5, 150)
-        self.grid.SetColLabelValue(6, "Longitude")
-        self.grid.SetColSize(6, 70)
-        self.grid.SetColLabelValue(7, "Latitude")
-        self.grid.SetColSize(7, 70)
-        self.grid.SetColLabelValue(8, "LGA")
-        self.grid.SetColSize(8, 100)
-        self.grid.SetColLabelValue(9, "Region")
-        self.grid.SetColSize(9, 120)
-        self.grid.SetColLabelValue(10, "Fatalities")
-        self.grid.SetColSize(10, 60)
-        self.grid.SetColLabelValue(11, "Injuries")
-        self.grid.SetColSize(11, 60)
-        self.grid.SetColLabelValue(12, "Alcohol")
-        self.grid.SetColSize(12, 60)
-        self.updateData()
+        if self.resultDb:
+            # This is to create the grid with same rows as database.
+            r = self.search.dataRowsCount()
+            self.grid.CreateGrid(r, 13)
+            self.grid.SetColLabelValue(0, "No")
+            self.grid.SetColSize(0, 12)
+            self.grid.SetColLabelValue(1, "Date")
+            self.grid.SetColSize(1, 90)
+            self.grid.SetColLabelValue(2, "Time")
+            self.grid.SetColSize(2, 70)
+            self.grid.SetColLabelValue(3, "Type")
+            self.grid.SetColSize(3, 150)
+            self.grid.SetColLabelValue(4, "Day")
+            self.grid.SetColSize(4, 60)
+            self.grid.SetColLabelValue(5, "Severity")
+            self.grid.SetColSize(5, 150)
+            self.grid.SetColLabelValue(6, "Longitude")
+            self.grid.SetColSize(6, 70)
+            self.grid.SetColLabelValue(7, "Latitude")
+            self.grid.SetColSize(7, 70)
+            self.grid.SetColLabelValue(8, "LGA")
+            self.grid.SetColSize(8, 100)
+            self.grid.SetColLabelValue(9, "Region")
+            self.grid.SetColSize(9, 120)
+            self.grid.SetColLabelValue(10, "Fatalities")
+            self.grid.SetColSize(10, 60)
+            self.grid.SetColLabelValue(11, "Injuries")
+            self.grid.SetColSize(11, 60)
+            self.grid.SetColLabelValue(12, "Alcohol")
+            self.grid.SetColSize(12, 60)
+            self.updateData()
 
-        # Set the whole grid read only
-        self.grid.EnableEditing(False)
+            # Set the whole grid read only
+            self.grid.EnableEditing(False)
 
     def makeBtmBox(self):
         # Bottom box for chart buttons
@@ -394,6 +437,7 @@ class MainFrame(wx.Frame):
         else:
             self.search.Accident_Type_List = self.accidentTypes[(self.accCh.GetCurrentSelection())]
         #print(self.search)
+        self.resultDb = self.search.getResult()
         self.updateGrid()
     
     def onChart(self, event):

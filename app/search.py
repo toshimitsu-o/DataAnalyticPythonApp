@@ -34,6 +34,21 @@ class Search:
     #     "Output_Type: ", self.Output_Type,
     #     "Lga", self.Lga,
     #     "Region", self.Region)
+
+    def checkTable(self):
+        """Check if the table exist in the database and return True or False"""
+        #result = c.fetchone()
+        #print(result)
+        try:
+            con = connection()
+            c = con.cursor()
+            #sql = "SELECT * FROM Accident LIMIT 1;"
+            c.execute("SELECT * FROM Accident LIMIT 1;")
+            c.fetchall()
+        except:
+            return False
+        else:
+            return True
     
     def getDateRange(self):
         """queries accident database to get the min and max date within the search query
@@ -47,9 +62,9 @@ class Search:
         sqlmin = "SELECT MIN(accidentDate) FROM Accident;"
         sqlmax = "SELECT MAX(accidentDate) FROM Accident;"
         c.execute(sqlmin)
-        minDate = c.fetchall()
+        minDate = c.fetchall()[0][0]
         c.execute(sqlmax)
-        maxDate = c.fetchall()
+        maxDate = c.fetchall()[0][0]
         return (minDate, maxDate)
     
     
@@ -686,10 +701,10 @@ class Search:
         return accidentNumList
 
         
-x = Search(To_Date = "2014-08-23", From_Date = "2013-07-01", Accident_Type_List="Collision with vehicle", Lga= "BAYSIDE", Region= 'EASTERN REGION')
+#x = Search(To_Date = "2014-08-23", From_Date = "2013-07-01", Accident_Type_List="Collision with vehicle", Lga= "BAYSIDE", Region= 'EASTERN REGION')
 # x.getResult()
-y = x.hourly_average(mode='alcohol')
-print(y)
+#y = x.hourly_average(mode='alcohol')
+#print(y)
 # print(x.getTotalDays())
 # print(x)
 
