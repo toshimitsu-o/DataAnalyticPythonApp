@@ -709,10 +709,10 @@ class Search:
         return accidentNumList
 
         
-x = Search(Accident_Type_List="Collision with vehicle", Lga= "BAYSIDE", Region= 'EASTERN REGION')
-# y = x.getResult()
-y = x.hourly_average()
-print(y)
+# x = Search(Accident_Type_List="Collision with vehicle", Lga= "BAYSIDE", Region= 'EASTERN REGION')
+# # y = x.getResult()
+# y = x.calculate_by_day(mode = 'alcohol')
+# print(y)
 # print(x.getTotalDays())
 # print(x)
 
