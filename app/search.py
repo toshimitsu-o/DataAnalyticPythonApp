@@ -450,9 +450,9 @@ class Search:
         dateList = []
         alcDateList = []
         regDateList = []
-        monthlyAccidentDict = {'00': 0, '01' : 0, '02' : 0, '03' : 0, '04': 0, '05' : 0, '06' : 0, '07' : 0, '08': 0, '09' : 0, '10' : 0, '11' : 0,'12': 0}
-        alcMonthlyAccidentDict = {'00': 0, '01' : 0, '02' : 0, '03' : 0, '04': 0, '05' : 0, '06' : 0, '07' : 0, '08': 0, '09' : 0, '10' : 0, '11' : 0,'12': 0}   
-        regMonthlyAccidentDict = {'00': 0, '01' : 0, '02' : 0, '03' : 0, '04': 0, '05' : 0, '06' : 0, '07' : 0, '08': 0, '09' : 0, '10' : 0, '11' : 0,'12': 0}
+        monthlyAccidentDict = {'01' : 0, '02' : 0, '03' : 0, '04': 0, '05' : 0, '06' : 0, '07' : 0, '08': 0, '09' : 0, '10' : 0, '11' : 0,'12': 0}
+        alcMonthlyAccidentDict = {'01' : 0, '02' : 0, '03' : 0, '04': 0, '05' : 0, '06' : 0, '07' : 0, '08': 0, '09' : 0, '10' : 0, '11' : 0,'12': 0}   
+        regMonthlyAccidentDict = {'01' : 0, '02' : 0, '03' : 0, '04': 0, '05' : 0, '06' : 0, '07' : 0, '08': 0, '09' : 0, '10' : 0, '11' : 0,'12': 0}
         #iterates through accidentDate column from result and appends full date to dateList 
         for row in result:
             dateList.append(row[1])
