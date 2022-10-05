@@ -25,7 +25,7 @@ class ChartFrame(wx.Frame):
         self.chartType = chartType
         self.mode = mode
 
-        wx.Frame.__init__(self, parent=parent, title=title, size=(800,600))
+        wx.Frame.__init__(self, parent=parent, title=title, size=(1000,800))
 
         self.result = None
 
@@ -71,8 +71,8 @@ class ChartFrame(wx.Frame):
 
     def plotLayout(self):
         sizer = wx.BoxSizer(wx.VERTICAL)
-        sizer.Add(self.canvas, 1, wx.LEFT | wx.TOP | wx.GROW)
-        sizer.Add(self.toolbar, 0, wx.LEFT | wx.EXPAND)
+        sizer.Add(self.canvas, 1, wx.ALL | wx.GROW, 0)
+        sizer.Add(self.toolbar, 0, wx.ALL | wx.EXPAND, 0)
         self.main.SetSizer(sizer)
     
     def getChart(self):
@@ -129,10 +129,10 @@ class ChartFrame(wx.Frame):
 
         # Make figure and axes.
         self.axes.plot(1, 0)
-        self.axes.set_ylabel('Accident')
+        self.axes.set_xlabel('Accident')
         self.axes.set_title(self.chartType)
 
-        self.axes.bar(labels, data)
+        self.axes.barh(labels, data)
 
     def drawMultiBarChart(self):
         labels = [i[0] for i in self.result[0]]
@@ -142,10 +142,10 @@ class ChartFrame(wx.Frame):
 
         # Make figure and axes.
         self.axes.plot(1, 0)
-        self.axes.set_ylabel('Accident')
+        self.axes.set_xlabel('Accident')
 
-        self.axes.bar(labels, data1, width=width, label='Alcohol Related')
-        self.axes.bar(np.arange(len(data2)) + width, data2, width=width, label='Non-Alcohol')
+        self.axes.barh(labels, data1, height=width, label='Alcohol Related')
+        self.axes.barh(np.arange(len(data2)) + width, data2, height=width, label='Non-Alcohol')
         self.axes.legend()
 
         self.axes.set_title(self.chartType)

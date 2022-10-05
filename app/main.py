@@ -55,10 +55,11 @@ class MainFrame(wx.Frame):
 
         # Define state of program: main, alcohol, location
         self.mode = "main"
+        self.built = 0
         self.search = Search(To_Date=None, From_Date =None, Accident_Type_List=None, Lga=None, Region=None)
         self.resultDb = None
-        self.minDate = ""
-        self.maxDate = ""
+        self.minDate = "2013-03-01"
+        self.maxDate = "2013-03-01"
 
 
         # create a panel in the frame
@@ -75,7 +76,6 @@ class MainFrame(wx.Frame):
         if self.search.checkTable():
             # Get and set dates
             dateRange = self.search.getDateRange()
-            print(dateRange)
             self.minDate = dateRange[0]
             self.maxDate = dateRange[1]
             self.search.From_Date = self.minDate
@@ -94,18 +94,31 @@ class MainFrame(wx.Frame):
         
         # create a menu bar
         self.makeMenuBar()
+        # Make menu box for buttons
+        self.makeMenuBox()
 
-        # Build main content structure
-        self.buidMain()
-
-        # Make a status bar
-        self.CreateStatusBar()
-        self.SetStatusText("Welcome to "+ APP_NAME)
-
-        # If dataset is empty
-        if not self.resultDb:
+        # If dataset is not empty
+        if self.resultDb:
+            # Build main content structure
+            self.buidMain()
+            self.built += 1
+        else:
+            # Sizer for main structure
+            self.mainSizer = wx.BoxSizer(wx.VERTICAL)
+            
+            # Box for grid
+            self.box = wx.StaticBox(self.pnl, wx.ID_ANY, "", pos =(0, 0), size =(-1, 450))
+            self.box.SetBackgroundColour("white")
+            # Sizer for main structure
+            self.mainSizer.Add(self.menubox, 0, wx.ALL | wx.EXPAND,0)
+            self.mainSizer.Add(self.box, 5, wx.ALL |wx.EXPAND, 0)
+            self.pnl.SetSizer(self.mainSizer)
             # Disable buttons
             wx.MessageBox("Dataset is empty. Please select Dataset in the menu bar to import.")
+
+        # Make a status bar
+        #self.CreateStatusBar()
+        #self.SetStatusText("Welcome to "+ APP_NAME)
     
     def updateData(self):
         if self.resultDb:
@@ -120,21 +133,49 @@ class MainFrame(wx.Frame):
             wx.MessageBox("Dataset is empty. Please select Dataset in the menu bar to import.")
 
     def buidMain(self):
-        # Make menu box for buttons
-        self.makeMenuBox()
-        # Make search bar for search box and summary
-        self.makeSchbar()
-        # Make grid box
-        self.makeGridBox()
-        # Make bottom box for chart buttons
-        self.makeBtmBox()
-        # Sizer for main structure
-        self.mainSizer = wx.BoxSizer(wx.VERTICAL)
-        self.mainSizer.Add(self.menubox, 0, wx.ALL | wx.EXPAND,0)
-        self.mainSizer.Add(self.schbarSizer, 0, wx.ALL | wx.EXPAND, 0)
-        self.mainSizer.Add(self.box, 5, wx.ALL |wx.EXPAND, 0)
-        self.mainSizer.Add(self.boxBtm, 0, wx.ALL |wx.EXPAND | wx.ALIGN_BOTTOM, 0)
-        self.pnl.SetSizer(self.mainSizer)
+        dateRange = self.search.getDateRange()
+        self.minDate = dateRange[0]
+        self.maxDate = dateRange[1]
+        self.resultDb = self.search.getResult()
+        self.accidentTypes = self.search.listAccidentType()
+        self.accidentTypes.insert(0, "All types")
+        if self.built > 0:
+            # self.mainSizer.Destroy()
+            # self.pnl.Layout()
+            #Clear items in the sizer
+            # for child in self.mainSizer.GetChildren():
+            #     self.mainSizer.Detach(child.Window)
+            #     self.mainSizer.Layout()
+            # self.searchBox.Destroy()
+            # self.box.Destroy()
+            # self.boxBtm.Destroy()
+            # self.mainSizer.Layout()
+            
+            #self.accCh = wx.Choice(self.searchBox, choices=self.accidentTypes)
+            self.searchBox.Destroy()
+            self.schbarSizer.Layout()
+            self.makeSearchBox()
+            self.schbarSizer.Add(self.searchBox, 5, wx.ALL | wx.ALIGN_CENTER_VERTICAL | wx.EXPAND, 0)
+            self.schbarSizer.Layout()
+
+            #self.setSeaerchDates()
+            self.updateGrid()
+            #self.schSizer.Layout()
+        else:
+            # Make search bar for search box and summary
+            self.makeSchbar()
+            # Make grid box
+            self.makeGridBox()
+            # Make bottom box for chart buttons
+            self.makeBtmBox()
+            # Sizer for main structure
+            self.mainSizer = wx.BoxSizer(wx.VERTICAL)
+            self.mainSizer.Add(self.menubox, 0, wx.ALL | wx.EXPAND,0)
+            self.mainSizer.Add(self.schbarSizer, 0, wx.ALL | wx.EXPAND, 0)
+            self.mainSizer.Add(self.box, 5, wx.ALL |wx.EXPAND, 0)
+            self.mainSizer.Add(self.boxBtm, 0, wx.ALL |wx.EXPAND | wx.ALIGN_BOTTOM, 0)
+            self.pnl.SetSizer(self.mainSizer)
+            self.pnl.Layout()
     
     def makeMenuBox(self):
         # Box for menu box buttons
@@ -178,23 +219,13 @@ class MainFrame(wx.Frame):
         # Search box items
         self.dateTl = wx.StaticText(self.searchBox, label="Date ")
         self.dateFrCt = wx.adv.DatePickerCtrl(self.searchBox)
-        minY = int(self.minDate[0:4])
-        minM = int(self.minDate[5:7].lstrip('0'))-1
-        print(minM)
-        minD = int(self.minDate[-2:].lstrip('0'))
-        maxY = int(self.maxDate[0:4])
-        maxM = int(self.maxDate[5:7].lstrip('0'))-1
-        maxD = int(self.maxDate[-2:].lstrip('0'))
-        self.dateFrCt.SetValue(wx.DateTime.FromDMY(minD,minM,minY))
-        self.dateFrCt.SetRange(wx.DateTime.FromDMY(minD,minM,minY),wx.DateTime.FromDMY(maxD,maxM,maxY))
+
         self.dateTo = wx.StaticText(self.searchBox, label="to ")
         self.dateToCt = wx.adv.DatePickerCtrl(self.searchBox)
-        self.dateToCt.SetValue(wx.DateTime.FromDMY(maxD,maxM,maxY))
-        self.dateToCt.SetRange(wx.DateTime.FromDMY(minD,minM,minY),wx.DateTime.FromDMY(maxD,maxM,maxY))
+
         self.accTl = wx.StaticText(self.searchBox, label="Accident Type ")
         self.accKyCt = wx.TextCtrl(self.searchBox)
-        self.typeList = self.accidentTypes
-        self.accCh = wx.Choice(self.searchBox, choices=self.typeList)
+        self.accCh = wx.Choice(self.searchBox, choices=self.accidentTypes)
         self.outTl = wx.StaticText(self.searchBox, label="Output ")
         self.outCb1 = wx.CheckBox(self.searchBox, label = 'Day')
         self.outCb2 = wx.CheckBox(self.searchBox, label = 'Hit&Run')
@@ -226,7 +257,22 @@ class MainFrame(wx.Frame):
         self.schSizer.Add(self.searchBtn, pos=(0,2), span=(2,1), flag=wx.ALIGN_RIGHT|wx.ALIGN_BOTTOM|wx.EXPAND)
         # Set sizer
         self.searchBox.SetSizer(self.schSizer)
-    
+        # Set dates controls
+        if self.resultDb:
+            self.setSeaerchDates()
+
+    def setSeaerchDates(self):
+        minY = int(self.minDate[0:4])
+        minM = int(self.minDate[5:7].lstrip('0'))-1
+        minD = int(self.minDate[-2:].lstrip('0'))
+        maxY = int(self.maxDate[0:4])
+        maxM = int(self.maxDate[5:7].lstrip('0'))-1
+        maxD = int(self.maxDate[-2:].lstrip('0'))
+        self.dateFrCt.SetValue(wx.DateTime.FromDMY(minD,minM,minY))
+        self.dateFrCt.SetRange(wx.DateTime.FromDMY(minD,minM,minY),wx.DateTime.FromDMY(maxD,maxM,maxY))
+        self.dateToCt.SetValue(wx.DateTime.FromDMY(maxD,maxM,maxY))
+        self.dateToCt.SetRange(wx.DateTime.FromDMY(minD,minM,minY),wx.DateTime.FromDMY(maxD,maxM,maxY))
+
     def makeSumBox(self):
         foundLbl = "230 found (out of 23000)"
         injuryLbl = "Injury: 200"
@@ -256,7 +302,7 @@ class MainFrame(wx.Frame):
         # Search Bar
         self.schbarSizer = wx.BoxSizer(wx.HORIZONTAL)
         self.schbarSizer.Add(self.searchBox, 5, wx.ALL | wx.ALIGN_CENTER_VERTICAL | wx.EXPAND, 0)
-        self.schbarSizer.Add(self.sumBox, 1, wx.ALL | wx.ALIGN_TOP | wx.EXPAND, 0)
+        #self.schbarSizer.Add(self.sumBox, 1, wx.ALL | wx.ALIGN_TOP | wx.EXPAND, 0)
     
     def makeGridBox(self):
         # Box for grid
@@ -390,16 +436,15 @@ class MainFrame(wx.Frame):
             # Proceed loading the file chosen by the user
             pathname = fileDialog.GetPath()
             try:
-                with open(pathname, 'r') as file:
-                    self.loadFile(file)
+                filepath = str(pathname)
+                #data = importData.importData(filepath)
+                importData.performImport(filepath)
             except IOError:
                 wx.LogError("Cannot open file")
-
-    def loadFile(self, filepath):
-        filepath = str(filepath)
-        data = importData.importData(filepath)
-        importData.createDatabase(data)
-        #wx.MessageBox("Filepath for Dataset is: " + filepath)
+            else:
+                wx.MessageBox("Dataset import success!")
+                # Build main content structure
+                self.buidMain()
     
     def importBox(self): # Not using this
         #Dataset import
@@ -447,10 +492,15 @@ class MainFrame(wx.Frame):
         self.frame_number += 1
     
     def onMap(self, event):
-        x = [ i[6] for i in self.rows]
-        y = [i[7] for i in self.rows]
-        #x = [144.9698,145.14671,144.80134,145.07011,144.9653,145.7914,145.00873,145.07229,145.02638,145.15439,145.04213,144.95479,145.06288,144.35796,145.07832,144.89081,145.16073,144.96245,144.99091]
-        #y = [-37.82202,-37.83166,-37.74003,-37.17891,-37.81808,-38.23087,-37.90637,-37.80207,-37.82156,-37.84541,-37.73512,-37.66725,-37.67821,-38.0824,-37.70195,-37.82599,-37.66936,-37.8127,-37.86532]
+        x = [ i[6] for i in self.rows if i[10]==1]
+        y = [i[7] for i in self.rows if i[10]==1]
+
+        x1 = [ i[6] for i in self.rows if i[11]==1]
+        y1 = [i[7] for i in self.rows if i[11]==1]
+
+        x2 = [ i[6] for i in self.rows if i[12]==1]
+        y2 = [i[7] for i in self.rows if i[12]==1]
+
         
         fig, ax = plt.subplots()
         left = 140.95260170441142
@@ -462,7 +512,9 @@ class MainFrame(wx.Frame):
         datafile = 'images/vicmap.png'
         img = plt.imread(datafile)
         plt.imshow(img, zorder=0,extent=[left, right, bottom, top])
-        ax.scatter(x, y, zorder=1, s=20, c='blue', alpha=0.3, edgecolors='none', label='Lable A',)
+        ax.scatter(x, y, zorder=1, s=5, c='red', alpha=0.4, edgecolors='none', label='Fatality',)
+        ax.scatter(x1, y1, zorder=1, s=5, c='green', alpha=0.4, edgecolors='none', label='Injury',)
+        ax.scatter(x2, y2, zorder=1, s=5, c='blue', alpha=0.4, edgecolors='none', label='Alcohol related',)
         
         ax.legend()
         #ax.grid(True)
