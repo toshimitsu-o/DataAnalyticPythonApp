@@ -129,7 +129,6 @@ class ChartFrame(wx.Frame):
 
         # Make figure and axes.
         self.axes.plot(1, 0)
-        self.axes.set_xlabel('Month')
         self.axes.set_ylabel('Accident')
         self.axes.set_title(self.chartType)
 
@@ -143,7 +142,6 @@ class ChartFrame(wx.Frame):
 
         # Make figure and axes.
         self.axes.plot(1, 0)
-        self.axes.set_xlabel('Month')
         self.axes.set_ylabel('Accident')
 
         self.axes.bar(labels, data1, width=width, label='Alcohol Related')

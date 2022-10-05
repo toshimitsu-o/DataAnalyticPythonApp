@@ -58,18 +58,18 @@ class Search:
         Get database records with the search criteria
         """
         # Set all search criteria to prepare sql query
-        # connection = connection()
-        # dateRange = self.getDateRange()
-        # minDate = dateRange[0]
-        # maxDate = dateRange[1]
+
+        dateRange = self.getDateRange()
+        minDate = dateRange[0]
+        maxDate = dateRange[1]
         if self.From_Date:
             date1 = str(self.From_Date)
         else:
-            date1 = "2013-07-01"
+            date1 = minDate
         if self.To_Date:
             date2 = str(self.To_Date)
         else:
-            date2 = "2019-02-01"
+            date2 = maxDate
         if self.Accident_Type_List:
             accidentList = str(self.Accident_Type_List)
         else:
