@@ -152,7 +152,18 @@ class Search:
         con = connection()
         cur = con.cursor()
         sql = "SELECT CAST((JULIANDAY(?) - JULIANDAY(?) + 1) AS Integer);"
-        data = [self.To_Date, self.From_Date]
+        dateRange = self.getDateRange()
+        minDate = dateRange[0]
+        maxDate = dateRange[1]
+        if self.From_Date:
+            date1 = str(self.From_Date)
+        else:
+            date1 = minDate
+        if self.To_Date:
+            date2 = str(self.To_Date)
+        else:
+            date2 = maxDate
+        data = [date2, date1]
         cur.execute(sql, data)
         result = cur.fetchone()
         return result
@@ -200,7 +211,7 @@ class Search:
             list: [(accidentType, NumofAccidents), ...] 
         if mode= 'alcohol
         Returns:
-            list: [[(accidentType, numOfAlcoholAccidents)], [(accidentType, numOfAccidents)]]
+            list: [[(accidentType, numOfAlcoholAccidents), ...], [(accidentType, numOfAccidents), ...]]
         """
         result = self.getResult()
         accidentType = self.Accident_Type_List
@@ -254,9 +265,9 @@ class Search:
         hourList = []
         alcHourList = []
         regHourList = []
-        hourlyAccidentDict = dict()   
-        alcHourlyAccidentDict = dict()
-        regHourlyAccidentDict = dict()
+        hourlyAccidentDict = {'00': 0, '01' : 0, '02' : 0, '03' : 0, '04': 0, '05' : 0, '06' : 0, '07' : 0, '08': 0, '09' : 0, '10' : 0, '11' : 0,'12': 0, '13' : 0, '14' : 0, '15' : 0, '16': 0, '17' : 0, '18' : 0, '19' : 0, '20': 0, '21' : 0, '22' : 0, '23' : 0}   
+        alcHourlyAccidentDict = {'00': 0, '01' : 0, '02' : 0, '03' : 0, '04': 0, '05' : 0, '06' : 0, '07' : 0, '08': 0, '09' : 0, '10' : 0, '11' : 0,'12': 0, '13' : 0, '14' : 0, '15' : 0, '16': 0, '17' : 0, '18' : 0, '19' : 0, '20': 0, '21' : 0, '22' : 0, '23' : 0} 
+        regHourlyAccidentDict = {'00': 0, '01' : 0, '02' : 0, '03' : 0, '04': 0, '05' : 0, '06' : 0, '07' : 0, '08': 0, '09' : 0, '10' : 0, '11' : 0,'12': 0, '13' : 0, '14' : 0, '15' : 0, '16': 0, '17' : 0, '18' : 0, '19' : 0, '20': 0, '21' : 0, '22' : 0, '23' : 0} 
         #iterates through accidentTime column from result and appends to hourList 
         for row in result:
             hourList.append(row[2])
@@ -321,8 +332,6 @@ class Search:
             sortedAccidentList = []
             for key in sortedHourlyAvg:
                 sortedAccidentList.append((key[0], key[1]/days))
-            # if mode == 'alcohol':
-            #     result = 
             result = sorted(sortedAccidentList)
             return result
 
@@ -441,9 +450,9 @@ class Search:
         dateList = []
         alcDateList = []
         regDateList = []
-        monthlyAccidentDict = dict()
-        alcMonthlyAccidentDict = dict()   
-        regMonthlyAccidentDict = dict()
+        monthlyAccidentDict = {'00': 0, '01' : 0, '02' : 0, '03' : 0, '04': 0, '05' : 0, '06' : 0, '07' : 0, '08': 0, '09' : 0, '10' : 0, '11' : 0,'12': 0}
+        alcMonthlyAccidentDict = {'00': 0, '01' : 0, '02' : 0, '03' : 0, '04': 0, '05' : 0, '06' : 0, '07' : 0, '08': 0, '09' : 0, '10' : 0, '11' : 0,'12': 0}   
+        regMonthlyAccidentDict = {'00': 0, '01' : 0, '02' : 0, '03' : 0, '04': 0, '05' : 0, '06' : 0, '07' : 0, '08': 0, '09' : 0, '10' : 0, '11' : 0,'12': 0}
         #iterates through accidentDate column from result and appends full date to dateList 
         for row in result:
             dateList.append(row[1])
@@ -463,7 +472,6 @@ class Search:
         # converts dictionary into sorted list
         monthlyAccidentList = []
         alcMonthlyAccidentList = []
-        combinedDict = dict()
         if mode == 'alcohol':
             # combines monthlyAccidentDict and alcMonthlyAccidentDict into 1 dictionary if mode= alcohol
             for key, val in alcMonthlyAccidentDict.items():
@@ -503,9 +511,9 @@ class Search:
             list: [(dayofWeek, numofAccidents), ...]
         """
         result = self.getResult()
-        dailyAccidentDict = dict() 
-        alcDailyAccidentDict = dict()
-        regDailyAccidentDict = dict()
+        dailyAccidentDict = {'Monday': 0, 'Tuesday' : 0, 'Wednesday' : 0, 'Thursday' : 0, 'Friday': 0, 'Saturday' : 0, 'Sunday' : 0} 
+        alcDailyAccidentDict = {'Monday': 0, 'Tuesday' : 0, 'Wednesday' : 0, 'Thursday' : 0, 'Friday': 0, 'Saturday' : 0, 'Sunday' : 0}
+        regDailyAccidentDict = {'Monday': 0, 'Tuesday' : 0, 'Wednesday' : 0, 'Thursday' : 0, 'Friday': 0, 'Saturday' : 0, 'Sunday' : 0}
         for row in result:
             #iterates through result and ignores row if day of week column == None
             if row[4] == None:
@@ -606,7 +614,7 @@ class Search:
         """Calculates the number of accidents within a given lga
 
         Returns:
-            tuple: (lgaName, numofAccidents)
+            list: [(lgaName, numofAccidents), ...]
         """
         result = self.getResult()
         lga = self.matchLga()
@@ -682,7 +690,7 @@ class Search:
         """calculates the num of accidents within a given region
 
         Returns:
-            tuple: (regionName, numofAccidents)
+            list: [(regionName, numofAccidents), ...]
         """
         result = self.getResult()
         region = self.matchRegions()
@@ -701,9 +709,9 @@ class Search:
         return accidentNumList
 
         
-# x = Search(To_Date = "2014-08-23", From_Date = "2013-07-01", Accident_Type_List="Collision with vehicle", Lga= "BAYSIDE", Region= 'EASTERN REGION')
-# # x.getResult()
-# y = x.hourly_average(mode='alcohol')
+# x = Search(Accident_Type_List="Collision with vehicle", Lga= "BAYSIDE", Region= 'EASTERN REGION')
+# # y = x.getResult()
+# y = x.calculate_by_day(mode = 'alcohol')
 # print(y)
 # print(x.getTotalDays())
 # print(x)
