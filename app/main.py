@@ -6,9 +6,16 @@ try:
     import wx
     import wx.adv
     import wx.grid
-    import matplotlib.pyplot as plt
 except ImportError:
     raise ImportError ("The wxPython module is required to run this program.")
+try:
+    import matplotlib.pyplot as plt
+except ImportError:
+    raise ImportError ("The matplotlib module is required to run this program.")
+try:
+    import numpy as np
+except ImportError:
+    raise ImportError ("The numpy module is required to run this program.")
 
 from search import Search
 from chart import ChartFrame
@@ -61,17 +68,11 @@ class MainFrame(wx.Frame):
         self.minDate = "2013-03-01"
         self.maxDate = "2013-03-01"
 
-
         # create a panel in the frame
         self.pnl = wx.Panel(self)
         self.frame_number = 1
         #self.SetBackgroundColour((19,162,166,255))
         self.SetBackgroundColour("white")
-
-        # try:
-        #     self.result = self.search.getResult()
-        # except:
-        #     wx.MessageBox("Dataset is empty. Please select Dataset in the menu bar to import.")
 
         if self.search.checkTable():
             # Get and set dates
@@ -183,25 +184,25 @@ class MainFrame(wx.Frame):
         self.menubox.SetBackgroundColour((19,162,166,255))
         # button for Dataset
         self.btn1 = wx.Button(self.pnl, size =(160, 40), label="Dataset")
-        self.bmp = wx.Bitmap('btn.png', wx.BITMAP_TYPE_PNG).ConvertToImage()
+        self.bmp = wx.Bitmap('images/dataBt.png', wx.BITMAP_TYPE_PNG).ConvertToImage()
         self.bmp = wx.Bitmap(self.bmp.Scale(30, 30, wx.IMAGE_QUALITY_HIGH))
         self.btn1.SetBitmap(self.bmp)
         self.Bind(wx.EVT_BUTTON, self.onFileOpen, self.btn1)
         #  button for Analyse
         self.btn2 = wx.Button(self.pnl, size =(160, 40), label="Analyse")
-        self.bmp = wx.Bitmap('btn.png', wx.BITMAP_TYPE_PNG).ConvertToImage()
+        self.bmp = wx.Bitmap('images/searchBt.png', wx.BITMAP_TYPE_PNG).ConvertToImage()
         self.bmp = wx.Bitmap(self.bmp.Scale(30, 30, wx.IMAGE_QUALITY_HIGH))
         self.btn2.SetBitmap(self.bmp)
         self.Bind(wx.EVT_BUTTON, self.onAnalyse, self.btn2)
         #  button for Analyse
         self.btn3 = wx.Button(self.pnl, size =(160, 40), label="Alcohol")
-        self.bmp = wx.Bitmap('btn.png', wx.BITMAP_TYPE_PNG).ConvertToImage()
+        self.bmp = wx.Bitmap('images/alcoBt.png', wx.BITMAP_TYPE_PNG).ConvertToImage()
         self.bmp = wx.Bitmap(self.bmp.Scale(30, 30, wx.IMAGE_QUALITY_HIGH))
         self.btn3.SetBitmap(self.bmp)
         self.Bind(wx.EVT_BUTTON, self.onAlcohol, self.btn3)
         #  button for Location
         self.btn4 = wx.Button(self.pnl, size =(160, 40), label="Location")
-        self.bmp = wx.Bitmap('btn.png', wx.BITMAP_TYPE_PNG).ConvertToImage()
+        self.bmp = wx.Bitmap('images/locBt.png', wx.BITMAP_TYPE_PNG).ConvertToImage()
         self.bmp = wx.Bitmap(self.bmp.Scale(30, 30, wx.IMAGE_QUALITY_HIGH))
         self.btn4.SetBitmap(self.bmp)
         self.Bind(wx.EVT_BUTTON, self.onLocation, self.btn4)
@@ -325,6 +326,7 @@ class MainFrame(wx.Frame):
         self.buildGrid()
         self.gridSizer.Add(self.grid, 0, wx.ALL | wx.EXPAND, 0)
         self.gridSizer.Layout()
+        wx.MessageBox("Data updated.")
     
     def buildGrid(self):
         # Create a wxGrid object
@@ -341,7 +343,7 @@ class MainFrame(wx.Frame):
             self.grid.SetColLabelValue(2, "Time")
             self.grid.SetColSize(2, 70)
             self.grid.SetColLabelValue(3, "Type")
-            self.grid.SetColSize(3, 150)
+            self.grid.SetColSize(3, 180)
             self.grid.SetColLabelValue(4, "Day")
             self.grid.SetColSize(4, 60)
             self.grid.SetColLabelValue(5, "Severity")
@@ -353,7 +355,7 @@ class MainFrame(wx.Frame):
             self.grid.SetColLabelValue(8, "LGA")
             self.grid.SetColSize(8, 100)
             self.grid.SetColLabelValue(9, "Region")
-            self.grid.SetColSize(9, 120)
+            self.grid.SetColSize(9, 160)
             self.grid.SetColLabelValue(10, "Fatalities")
             self.grid.SetColSize(10, 60)
             self.grid.SetColLabelValue(11, "Injuries")
@@ -427,7 +429,7 @@ class MainFrame(wx.Frame):
 
     def onFileOpen(self, event):
         # Ask the user what new file to open
-        with wx.FileDialog(self, "Open XYZ file", wildcard="CSV files (*.csv)|*.csv",
+        with wx.FileDialog(self, "Select a CSV Dataset file to import", wildcard="CSV files (*.csv)|*.csv",
                        style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fileDialog:
 
             if fileDialog.ShowModal() == wx.ID_CANCEL:
@@ -486,10 +488,95 @@ class MainFrame(wx.Frame):
         self.updateGrid()
     
     def onChart(self, event):
-        type = event.GetEventObject().GetLabel()
-        title = 'Chart {}'.format(self.frame_number)
-        frame = ChartFrame(title=title, search=self.search, chartType=type, mode=self.mode)
-        self.frame_number += 1
+        self.type = event.GetEventObject().GetLabel()
+        # title = 'Chart {}'.format(self.frame_number)
+        # frame = ChartFrame(title=title, search=self.search, chartType=type, mode=self.mode)
+        # self.frame_number += 1
+
+        if self.type == "Hourly Average":
+            self.result = self.search.hourly_average(mode=self.mode)
+            if self.mode == "alcohol":
+                self.drawMultiBarChart()
+            else:
+                self.drawBarChart()
+        elif self.type == "Accident Types":
+            self.result = self.search.accident_type(mode=self.mode)
+            if self.mode == "alcohol":
+                self.drawMultiBarChart()
+            else:
+                self.drawBarChart()
+        elif self.type == "By Month":
+            self.result = self.search.calculate_by_month(mode=self.mode)
+            if self.mode == "alcohol":
+                self.drawMultiBarChart()
+            else:
+                self.drawBarChart()
+        elif self.type == "By Day":
+            self.result = self.search.calculate_by_day(mode=self.mode)
+            if self.mode == "alcohol":
+                self.drawMultiBarChart()
+            else:
+                self.drawBarChart()
+        elif self.type == "LGA":
+            self.result = self.search.calcAllLgas()
+            self.drawBarChart()
+        elif self.type == "Region":
+            self.result = self.search.calcAllRegions()
+            self.drawBarChart()
+        else:
+            wx.MessageBox("Error: Menu is not selected or chart type doesn't exist.")
+
+    def drawBarChart(self):
+        # labels = ['one', 'two', 'three', 'four', 'five']
+        # data = [23,85, 72, 43, 52]
+        fig, ax = plt.subplots(figsize =(10, 7))
+        if self.type == "LGA" and len(self.result) > 12:
+            #self.result = {key: val for key, val in sorted(self.result.items(), key = lambda ele: ele[1], reverse = True)}
+            self.result.sort(key=lambda y: y[1], reverse=True)
+            labels = [i[0] for i in self.result][:10]
+            data = [i[1] for i in self.result][:10]
+            ax.set_title("TOP 10 LGA")
+        else:
+            labels = [i[0] for i in self.result]
+            data = [i[1] for i in self.result]
+            ax.set_title(self.type)
+
+        
+        ax.barh(labels, data)
+        ax.grid(b = True, color ='grey',linestyle ='-.', linewidth = 0.5,alpha = 0.2)
+        # Show top values
+        #ax.invert_yaxis()
+        # Add Plot Title
+        ax.set_xlabel("Accident")
+        ax.set_yticklabels(labels, fontsize=9)
+        # Add annotation to bars
+        for i in ax.patches:
+            plt.text(i.get_width()+0.1, i.get_y()+0.2,
+                    str(round((i.get_width()), 2)),
+                    fontsize = 9, fontweight ='normal',
+                    color ='grey')
+        plt.tight_layout()
+        plt.show()
+
+    def drawMultiBarChart(self):
+
+        labels = [i[0] for i in self.result[0]]
+        data1 = [i[1] for i in self.result[0]]
+        data2 = [i[1] for i in self.result[1]]
+        ind = np.arange(len(data1))
+        width = 0.3
+
+        fig = plt.subplots(figsize =(10, 7))
+        p1 = plt.barh(ind, data1, width)
+        p2 = plt.barh(ind, data2, width, left = data1)
+        #plt.margins()
+        plt.xlabel('Accident')
+        plt.title(self.type)
+        plt.yticks(ind, labels)
+        #plt.yticks(np.arange(0, 81, 10))
+        plt.legend((p1[0], p2[0]), ('Alcohol Related', 'Non-Alcohol'))
+        plt.tight_layout()
+        plt.show()
     
     def onMap(self, event):
         x = [ i[6] for i in self.rows if i[10]==1]
@@ -502,7 +589,7 @@ class MainFrame(wx.Frame):
         y2 = [i[7] for i in self.rows if i[12]==1]
 
         
-        fig, ax = plt.subplots()
+        fig, ax = plt.subplots(figsize =(10, 7))
         left = 140.95260170441142
         right = 150.061662159373
         bottom = -39.12502305202676
@@ -517,7 +604,7 @@ class MainFrame(wx.Frame):
         ax.scatter(x2, y2, zorder=1, s=5, c='blue', alpha=0.4, edgecolors='none', label='Alcohol related',)
         
         ax.legend()
-        #ax.grid(True)
+        plt.tight_layout()
         plt.show()
 
     def makeMenuBar(self):
@@ -545,7 +632,7 @@ class MainFrame(wx.Frame):
         # Give the menu bar to the frame
         self.SetMenuBar(menuBar)
         # Bind actions to menu items
-        self.Bind(wx.EVT_MENU, self.OnImport, importItem)
+        self.Bind(wx.EVT_MENU, self.onFileOpen, importItem)
         self.Bind(wx.EVT_MENU, self.OnExit,  exitItem)
         self.Bind(wx.EVT_MENU, self.OnAbout, aboutItem)
 
@@ -563,41 +650,6 @@ class MainFrame(wx.Frame):
         wx.MessageBox("This app helps to analyse a dataset of Victoria State Accidents.",
                       APP_NAME,
                       wx.OK|wx.ICON_INFORMATION)
-
-# class ChartFrame(wx.Frame):
-#     """Class for chart frame window"""
-#     def __init__(self, title, parent=None):
-#         wx.Frame.__init__(self, parent=parent, title=title, size=(1000,625))
-
-#         # create a panel in the frame
-#         pnl = wx.Panel(self)
-#         self.SetBackgroundColour("white")
-
-#         # bar box
-#         box = wx.StaticBox(pnl, wx.ID_ANY, "", pos =(0, 0), size =(-1, 40))
-#         box.SetBackgroundColour("black")
-#         # Create items
-#         charTl = wx.StaticText(box, label="Chart ")
-#         charTl.SetForegroundColour("white")
-#         # Sizer
-#         sizer = wx.BoxSizer(wx.HORIZONTAL)
-#         sizer.Add(charTl, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL | wx.EXPAND, 0)
-#         box.SetSizer(sizer)
-
-#         # Main
-#         main = wx.StaticBox(pnl, wx.ID_ANY, "", pos =(0, 0), size =(-1, -1))
-#         text = wx.StaticText(main, label="Chart will be inserted")
-#         # Sizer
-#         sizer = wx.BoxSizer(wx.VERTICAL)
-#         sizer.Add(text, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL | wx.EXPAND, 0)
-#         main.SetSizer(sizer)
-
-#         sizer = wx.BoxSizer(wx.VERTICAL)
-#         sizer.Add(box, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL | wx.EXPAND, 0)
-#         sizer.Add(main, 5, wx.ALL | wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_CENTER | wx.EXPAND, 0)
-#         pnl.SetSizer(sizer)
-
-#         self.Show()
 
 if __name__ == '__main__':
     # When this module is run (not imported) then create the app, the
