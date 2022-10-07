@@ -195,7 +195,6 @@ class Search:
             list: ['accidentType', ...]
             
         """
-        result = self.getResult()
         word = self.Accident_Type_Keyword
         types = self.listAccidentType()
         matchedList = []
@@ -398,7 +397,7 @@ class Search:
         for row in result:
             if row[3] in accidentType:
                 accidentNum[row[3]] = accidentNum.get(row[3], 0) + 1
-            if mode == "alcohol":
+            if mode == "alcohol" and row[3] in accidentType:
                 if row[-1] == 1:
                     alcAccidentNum[row[3]] = alcAccidentNum.get(row[3], 0) + 1
                 if row[-1] == 0:
