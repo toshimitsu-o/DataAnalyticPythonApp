@@ -713,10 +713,10 @@ class Search:
         return accidentNumList
 
         
-x = Search(To_Date='2016-01-01', From_Date='2015-01-01', Accident_Type_Keyword='collision', Lga= "BAYSIDE", Region= 'EASTERN REGION')
-y = x.accident_type(mode = 'alcohol')
+#x = Search(To_Date='2016-01-01', From_Date='2015-01-01', Accident_Type_Keyword='collision', Lga= "BAYSIDE", Region= 'EASTERN REGION')
+#y = x.accident_type(mode = 'alcohol')
 # y = x.calculate_by_day(mode = 'alcohol')
-print(y)
+#print(y)
 # print(x.getTotalDays())
 # print(x)
 

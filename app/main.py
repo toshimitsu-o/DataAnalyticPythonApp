@@ -18,7 +18,6 @@ except ImportError:
     raise ImportError ("The numpy module is required to run this program.")
 
 from search import Search
-from chart import ChartFrame
 import importData
 
 APP_NAME = "Accident Analysis"
@@ -63,7 +62,7 @@ class MainFrame(wx.Frame):
         # Define state of program: main, alcohol, location
         self.mode = "main"
         self.built = 0
-        self.search = Search(To_Date=None, From_Date =None, Accident_Type_List=None, Lga=None, Region=None)
+        self.search = Search(To_Date=None, From_Date =None, Accident_Type_Keyword="",Accident_Type_List="", Lga=None, Region=None)
         self.resultDb = None
         self.minDate = "2013-03-01"
         self.maxDate = "2013-03-01"
@@ -227,10 +226,10 @@ class MainFrame(wx.Frame):
         self.accTl = wx.StaticText(self.searchBox, label="Accident Type ")
         self.accKyCt = wx.TextCtrl(self.searchBox)
         self.accCh = wx.Choice(self.searchBox, choices=self.accidentTypes)
-        self.outTl = wx.StaticText(self.searchBox, label="Output ")
-        self.outCb1 = wx.CheckBox(self.searchBox, label = 'Day')
-        self.outCb2 = wx.CheckBox(self.searchBox, label = 'Hit&Run')
-        self.outCb3 = wx.CheckBox(self.searchBox, label = 'Location')
+        # self.outTl = wx.StaticText(self.searchBox, label="Output ")
+        # self.outCb1 = wx.CheckBox(self.searchBox, label = 'Day')
+        # self.outCb2 = wx.CheckBox(self.searchBox, label = 'Hit&Run')
+        # self.outCb3 = wx.CheckBox(self.searchBox, label = 'Location')
         self.searchBtn = wx.Button(self.searchBox, label="Search", size=(100, 30))
         self.searchBtn.Bind(wx.EVT_BUTTON, self.onSearch)
         # Sizer 
@@ -299,7 +298,7 @@ class MainFrame(wx.Frame):
         # Make search box for search form
         self.makeSearchBox()
         # Make summary box for result summary
-        self.makeSumBox()
+        #self.makeSumBox()
         # Search Bar
         self.schbarSizer = wx.BoxSizer(wx.HORIZONTAL)
         self.schbarSizer.Add(self.searchBox, 5, wx.ALL | wx.ALIGN_CENTER_VERTICAL | wx.EXPAND, 0)
@@ -318,11 +317,6 @@ class MainFrame(wx.Frame):
 
     def updateGrid(self):
         self.grid.Destroy()
-        #self.gridSizer.Destroy(self.grid)
-        # Clear items in the sizer
-        # for child in self.gridSizer.GetChildren():
-        #     self.gridSizer.Detach(child.Window)
-        #     self.gridSizer.Layout()
         self.buildGrid()
         self.gridSizer.Add(self.grid, 0, wx.ALL | wx.EXPAND, 0)
         self.gridSizer.Layout()
@@ -374,6 +368,10 @@ class MainFrame(wx.Frame):
         # Create items
         self.charTl = wx.StaticText(self.boxBtm, label="Chart ")
         self.charTl.SetForegroundColour("white")
+        self.charAl = wx.StaticText(self.boxBtm, label=" - Alcohol ")
+        self.charAl.SetForegroundColour("white")
+        self.charLoc = wx.StaticText(self.boxBtm, label=" - Location ")
+        self.charLoc.SetForegroundColour("white")
         self.cBtn1 = wx.Button(self.boxBtm, label="Hourly Average")
         self.cBtn2 = wx.Button(self.boxBtm, label="Accident Types")
         self.cBtn3 = wx.Button(self.boxBtm, label="By Month")
@@ -399,6 +397,8 @@ class MainFrame(wx.Frame):
                 self.boxBtmSizer.Detach(child.Window)
                 self.boxBtmSizer.Layout()
         if mode == "location":
+            self.charLoc.Show()
+            self.charAl.Hide()
             self.cBtn1.Hide()
             self.cBtn2.Hide()
             self.cBtn3.Hide()
@@ -407,10 +407,16 @@ class MainFrame(wx.Frame):
             self.cBtn6.Show()
             self.cBtn7.Show()
             self.boxBtmSizer.Add(self.charTl, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
+            self.boxBtmSizer.Add(self.charLoc, 0, wx.RIGHT | wx.ALIGN_CENTER_VERTICAL, 5)
             self.boxBtmSizer.Add(self.cBtn5, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
             self.boxBtmSizer.Add(self.cBtn6, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
             self.boxBtmSizer.Add(self.cBtn7, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
         else:
+            self.charLoc.Hide()
+            if mode != "alcohol":
+                self.charAl.Hide()
+            else:
+                self.charAl.Show()
             self.cBtn1.Show()
             self.cBtn2.Show()
             self.cBtn3.Show()
@@ -419,6 +425,8 @@ class MainFrame(wx.Frame):
             self.cBtn6.Hide()
             self.cBtn7.Hide()
             self.boxBtmSizer.Add(self.charTl, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
+            if mode == "alcohol":
+                self.boxBtmSizer.Add(self.charAl, 0, wx.RIGHT | wx.ALIGN_CENTER_VERTICAL, 5)
             self.boxBtmSizer.Add(self.cBtn1, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
             self.boxBtmSizer.Add(self.cBtn2, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
             self.boxBtmSizer.Add(self.cBtn3, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
@@ -447,21 +455,6 @@ class MainFrame(wx.Frame):
                 wx.MessageBox("Dataset import success!")
                 # Build main content structure
                 self.buidMain()
-    
-    def importBox(self): # Not using this
-        #Dataset import
-        self.importBox = wx.StaticBox(self.pnl, wx.ID_ANY, "", pos =wx.DefaultPosition, size =(-1, 100))
-        self.importBox.SetBackgroundColour((247,247,247,255))
-        # Items
-        self.importTl = wx.StaticText(self.importBox, label="Import Dataset ")
-        #importTl.SetForegroundColour("white")
-        self.importBtn = wx.Button(self.importBox, label="Select a file")
-        self.Bind(wx.EVT_BUTTON, self.onFileOpen, self.importBtn)
-        # Sizer
-        self.sizer = wx.BoxSizer(wx.VERTICAL)
-        self.sizer.Add(self.importTl, 0, wx.ALL | wx.EXPAND,0)
-        self.sizer.Add(self.importBtn, 0, wx.ALL | wx.EXPAND,0)
-        self.importBox.SetSizer(self.sizer)
 
     def onAnalyse(self, event):
         self.mode = "main"
@@ -489,9 +482,6 @@ class MainFrame(wx.Frame):
     
     def onChart(self, event):
         self.type = event.GetEventObject().GetLabel()
-        # title = 'Chart {}'.format(self.frame_number)
-        # frame = ChartFrame(title=title, search=self.search, chartType=type, mode=self.mode)
-        # self.frame_number += 1
 
         if self.type == "Hourly Average":
             self.result = self.search.hourly_average(mode=self.mode)
@@ -531,7 +521,6 @@ class MainFrame(wx.Frame):
         # data = [23,85, 72, 43, 52]
         fig, ax = plt.subplots(figsize =(10, 7))
         if self.type == "LGA" and len(self.result) > 12:
-            #self.result = {key: val for key, val in sorted(self.result.items(), key = lambda ele: ele[1], reverse = True)}
             self.result.sort(key=lambda y: y[1], reverse=True)
             labels = [i[0] for i in self.result][:10]
             data = [i[1] for i in self.result][:10]
@@ -559,7 +548,7 @@ class MainFrame(wx.Frame):
         plt.show()
 
     def drawMultiBarChart(self):
-        print(self.result)
+        #print(self.result)
 
         labels = [i[0] for i in self.result[0]]
         data1 = [i[1] for i in self.result[0]]
