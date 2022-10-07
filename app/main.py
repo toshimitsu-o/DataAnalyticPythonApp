@@ -559,6 +559,7 @@ class MainFrame(wx.Frame):
         plt.show()
 
     def drawMultiBarChart(self):
+        print(self.result)
 
         labels = [i[0] for i in self.result[0]]
         data1 = [i[1] for i in self.result[0]]
