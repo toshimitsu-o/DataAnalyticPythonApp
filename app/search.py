@@ -393,6 +393,11 @@ class Search:
         accidentNum = dict()
         alcAccidentNum = dict()
         regAccidentNum = dict()
+        if mode == 'alcohol':
+            for row in result:
+                if row[3] in accidentType:
+                    alcAccidentNum[row[3]] = alcAccidentNum.get(row[3], 0)
+                    regAccidentNum[row[3]] = regAccidentNum.get(row[3], 0)
         # iterates through result and appends self.Accident_Type_Keyword as key in accidentNum dict, increments +1 per associated record in result else continues
         for row in result:
             if row[3] in accidentType:
@@ -708,10 +713,10 @@ class Search:
         return accidentNumList
 
         
-# x = Search(Accident_Type_List="Collision with vehicle", Lga= "BAYSIDE", Region= 'EASTERN REGION')
-# # y = x.getResult()
+x = Search(To_Date='2016-01-01', From_Date='2015-01-01', Accident_Type_Keyword='collision', Lga= "BAYSIDE", Region= 'EASTERN REGION')
+y = x.accident_type(mode = 'alcohol')
 # y = x.calculate_by_day(mode = 'alcohol')
-# print(y)
+print(y)
 # print(x.getTotalDays())
 # print(x)
 
