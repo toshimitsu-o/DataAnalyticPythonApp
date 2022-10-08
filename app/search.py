@@ -37,18 +37,21 @@ class Search:
 
     def checkTable(self):
         """Check if the table exist in the database and return True or False"""
-        #result = c.fetchone()
+        result = []
         #print(result)
         try:
             con = connection()
             c = con.cursor()
             #sql = "SELECT * FROM Accident LIMIT 1;"
-            c.execute("SELECT * FROM Accident LIMIT 1;")
-            c.fetchall()
+            c.execute("SELECT * FROM Accident LIMIT 2;")
+            result = c.fetchall()
         except:
             return False
         else:
-            return True
+            if len(result) == 2:
+                return True
+            else:
+                return False
     
     def getDateRange(self):
         """queries accident database to get the min and max date within the search query

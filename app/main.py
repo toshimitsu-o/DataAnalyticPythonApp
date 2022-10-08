@@ -98,7 +98,7 @@ class MainFrame(wx.Frame):
         self.makeMenuBox()
 
         # If dataset is not empty
-        if self.resultDb:
+        if self.search.checkTable():
             # Build main content structure
             self.buidMain()
             self.built += 1
@@ -130,7 +130,7 @@ class MainFrame(wx.Frame):
                     cell = self.rows[i]
                     self.grid.SetCellValue(i, j, str(cell[j]))
         else:
-            wx.MessageBox("Dataset is empty. Please select Dataset in the menu bar to import.")
+            print("No data to insert to the grid.")
 
     def buidMain(self):
         dateRange = self.search.getDateRange()
@@ -481,40 +481,43 @@ class MainFrame(wx.Frame):
         self.updateGrid()
     
     def onChart(self, event):
-        self.type = event.GetEventObject().GetLabel()
+        if self.search.checkTable():
+            self.type = event.GetEventObject().GetLabel()
 
-        if self.type == "Hourly Average":
-            self.result = self.search.hourly_average(mode=self.mode)
-            if self.mode == "alcohol":
-                self.drawMultiBarChart()
-            else:
+            if self.type == "Hourly Average":
+                self.result = self.search.hourly_average(mode=self.mode)
+                if self.mode == "alcohol":
+                    self.drawMultiBarChart()
+                else:
+                    self.drawBarChart()
+            elif self.type == "Accident Types":
+                self.result = self.search.accident_type(mode=self.mode)
+                if self.mode == "alcohol":
+                    self.drawMultiBarChart()
+                else:
+                    self.drawBarChart()
+            elif self.type == "By Month":
+                self.result = self.search.calculate_by_month(mode=self.mode)
+                if self.mode == "alcohol":
+                    self.drawMultiBarChart()
+                else:
+                    self.drawBarChart()
+            elif self.type == "By Day":
+                self.result = self.search.calculate_by_day(mode=self.mode)
+                if self.mode == "alcohol":
+                    self.drawMultiBarChart()
+                else:
+                    self.drawBarChart()
+            elif self.type == "LGA":
+                self.result = self.search.calcAllLgas()
                 self.drawBarChart()
-        elif self.type == "Accident Types":
-            self.result = self.search.accident_type(mode=self.mode)
-            if self.mode == "alcohol":
-                self.drawMultiBarChart()
-            else:
+            elif self.type == "Region":
+                self.result = self.search.calcAllRegions()
                 self.drawBarChart()
-        elif self.type == "By Month":
-            self.result = self.search.calculate_by_month(mode=self.mode)
-            if self.mode == "alcohol":
-                self.drawMultiBarChart()
             else:
-                self.drawBarChart()
-        elif self.type == "By Day":
-            self.result = self.search.calculate_by_day(mode=self.mode)
-            if self.mode == "alcohol":
-                self.drawMultiBarChart()
-            else:
-                self.drawBarChart()
-        elif self.type == "LGA":
-            self.result = self.search.calcAllLgas()
-            self.drawBarChart()
-        elif self.type == "Region":
-            self.result = self.search.calcAllRegions()
-            self.drawBarChart()
+                wx.MessageBox("Error: Menu is not selected or chart type doesn't exist.")
         else:
-            wx.MessageBox("Error: Menu is not selected or chart type doesn't exist.")
+            wx.MessageBox("Error: Dataset is empty.")
 
     def drawBarChart(self):
         # labels = ['one', 'two', 'three', 'four', 'five']
@@ -569,33 +572,36 @@ class MainFrame(wx.Frame):
         plt.show()
     
     def onMap(self, event):
-        x = [ i[6] for i in self.rows if i[10]==1]
-        y = [i[7] for i in self.rows if i[10]==1]
+        if self.search.checkTable():
+            x = [ i[6] for i in self.rows if i[10]==1]
+            y = [i[7] for i in self.rows if i[10]==1]
 
-        x1 = [ i[6] for i in self.rows if i[11]==1]
-        y1 = [i[7] for i in self.rows if i[11]==1]
+            x1 = [ i[6] for i in self.rows if i[11]==1]
+            y1 = [i[7] for i in self.rows if i[11]==1]
 
-        x2 = [ i[6] for i in self.rows if i[12]==1]
-        y2 = [i[7] for i in self.rows if i[12]==1]
+            x2 = [ i[6] for i in self.rows if i[12]==1]
+            y2 = [i[7] for i in self.rows if i[12]==1]
 
-        
-        fig, ax = plt.subplots(figsize =(10, 7))
-        left = 140.95260170441142
-        right = 150.061662159373
-        bottom = -39.12502305202676
-        top = -33.992432778690606
-        plt.xlim([left, right])
-        plt.ylim([bottom, top])
-        datafile = 'images/vicmap.png'
-        img = plt.imread(datafile)
-        plt.imshow(img, zorder=0,extent=[left, right, bottom, top])
-        ax.scatter(x, y, zorder=1, s=5, c='red', alpha=0.4, edgecolors='none', label='Fatality',)
-        ax.scatter(x1, y1, zorder=1, s=5, c='green', alpha=0.4, edgecolors='none', label='Injury',)
-        ax.scatter(x2, y2, zorder=1, s=5, c='blue', alpha=0.4, edgecolors='none', label='Alcohol related',)
-        
-        ax.legend()
-        plt.tight_layout()
-        plt.show()
+            
+            fig, ax = plt.subplots(figsize =(10, 7))
+            left = 140.95260170441142
+            right = 150.061662159373
+            bottom = -39.12502305202676
+            top = -33.992432778690606
+            plt.xlim([left, right])
+            plt.ylim([bottom, top])
+            datafile = 'images/vicmap.png'
+            img = plt.imread(datafile)
+            plt.imshow(img, zorder=0,extent=[left, right, bottom, top])
+            ax.scatter(x, y, zorder=1, s=5, c='red', alpha=0.4, edgecolors='none', label='Fatality',)
+            ax.scatter(x1, y1, zorder=1, s=5, c='green', alpha=0.4, edgecolors='none', label='Injury',)
+            ax.scatter(x2, y2, zorder=1, s=5, c='blue', alpha=0.4, edgecolors='none', label='Alcohol related',)
+            
+            ax.legend()
+            plt.tight_layout()
+            plt.show()
+        else:
+            wx.MessageBox("Error: Dataset is empty.")
 
     def makeMenuBar(self):
         """
@@ -607,7 +613,9 @@ class MainFrame(wx.Frame):
         # The "\t..." syntax defines an accelerator key that also triggers
         # the same event
         importItem = fileMenu.Append(-1, "&Import\tCtrl-I",
-                "Help string shown in status bar for this menu item")
+                "Import dataset CSV file")
+        clearItem = fileMenu.Append(-1, "&Clear Dataset\tCtrl-C",
+                "Clear dataset")
         fileMenu.AppendSeparator()
         # When using a stock ID we don't need to specify the menu item's
         # label
@@ -623,6 +631,7 @@ class MainFrame(wx.Frame):
         self.SetMenuBar(menuBar)
         # Bind actions to menu items
         self.Bind(wx.EVT_MENU, self.onFileOpen, importItem)
+        self.Bind(wx.EVT_MENU, self.OnClear, clearItem)
         self.Bind(wx.EVT_MENU, self.OnExit,  exitItem)
         self.Bind(wx.EVT_MENU, self.OnAbout, aboutItem)
 
@@ -630,10 +639,11 @@ class MainFrame(wx.Frame):
         """Close the frame, terminating the application."""
         self.Close(True)
 
-
-    def OnImport(self, event):
-        """Import function will be here later"""
-        wx.MessageBox("Import function will be linked here later.")
+    def OnClear(self, event):
+        """Clear function"""
+        importData.createDatabase()
+        self.buidMain()
+        wx.MessageBox("Dataset cleared.")
 
     def OnAbout(self, event):
         """Display an About Dialog"""
